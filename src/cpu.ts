@@ -14,6 +14,12 @@ export default class CPU {
    */
   public SP: number;
 
+  public Registers: {
+    A: number;
+    X: number;
+    Y: number;
+  };
+
   /**
    * Initializes a new CPU.
    */
@@ -27,5 +33,10 @@ export default class CPU {
   public Initialize(): void {
     this.PC = 0x0000;
     this.SP = 0x0000;
+    this.Registers = {
+      A: 0,
+      X: 0,
+      Y: 0,
+    };
   }
 }
