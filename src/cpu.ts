@@ -150,6 +150,12 @@ export default class CPU {
         case Opcodes.LDA_Zero_Page:
           this.LoadRegisterZeroPage("A", memory);
           break;
+        case Opcodes.LDX_Zero_Page:
+          this.LoadRegisterZeroPage("X", memory);
+          break;
+        case Opcodes.LDY_Zero_Page:
+          this.LoadRegisterZeroPage("Y", memory);
+          break;
       }
     }
 

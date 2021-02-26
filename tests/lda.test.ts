@@ -90,3 +90,11 @@ test("Verify LDY Immediate", () => {
 test("Verify LDA Zero Page", () => {
   verifyLoadZeroPage(Opcodes.LDA_Zero_Page, "A");
 });
+
+test("Verify LDX Zero Page", () => {
+  verifyLoadZeroPage(Opcodes.LDX_Zero_Page, "X");
+});
+
+test("Verify LDY Zero Page", () => {
+  verifyLoadZeroPage(Opcodes.LDY_Zero_Page, "Y");
+});

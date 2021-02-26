@@ -8,6 +8,8 @@ enum Opcodes {
   LDX_Immediate = 0xa2,
   LDY_Immediate = 0xa0,
   LDA_Zero_Page = 0xa5,
+  LDX_Zero_Page = 0xa6,
+  LDY_Zero_Page = 0xa4,
 }
 
 export default Opcodes;
