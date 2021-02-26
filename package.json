@@ -1,0 +1,24 @@
+{
+  "name": "6502ts",
+  "version": "1.0.0",
+  "description": "Basic 6502 emulator writte in TypeScript",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danecreekphotography/6502ts.git"
+  },
+  "keywords": [
+    "6502",
+    "emulator",
+    "typescript"
+  ],
+  "author": "Neil Enns",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danecreekphotography/6502ts/issues"
+  },
+  "homepage": "https://github.com/danecreekphotography/6502ts#readme"
+}
