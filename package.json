@@ -20,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/danecreekphotography/6502ts/issues"
   },
-  "homepage": "https://github.com/danecreekphotography/6502ts#readme"
+  "homepage": "https://github.com/danecreekphotography/6502ts#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.15.2",
+    "@typescript-eslint/parser": "^4.15.2",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-notice": "^0.9.10",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.2"
+  }
 }
