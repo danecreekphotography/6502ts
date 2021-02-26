@@ -29,12 +29,15 @@
   },
   "homepage": "https://github.com/danecreekphotography/6502ts#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-notice": "^0.9.10",
+    "jest-cli": "^26.6.3",
     "prettier": "^2.2.1",
+    "ts-jest": "^26.5.2",
     "typescript": "^4.2.2"
   }
 }
