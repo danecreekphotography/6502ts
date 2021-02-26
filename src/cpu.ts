@@ -14,6 +14,9 @@ export default class CPU {
    */
   public SP: number;
 
+  /**
+   * Initializes a new CPU.
+   */
   constructor() {
     this.Initialize();
   }
