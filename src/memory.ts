@@ -6,7 +6,9 @@
 export default class Memory {
   public readonly MAX_ADDRESS = 0xffff;
 
-  private memory = Array<number>(this.MAX_ADDRESS);
+  // Memory runs from 0x0000 to 0xffff so need a plus one on the array, otherwise
+  // the length would be 0x0000 to 0xfffe since it's origin zero.
+  private memory = Array<number>(this.MAX_ADDRESS + 1);
 
   private verifyAddressRange(address: number): void {
     if (address > this.MAX_ADDRESS) {
