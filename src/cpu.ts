@@ -5,6 +5,11 @@
 
 export default class CPU {
   /**
+   * Location in memory where execution starts.
+   */
+  public readonly RESET_VECTOR = 0xfffc;
+
+  /**
    * The program counter.
    */
   public PC: number;
@@ -71,7 +76,7 @@ export default class CPU {
    * Reset the CPU to its initial state, as if the power was just turned on.
    */
   public Initialize(): void {
-    this.PC = 0x0000;
+    this.PC = this.RESET_VECTOR;
     this.SP = 0x0000;
     this.Registers = {
       A: 0,

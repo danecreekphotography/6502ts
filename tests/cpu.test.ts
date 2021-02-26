@@ -6,7 +6,7 @@
 import CPU from "../src/cpu";
 
 function verifyCpuInitialization(cpu: CPU): void {
-  expect(cpu.PC).toBe(0x0000);
+  expect(cpu.PC).toBe(cpu.RESET_VECTOR);
   expect(cpu.SP).toBe(0x0000);
   expect(cpu.Registers.A).toBe(0);
   expect(cpu.Registers.X).toBe(0);
