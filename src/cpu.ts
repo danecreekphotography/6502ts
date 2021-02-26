@@ -86,10 +86,10 @@ export default class CPU {
    * Loads the data from memory at the current PC location into the specified
    * register.
    * Causes the program counter to increment by one and consumes one cycle.
-   * @param register The register to load the data into
    * @param memory The memory containing the data
+   * @param register The register to load the data into
    */
-  private LoadRegisterImmediate(register: keyof Registers, memory: Memory): void {
+  private LoadRegisterImmediate(memory: Memory, register: keyof Registers): void {
     this.Registers[register] = memory.read(this.PC++);
     this.consumedCycles++;
     this.SetFlagsOnRegisterLoad(register);
@@ -98,13 +98,19 @@ export default class CPU {
   /**
    * Loads the zero page address from memory at the current PC location
    * then loads the data at the zero page address into the specified register.
-   * Causes the program counter to increment by one and consumes two cycles.
-   * @param register The register to load the data into
+   * Causes the program counter to increment by one and consumes two cycles (without an offset)
+   * or three cycles (if an offsetRegister is provided)
    * @param memory The memory containing the data
+   * @param register The register to load the data into
+   * @param offsetRegister The register to add to the zero page address prior to reading
    */
-  private LoadRegisterZeroPage(register: keyof Registers, memory: Memory): void {
-    const zeroPageAddress = memory.read(this.PC++);
+  private LoadRegisterZeroPage(memory: Memory, register: keyof Registers, offsetRegister?: keyof Registers): void {
+    let zeroPageAddress = memory.read(this.PC++);
     this.consumedCycles++;
+    if (offsetRegister) {
+      zeroPageAddress += this.Registers[offsetRegister];
+      this.consumedCycles++;
+    }
     this.Registers[register] = memory.read(zeroPageAddress);
     this.consumedCycles++;
     this.SetFlagsOnRegisterLoad(register);
@@ -139,22 +145,31 @@ export default class CPU {
 
       switch (opcode) {
         case Opcodes.LDA_Immediate:
-          this.LoadRegisterImmediate("A", memory);
+          this.LoadRegisterImmediate(memory, "A");
           break;
         case Opcodes.LDX_Immediate:
-          this.LoadRegisterImmediate("X", memory);
+          this.LoadRegisterImmediate(memory, "X");
           break;
         case Opcodes.LDY_Immediate:
-          this.LoadRegisterImmediate("Y", memory);
+          this.LoadRegisterImmediate(memory, "Y");
           break;
         case Opcodes.LDA_Zero_Page:
-          this.LoadRegisterZeroPage("A", memory);
+          this.LoadRegisterZeroPage(memory, "A");
           break;
         case Opcodes.LDX_Zero_Page:
-          this.LoadRegisterZeroPage("X", memory);
+          this.LoadRegisterZeroPage(memory, "X");
           break;
         case Opcodes.LDY_Zero_Page:
-          this.LoadRegisterZeroPage("Y", memory);
+          this.LoadRegisterZeroPage(memory, "Y");
+          break;
+        case Opcodes.LDA_Zero_PageX:
+          this.LoadRegisterZeroPage(memory, "A", "X");
+          break;
+        case Opcodes.LDX_Zero_PageY:
+          this.LoadRegisterZeroPage(memory, "X", "Y");
+          break;
+        case Opcodes.LDY_Zero_PageX:
+          this.LoadRegisterZeroPage(memory, "Y", "X");
           break;
       }
     }

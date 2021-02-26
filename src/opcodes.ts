@@ -10,6 +10,9 @@ enum Opcodes {
   LDA_Zero_Page = 0xa5,
   LDX_Zero_Page = 0xa6,
   LDY_Zero_Page = 0xa4,
+  LDA_Zero_PageX = 0xb5,
+  LDX_Zero_PageY = 0xb6,
+  LDY_Zero_PageX = 0xb4,
 }
 
 export default Opcodes;
