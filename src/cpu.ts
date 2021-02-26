@@ -15,9 +15,49 @@ export default class CPU {
   public SP: number;
 
   public Registers: {
+    /**
+     * Accumulator
+     */
     A: number;
+    /**
+     * X register
+     */
     X: number;
+    /**
+     * Y register
+     */
     Y: number;
+  };
+
+  public Flags: {
+    /**
+     * Carry flag
+     */
+    C: boolean;
+    /**
+     * Zero flag
+     */
+    Z: boolean;
+    /**
+     * Interrupt disable
+     */
+    I: boolean;
+    /**
+     * Decimal mode
+     */
+    D: boolean;
+    /**
+     * Break command
+     */
+    B: boolean;
+    /**
+     * Overflow flag
+     */
+    V: boolean;
+    /**
+     * Negative flag
+     */
+    N: boolean;
   };
 
   /**
@@ -37,6 +77,15 @@ export default class CPU {
       A: 0,
       X: 0,
       Y: 0,
+    };
+    this.Flags = {
+      B: false,
+      C: false,
+      D: false,
+      I: false,
+      N: false,
+      V: false,
+      Z: false,
     };
   }
 }

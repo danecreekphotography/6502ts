@@ -11,6 +11,13 @@ function verifyCpuInitialization(cpu: CPU): void {
   expect(cpu.Registers.A).toBe(0);
   expect(cpu.Registers.X).toBe(0);
   expect(cpu.Registers.Y).toBe(0);
+  expect(cpu.Flags.B).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+  expect(cpu.Flags.D).toBe(false);
+  expect(cpu.Flags.I).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expect(cpu.Flags.V).toBe(false);
+  expect(cpu.Flags.Z).toBe(false);
 }
 
 test("Verify CPU constructor", () => {
