@@ -83,13 +83,29 @@ export default class CPU {
   }
 
   /**
-   * Loads a value from a memory location into the specified register.
+   * Loads the data from memory at the current PC location into the specified
+   * register.
    * Causes the program counter to increment by one and consumes one cycle.
    * @param register The register to load the data into
    * @param memory The memory containing the data
    */
   private LoadRegisterImmediate(register: keyof Registers, memory: Memory): void {
     this.Registers[register] = memory.read(this.PC++);
+    this.consumedCycles++;
+    this.SetFlagsOnRegisterLoad(register);
+  }
+
+  /**
+   * Loads the zero page address from memory at the current PC location
+   * then loads the data at the zero page address into the specified register.
+   * Causes the program counter to increment by one and consumes two cycles.
+   * @param register The register to load the data into
+   * @param memory The memory containing the data
+   */
+  private LoadRegisterZeroPage(register: keyof Registers, memory: Memory): void {
+    const zeroPageAddress = memory.read(this.PC++);
+    this.consumedCycles++;
+    this.Registers[register] = memory.read(zeroPageAddress);
     this.consumedCycles++;
     this.SetFlagsOnRegisterLoad(register);
   }
@@ -130,6 +146,9 @@ export default class CPU {
           break;
         case Opcodes.LDY_Immediate:
           this.LoadRegisterImmediate("Y", memory);
+          break;
+        case Opcodes.LDA_Zero_Page:
+          this.LoadRegisterZeroPage("A", memory);
           break;
       }
     }
