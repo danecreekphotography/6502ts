@@ -88,9 +88,21 @@ export default class CPU {
    * Causes the program counter to increment by one and consumes one cycle.
    * @param memory The memory containing the data
    * @param register The register to load the data into
+   * @param address The base address to use for the data
+   * @param offsetRegister The register to add to the base address
    */
-  private LoadRegisterImmediate(memory: Memory, register: keyof Registers): void {
-    this.Registers[register] = memory.read(this.PC++);
+  private LoadRegisterImmediate(
+    memory: Memory,
+    register: keyof Registers,
+    address: number,
+    offsetRegister?: keyof Registers,
+  ): void {
+    let dataAddress = address;
+    if (offsetRegister) {
+      dataAddress += this.Registers[offsetRegister];
+      this.consumedCycles++;
+    }
+    this.Registers[register] = memory.read(dataAddress);
     this.consumedCycles++;
     this.SetFlagsOnRegisterLoad(register);
   }
@@ -145,14 +157,15 @@ export default class CPU {
 
       switch (opcode) {
         case Opcodes.LDA_Immediate:
-          this.LoadRegisterImmediate(memory, "A");
+          this.LoadRegisterImmediate(memory, "A", this.PC++);
           break;
         case Opcodes.LDX_Immediate:
-          this.LoadRegisterImmediate(memory, "X");
+          this.LoadRegisterImmediate(memory, "X", this.PC++);
           break;
         case Opcodes.LDY_Immediate:
-          this.LoadRegisterImmediate(memory, "Y");
+          this.LoadRegisterImmediate(memory, "Y", this.PC++);
           break;
+
         case Opcodes.LDA_Zero_Page:
           this.LoadRegisterZeroPage(memory, "A");
           break;
@@ -162,6 +175,7 @@ export default class CPU {
         case Opcodes.LDY_Zero_Page:
           this.LoadRegisterZeroPage(memory, "Y");
           break;
+
         case Opcodes.LDA_Zero_PageX:
           this.LoadRegisterZeroPage(memory, "A", "X");
           break;
@@ -171,6 +185,25 @@ export default class CPU {
         case Opcodes.LDY_Zero_PageX:
           this.LoadRegisterZeroPage(memory, "Y", "X");
           break;
+
+        case Opcodes.LDA_Absolute: {
+          const address = memory.read(this.PC++);
+          this.consumedCycles++;
+          this.LoadRegisterImmediate(memory, "A", address);
+          break;
+        }
+        case Opcodes.LDX_Absolute: {
+          const address = memory.read(this.PC++);
+          this.consumedCycles++;
+          this.LoadRegisterImmediate(memory, "X", address);
+          break;
+        }
+        case Opcodes.LDY_Absolute: {
+          const address = memory.read(this.PC++);
+          this.consumedCycles++;
+          this.LoadRegisterImmediate(memory, "Y", address);
+          break;
+        }
       }
     }
 

@@ -112,6 +112,26 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(true);
 }
 
+// Verifies load zero page plus an offset from a register works for the specified
+// offset register, register and value.
+// Additionally tests that zero and negative numbers properly set the
+// accumulator flags.
+
+function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
+  const cpu = new CPU();
+  const memory = new Memory();
+
+  memory.write(cpu.RESET_VECTOR, opcode);
+  memory.write(cpu.RESET_VECTOR + 1, 0x80);
+
+  // Positive non-zero number case
+  memory.write(0x80, 0x42);
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers[register]).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+}
+
 test("Verify LDA Immediate", () => {
   verifyLoadImmediate(Opcodes.LDA_Immediate, "A");
 });
@@ -146,4 +166,16 @@ test("Verify LDX Zero Page Plus Y", () => {
 
 test("Verify LDY Zero Page Plus X", () => {
   verifyLoadZeroPagePlusRegister(Opcodes.LDY_Zero_PageX, "Y", "X");
+});
+
+test("Verify LDA Absolute", () => {
+  verifyLoadAbsolute(Opcodes.LDA_Absolute, "A");
+});
+
+test("Verify LDX Absolute", () => {
+  verifyLoadAbsolute(Opcodes.LDX_Absolute, "X");
+});
+
+test("Verify LDY Absolute", () => {
+  verifyLoadAbsolute(Opcodes.LDY_Absolute, "Y");
 });
