@@ -229,6 +229,9 @@ export default class CPU {
           this.LoadRegister(memory, "Y", AddressModes.Absolute);
           break;
         }
+        default: {
+          throw Error(`Read an invalid opcode at memory address 0x${this.PC.toString(16)}.`);
+        }
       }
     }
 
