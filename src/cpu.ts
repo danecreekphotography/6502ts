@@ -94,7 +94,7 @@ export default class CPU {
     switch (addressMode) {
       // Read directly from memory at the current program counter location.
       case AddressModes.Immediate: {
-        data = memory.read(this.PC++);
+        data = memory.readByte(this.PC++);
         this.consumedCycles++;
         break;
       }
@@ -104,7 +104,7 @@ export default class CPU {
       case AddressModes.ZeroPage:
       case AddressModes.ZeroPageX:
       case AddressModes.ZeroPageY: {
-        let dataAddress = memory.read(this.PC++);
+        let dataAddress = memory.readByte(this.PC++);
         this.consumedCycles++;
 
         if (addressMode === AddressModes.ZeroPageX) {
@@ -116,7 +116,7 @@ export default class CPU {
           this.consumedCycles++;
         }
 
-        data = memory.read(dataAddress);
+        data = memory.readByte(dataAddress);
         this.consumedCycles++;
         break;
       }
@@ -126,9 +126,9 @@ export default class CPU {
       case AddressModes.Absolute:
       case AddressModes.AbsoluteX:
       case AddressModes.AbsoluteY: {
-        const dataAddressHighByte = memory.read(this.PC++);
+        const dataAddressHighByte = memory.readByte(this.PC++);
         this.consumedCycles++;
-        const dataAddressLowByte = memory.read(this.PC++);
+        const dataAddressLowByte = memory.readByte(this.PC++);
         this.consumedCycles++;
         let dataAddress = (dataAddressHighByte << 8) | dataAddressLowByte;
 
@@ -141,7 +141,7 @@ export default class CPU {
           dataAddress += this.Registers.Y;
         }
 
-        data = memory.read(dataAddress);
+        data = memory.readByte(dataAddress);
         this.consumedCycles++;
         break;
       }
@@ -185,7 +185,7 @@ export default class CPU {
     while (this.consumedCycles < cyclesToExecute) {
       // Grab the opcode from memory, incrementing the program counter
       // and consuming one cycle.
-      const opcode = memory.read(this.PC++);
+      const opcode = memory.readByte(this.PC++);
       this.consumedCycles++;
 
       switch (opcode) {

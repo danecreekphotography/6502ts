@@ -15,10 +15,10 @@ function verifyLoadImmediate(opcode: Opcodes, register: keyof Registers) {
   const cpu = new CPU();
   const memory = new Memory();
 
-  memory.write(cpu.RESET_VECTOR, opcode);
+  memory.writeByte(cpu.RESET_VECTOR, opcode);
 
   // Positive non-zero number case
-  memory.write(cpu.RESET_VECTOR + 1, 0x42);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x42);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
@@ -26,7 +26,7 @@ function verifyLoadImmediate(opcode: Opcodes, register: keyof Registers) {
 
   // Zero number case
   cpu.Initialize();
-  memory.write(cpu.RESET_VECTOR + 1, 0x00);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
@@ -34,7 +34,7 @@ function verifyLoadImmediate(opcode: Opcodes, register: keyof Registers) {
 
   // Negative number case
   cpu.Initialize();
-  memory.write(cpu.RESET_VECTOR + 1, 0b10010101);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0b10010101);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
@@ -48,11 +48,11 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
   const cpu = new CPU();
   const memory = new Memory();
 
-  memory.write(cpu.RESET_VECTOR, opcode);
-  memory.write(cpu.RESET_VECTOR + 1, 0x00);
+  memory.writeByte(cpu.RESET_VECTOR, opcode);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
 
   // Positive non-zero number case
-  memory.write(0x00, 0x42);
+  memory.writeByte(0x00, 0x42);
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
@@ -60,7 +60,7 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
 
   // Zero number case
   cpu.Initialize();
-  memory.write(0x00, 0x00);
+  memory.writeByte(0x00, 0x00);
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Registers[register]).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
@@ -68,7 +68,7 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
 
   // Negative number case
   cpu.Initialize();
-  memory.write(0x00, 0b10010101);
+  memory.writeByte(0x00, 0b10010101);
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Registers[register]).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
@@ -84,12 +84,12 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
   const cpu = new CPU();
   const memory = new Memory();
 
-  memory.write(cpu.RESET_VECTOR, opcode);
-  memory.write(cpu.RESET_VECTOR + 1, 0x00);
+  memory.writeByte(cpu.RESET_VECTOR, opcode);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
   cpu.Registers[offsetRegister] = 0x01;
 
   // Positive non-zero number case
-  memory.write(0x01, 0x42);
+  memory.writeByte(0x01, 0x42);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
@@ -97,7 +97,7 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
 
   // Zero number case
   cpu.Initialize();
-  memory.write(0x01, 0x00);
+  memory.writeByte(0x01, 0x00);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
@@ -105,7 +105,7 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
 
   // Negative number case
   cpu.Initialize();
-  memory.write(0x01, 0b10010101);
+  memory.writeByte(0x01, 0b10010101);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
@@ -121,12 +121,11 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   const cpu = new CPU();
   const memory = new Memory();
 
-  memory.write(cpu.RESET_VECTOR, opcode);
-  memory.write(cpu.RESET_VECTOR + 1, 0x20);
-  memory.write(cpu.RESET_VECTOR + 2, 0x40);
+  memory.writeByte(cpu.RESET_VECTOR, opcode);
+  memory.writeWord(cpu.RESET_VECTOR + 1, 0x2040);
 
   // Positive non-zero number case
-  memory.write(0x2040, 0x42);
+  memory.writeByte(0x2040, 0x42);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);

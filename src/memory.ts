@@ -10,6 +10,10 @@ export default class Memory {
   // the length would be 0x0000 to 0xfffe since it's origin zero.
   private memory = Array<number>(this.MAX_ADDRESS + 1);
 
+  /**
+   * Verifies a memory address is within the memory's valid address range.
+   * @param address The address to verify
+   */
   private verifyAddressRange(address: number): void {
     if (address > this.MAX_ADDRESS) {
       throw new RangeError(
@@ -22,21 +26,47 @@ export default class Memory {
   }
 
   /**
-   * Reads a byte of data from memory
+   * Reads a byte of data from memory. This takes one cycle.
    * @param address The address to read
    */
-  public read(address: number): number {
+  public readByte(address: number): number {
     this.verifyAddressRange(address);
     return this.memory[address];
   }
 
   /**
-   * Writes a byte of data from memory
+   * Reads a word of data from memory. This takes two cycles.
+   * @param address The address to read
+   */
+  public readWord(address: number): number {
+    this.verifyAddressRange(address);
+    this.verifyAddressRange(address + 1);
+
+    const lowByte = this.memory[address++];
+    const highByte = this.memory[address];
+    return (highByte << 8) | lowByte;
+  }
+
+  /**
+   * Writes a byte of data to memory. This takes one cycle.
    * @param address The address to write to
    * @param data The data to write
    */
-  public write(address: number, data: number): void {
+  public writeByte(address: number, data: number): void {
     this.verifyAddressRange(address);
     this.memory[address] = data;
+  }
+
+  /**
+   * Writes a word of data to memory. This takes two cycles.
+   * @param address The address to write to
+   * @param data The data to write
+   */
+  public writeWord(address: number, data: number): void {
+    this.verifyAddressRange(address);
+    this.verifyAddressRange(address + 1);
+
+    this.memory[address++] = data & 0xff;
+    this.memory[address] = data >> 8;
   }
 }

@@ -5,31 +5,59 @@
 
 import Memory from "../src/memory";
 
-test("Verify read address bounds", () => {
+test("Verify read byte address bounds", () => {
   const memory = new Memory();
 
   expect(() => {
-    memory.read(memory.MAX_ADDRESS + 1);
+    memory.readByte(memory.MAX_ADDRESS + 1);
   }).toThrow(RangeError);
   expect(() => {
-    memory.read(-1);
+    memory.readByte(-1);
   }).toThrow(RangeError);
 });
 
-test("Verify write address bounds", () => {
+test("Verify read word address bounds", () => {
   const memory = new Memory();
 
   expect(() => {
-    memory.write(memory.MAX_ADDRESS + 1, 0);
+    memory.readWord(memory.MAX_ADDRESS + 1);
   }).toThrow(RangeError);
   expect(() => {
-    memory.write(-1, 0);
+    memory.readWord(-1);
+  }).toThrow(RangeError);
+});
+
+test("Verify write word address bounds", () => {
+  const memory = new Memory();
+
+  expect(() => {
+    memory.writeWord(memory.MAX_ADDRESS + 1, 0);
+  }).toThrow(RangeError);
+  expect(() => {
+    memory.writeWord(-1, 0);
   }).toThrowError();
 });
 
-test("Verify read and write", () => {
+test("Verify write byte address bounds", () => {
   const memory = new Memory();
 
-  memory.write(0x0000, 0x42);
-  expect(memory.read(0x0000)).toBe(0x42);
+  expect(() => {
+    memory.writeByte(memory.MAX_ADDRESS + 1, 0);
+  }).toThrow(RangeError);
+  expect(() => {
+    memory.writeByte(-1, 0);
+  }).toThrowError();
+});
+test("Verify read and write byte", () => {
+  const memory = new Memory();
+
+  memory.writeByte(0x0000, 0x42);
+  expect(memory.readByte(0x0000)).toBe(0x42);
+});
+
+test("Verify read and write word", () => {
+  const memory = new Memory();
+
+  memory.writeWord(0x0000, 0x4221);
+  expect(memory.readWord(0x0000)).toBe(0x4221);
 });
