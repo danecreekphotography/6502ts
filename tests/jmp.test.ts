@@ -48,7 +48,31 @@ test("Verify JMP indirect", () => {
   memory.writeByte(INDIRECT_ADDRESS_LOCATION, Opcodes.LDA_Immediate);
   memory.writeByte(INDIRECT_ADDRESS_LOCATION + 1, 0x42);
 
-  expect(cpu.Execute(7, memory)).toBe(7);
+  // Six cycles for the JMP indirect, 2 for the LDA immediate
+  expect(cpu.Execute(8, memory)).toBe(8);
+  expect(cpu.Registers.A).toBe(0x42);
+  expect(cpu.PC).toBe(INDIRECT_ADDRESS_LOCATION + 2);
+});
+8;
+
+test("Verify JMP indirect across page boundary", () => {
+  const JMP_LOCATION = 0x30ff; // Where the indirect address will get stored
+  const INDIRECT_ADDRESS_LOCATION = 0x4080; // The actual address to jump to
+
+  // Store the jump instruction and jump location
+  memory.writeByte(CODE_LOCATION, Opcodes.JPM_Indirect);
+  memory.writeWord(CODE_LOCATION + 1, JMP_LOCATION);
+
+  // Store the address to jump to.
+  memory.writeByte(0x3000, 0x40); // This should be the high byte
+  memory.writeByte(0x30ff, 0x80); // This should be the low byte
+
+  // Store something to execute at the code location
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION + 1, 0x42);
+
+  // Six cycles for the JMP indirect, 2 for the LDA immediate
+  expect(cpu.Execute(8, memory)).toBe(8);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.PC).toBe(INDIRECT_ADDRESS_LOCATION + 2);
 });

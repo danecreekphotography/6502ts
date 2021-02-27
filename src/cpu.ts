@@ -187,22 +187,29 @@ export default class CPU {
         break;
       }
       case AddressModes.Indirect: {
-        const lowByte = memory.readByte(this.PC) & 0x00ff;
-        this.consumedCycles++;
-
-        // The high byte comes from the next location of the program counter but
-        // without wrapping across the page boundary. Funky.
-        let highByteAddress = 0;
-        if ((this.PC & 0xff) == 0xff) {
-          highByteAddress = this.PC & 0x00;
-        } else {
-          highByteAddress = this.PC + 1;
-        }
-        const highByte = memory.readByte(highByteAddress) & 0x00ff;
-        this.consumedCycles++;
-
-        this.PC = memory.readWord((highByte << 8) | lowByte);
+        // This gives us a two byte address in memory to read from.
+        // We need to read two bytes of data from that address, but without wrapping across a page boundary.
+        const indirectAddress = memory.readWord(this.PC);
         this.consumedCycles += 2;
+
+        // Read the low byte data first since that's easy.
+        const lowByteData = memory.readByte(indirectAddress);
+        this.consumedCycles++;
+
+        // The high byte comes from indirectAddress + 1, but does not
+        // cross over a page boundary. Do some funky checks to ensure that's what happens
+        let highByteDataAddress = 0;
+        if ((indirectAddress & 0xff) == 0xff) {
+          highByteDataAddress = indirectAddress & 0xff00;
+        } else {
+          highByteDataAddress = indirectAddress + 1;
+        }
+        const highByteData = memory.readByte(highByteDataAddress);
+        this.consumedCycles++;
+
+        // Set the program counter to the indirect address
+        this.PC = (highByteData << 8) | lowByteData;
+        this.consumedCycles++;
         break;
       }
       default:
