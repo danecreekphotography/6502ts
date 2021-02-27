@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import CPU from "../src/cpu";
+import Memory from "../src/memory";
+import Opcodes from "../src/opcodes";
 
 function verifyCpuInitialization(cpu: CPU): void {
-  expect(cpu.PC).toBe(0x0000);
+  expect(cpu.PC).toBe(cpu.RESET_VECTOR);
   expect(cpu.SP).toBe(0x0000);
   expect(cpu.Registers.A).toBe(0);
   expect(cpu.Registers.X).toBe(0);
@@ -36,4 +38,16 @@ test("Verify CPU initialization", () => {
   cpu.Initialize();
 
   verifyCpuInitialization(cpu);
+});
+
+test("Verify reading an invalid opcode", () => {
+  const cpu = new CPU();
+  const memory = new Memory();
+
+  memory.writeByte(cpu.RESET_VECTOR, Opcodes.LDA_Immediate);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x42);
+
+  expect(() => {
+    cpu.Execute(3, memory);
+  }).toThrowError();
 });
