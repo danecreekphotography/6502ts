@@ -145,6 +145,24 @@ export default class CPU {
         this.consumedCycles++;
         break;
       }
+
+      // Read from the two byte address stored in the zero page plus offset location,
+      // then use that as an address to read the actual data.
+      case AddressModes.IndirectX: {
+        // Start by getting the zero page address from the current program counter location.
+        const baseZeroPageAddress = memory.readByte(this.PC++);
+        this.consumedCycles++;
+        // Add RegisterX to get the actual zero page address, but wrap it within the zero page address space.
+        const zeroPageAddress = (baseZeroPageAddress + this.Registers.X) & 0xff; // This forces it to wrap within the zero page address space
+        this.consumedCycles++;
+        // Get the data address from the zero page memory location.
+        const dataAddress = memory.readWord(zeroPageAddress);
+        this.consumedCycles += 2;
+        // Actually read the data.
+        data = memory.readByte(dataAddress);
+        this.consumedCycles++;
+        break;
+      }
     }
 
     return data;
@@ -242,6 +260,11 @@ export default class CPU {
         }
         case Opcodes.LDY_AbsoluteX: {
           this.LoadRegister(memory, "Y", AddressModes.AbsoluteX);
+          break;
+        }
+
+        case Opcodes.LDA_IndirectX: {
+          this.LoadRegister(memory, "A", AddressModes.IndirectX);
           break;
         }
 

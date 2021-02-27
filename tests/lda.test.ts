@@ -252,3 +252,49 @@ test("Verify LDX Absolute Plus Register", () => {
 test("Verify LDY Absolute Plus Register", () => {
   verifyLoadAbsolutePlusRegister(Opcodes.LDY_AbsoluteX, "Y", "X");
 });
+
+test("Verify LDA Indirect X", () => {
+  const cpu = new CPU();
+  const memory = new Memory();
+
+  memory.writeByte(cpu.RESET_VECTOR, Opcodes.LDA_IndirectX);
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0x20); // This is the base zero page address
+  cpu.Registers.X = 0x04; // This is the offset to add to the zero page address
+
+  // Positive non-zero number case, memory location doesn't wrap zero page
+  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
+  memory.writeByte(0x2070, 0x42); // This is the actual data in the target location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Registers.A).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Zero number case, memory location doesn't wrap zero page
+  cpu.Initialize();
+  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
+  memory.writeByte(0x2070, 0x00); // This is the actual data in the target location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Registers.A).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Negative number case, memory location doesn't wrap zero page
+  cpu.Initialize();
+  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
+  memory.writeByte(0x2070, 0b10010101); // This is the actual data in the target location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Registers.A).toBe(0b10010101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+
+  // Positive non-zero number case, memory location wraps the zero page address space.
+  cpu.Initialize();
+  memory.writeByte(cpu.RESET_VECTOR + 1, 0xff); // Base zero page address at the end of zero page address space.
+  cpu.Registers.X = 2; // This will get added to 0xFF resulting in a wrapped value of 0x01.
+  memory.writeWord(0x01, 0x2070); // This is the target location in memory that contains the actual data
+  memory.writeByte(0x2070, 0x42); // This is the actual data in the target location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Registers.A).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+});
