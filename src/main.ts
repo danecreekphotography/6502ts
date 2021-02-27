@@ -10,9 +10,11 @@ import Opcodes from "./opcodes";
 const cpu = new CPU();
 const memory = new Memory();
 
-memory.write(cpu.RESET_VECTOR, Opcodes.LDA_Zero_Page);
-memory.write(cpu.RESET_VECTOR + 1, 0x00);
+memory.write(cpu.RESET_VECTOR, Opcodes.LDA_Absolute);
+memory.write(cpu.RESET_VECTOR + 1, 0x20);
+memory.write(cpu.RESET_VECTOR + 2, 0x40);
 
 // Positive non-zero number case
-memory.write(0x00, 0x42);
+memory.write(0x2040, 0x42);
+
 cpu.Execute(3, memory);

@@ -122,10 +122,11 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   const memory = new Memory();
 
   memory.write(cpu.RESET_VECTOR, opcode);
-  memory.write(cpu.RESET_VECTOR + 1, 0x80);
+  memory.write(cpu.RESET_VECTOR + 1, 0x20);
+  memory.write(cpu.RESET_VECTOR + 2, 0x40);
 
   // Positive non-zero number case
-  memory.write(0x80, 0x42);
+  memory.write(0x2040, 0x42);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);

@@ -98,6 +98,7 @@ export default class CPU {
         this.consumedCycles++;
         break;
       }
+
       // Read from the single byte memory address stored at the current program
       // counter location, adding in the offset from X or Y if appropriate.
       case AddressModes.ZeroPage:
@@ -113,6 +114,31 @@ export default class CPU {
         if (addressMode === AddressModes.ZeroPageY) {
           dataAddress += this.Registers.Y;
           this.consumedCycles++;
+        }
+
+        data = memory.read(dataAddress);
+        this.consumedCycles++;
+        break;
+      }
+
+      // Read from the two byte address stored at the current program
+      // counter location, adding in the offset from X or Y if appropriate.
+      case AddressModes.Absolute:
+      case AddressModes.AbsoluteX:
+      case AddressModes.AbsoluteY: {
+        const dataAddressHighByte = memory.read(this.PC++);
+        this.consumedCycles++;
+        const dataAddressLowByte = memory.read(this.PC++);
+        this.consumedCycles++;
+        let dataAddress = (dataAddressHighByte << 8) | dataAddressLowByte;
+
+        // The AbsoluteX and AbsoluteY address modes don't cost an extra
+        // consumed clock cycle so there is no consumedCycles++ here.
+        if (addressMode === AddressModes.AbsoluteX) {
+          dataAddress += this.Registers.X;
+        }
+        if (addressMode === AddressModes.AbsoluteY) {
+          dataAddress += this.Registers.Y;
         }
 
         data = memory.read(dataAddress);
