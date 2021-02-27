@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
+import Flags from "./flags";
 import Memory from "./memory";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
@@ -26,38 +27,15 @@ export default class CPU {
    */
   public SP: number;
 
+  /**
+   * The registers.
+   */
   public Registers = new Registers();
 
-  public Flags: {
-    /**
-     * Carry flag
-     */
-    C: boolean;
-    /**
-     * Zero flag
-     */
-    Z: boolean;
-    /**
-     * Interrupt disable
-     */
-    I: boolean;
-    /**
-     * Decimal mode
-     */
-    D: boolean;
-    /**
-     * Break command
-     */
-    B: boolean;
-    /**
-     * Overflow flag
-     */
-    V: boolean;
-    /**
-     * Negative flag
-     */
-    N: boolean;
-  };
+  /** 
+   * The status flags
+   */
+  public Flags = new Flags();
 
   /**
    * Reset the CPU to its initial state, as if the power was just turned on.
@@ -66,15 +44,6 @@ export default class CPU {
   public Initialize(memory: Memory): void {
     this.PC = memory.readWord(this.RESET_VECTOR);
     this.SP = 0x0000;
-    this.Flags = {
-      B: false,
-      C: false,
-      D: false,
-      I: false,
-      N: false,
-      V: false,
-      Z: false,
-    };
   }
 
   /**
