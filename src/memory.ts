@@ -69,4 +69,14 @@ export default class Memory {
     this.memory[address++] = data & 0xff;
     this.memory[address] = data >> 8;
   }
+
+  /**
+   * Returns true if adding the offset to the base address modifies the high byte
+   * of the resulting address.
+   * @param address The base address.
+   * @param offset The offset to add to the address.
+   */
+  public OffsetCrossesPageBoundary(address: number, offset: number): boolean {
+    return (address & 0xff) + (offset & 0xff) > 0xff;
+  }
 }

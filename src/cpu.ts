@@ -130,13 +130,15 @@ export default class CPU {
         this.PC += 2;
         this.consumedCycles += 2;
 
-        // The AbsoluteX and AbsoluteY address modes don't cost an extra
-        // consumed clock cycle so there is no consumedCycles++ here.
+        // The AbsoluteX and AbsoluteY address modes only consume an extra cycle
+        // if the base address + register cross a page boundary.
         if (addressMode === AddressModes.AbsoluteX) {
           dataAddress += this.Registers.X;
+          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.X)) this.consumedCycles++;
         }
         if (addressMode === AddressModes.AbsoluteY) {
           dataAddress += this.Registers.Y;
+          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.Y)) this.consumedCycles++;
         }
 
         data = memory.readByte(dataAddress);
@@ -229,6 +231,20 @@ export default class CPU {
           this.LoadRegister(memory, "Y", AddressModes.Absolute);
           break;
         }
+
+        case Opcodes.LDA_AbsoluteX: {
+          this.LoadRegister(memory, "A", AddressModes.AbsoluteX);
+          break;
+        }
+        case Opcodes.LDX_AbsoluteY: {
+          this.LoadRegister(memory, "X", AddressModes.AbsoluteY);
+          break;
+        }
+        case Opcodes.LDY_AbsoluteX: {
+          this.LoadRegister(memory, "Y", AddressModes.AbsoluteX);
+          break;
+        }
+
         default: {
           throw Error(`Read an invalid opcode at memory address 0x${this.PC.toString(16)}.`);
         }

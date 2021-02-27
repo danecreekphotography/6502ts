@@ -61,3 +61,13 @@ test("Verify read and write word", () => {
   memory.writeWord(0x0000, 0x4221);
   expect(memory.readWord(0x0000)).toBe(0x4221);
 });
+
+test("Verify page boundary detection", () => {
+  const memory = new Memory();
+
+  expect(memory.OffsetCrossesPageBoundary(0x0000, 0x0001)).toBe(false);
+  expect(memory.OffsetCrossesPageBoundary(0x0100, 0x0001)).toBe(false);
+  expect(memory.OffsetCrossesPageBoundary(0x00ff, 0x0001)).toBe(true);
+  expect(memory.OffsetCrossesPageBoundary(0x01ff, 0x0001)).toBe(true);
+  expect(memory.OffsetCrossesPageBoundary(0xffff, 0x0001)).toBe(true);
+});

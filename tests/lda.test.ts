@@ -112,11 +112,9 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(true);
 }
 
-// Verifies load zero page plus an offset from a register works for the specified
-// offset register, register and value.
+// Verifies load absolute works for the specified register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-
 function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   const cpu = new CPU();
   const memory = new Memory();
@@ -130,6 +128,69 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
+
+  // Zero number case
+  cpu.Initialize();
+  memory.writeByte(0x2040, 0x00);
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers[register]).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Negative number case
+  cpu.Initialize();
+  memory.writeByte(0x2040, 0b10010101);
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers[register]).toBe(0b10010101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+}
+
+// Verifies load absolute plus an offset from a register works for the specified
+// offset register, register and value.
+// Additionally tests that zero and negative numbers properly set the
+// accumulator flags.
+function verifyLoadAbsolutePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: keyof Registers) {
+  const cpu = new CPU();
+  const memory = new Memory();
+
+  memory.writeByte(cpu.RESET_VECTOR, opcode);
+  memory.writeWord(cpu.RESET_VECTOR + 1, 0x2040);
+  cpu.Registers[offsetRegister] = 0x01;
+
+  // Positive non-zero number case, no page boundary crossed
+  memory.writeByte(0x2040 + 0x01, 0x42);
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers[register]).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Positive non-zero number case, page boundary crossed
+  cpu.Initialize();
+  cpu.Registers[offsetRegister] = 0xff;
+  memory.writeByte(0x2040 + 0xff, 0x42);
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(cpu.Registers[register]).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Zero number case, page boundary crossed
+  cpu.Initialize();
+  cpu.Registers[offsetRegister] = 0xff;
+  memory.writeByte(0x2040 + 0xff, 0x00);
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(cpu.Registers[register]).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Negative number case, page boundary not crossed
+  cpu.Initialize();
+  cpu.Registers[offsetRegister] = 0x01;
+  memory.writeByte(0x2040 + 0x01, 0b10010101);
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers[register]).toBe(0b10010101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
 }
 
 test("Verify LDA Immediate", () => {
@@ -178,4 +239,16 @@ test("Verify LDX Absolute", () => {
 
 test("Verify LDY Absolute", () => {
   verifyLoadAbsolute(Opcodes.LDY_Absolute, "Y");
+});
+
+test("Verify LDA Absolute Plus Register", () => {
+  verifyLoadAbsolutePlusRegister(Opcodes.LDA_AbsoluteX, "A", "X");
+});
+
+test("Verify LDX Absolute Plus Register", () => {
+  verifyLoadAbsolutePlusRegister(Opcodes.LDX_AbsoluteY, "X", "Y");
+});
+
+test("Verify LDY Absolute Plus Register", () => {
+  verifyLoadAbsolutePlusRegister(Opcodes.LDY_AbsoluteX, "Y", "X");
 });
