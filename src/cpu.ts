@@ -13,7 +13,7 @@ export default class CPU {
   private consumedCycles: number;
 
   /**
-   * Location in memory where execution starts.
+   * Location in memory where the reset vector is stored.
    */
   public readonly RESET_VECTOR = 0xfffc;
 
@@ -38,17 +38,11 @@ export default class CPU {
   public Flags = new Flags();
 
   /**
-   * Initializes a new CPU.
-   */
-  constructor() {
-    this.Initialize();
-  }
-
-  /**
    * Reset the CPU to its initial state, as if the power was just turned on.
+   * @param memory The memory to use with the CPU. The address at the reset vector will get used to set the program counter's starting value.
    */
-  public Initialize(): void {
-    this.PC = this.RESET_VECTOR;
+  public Initialize(memory: Memory): void {
+    this.PC = memory.readWord(this.RESET_VECTOR);
     this.SP = 0x0000;
   }
 

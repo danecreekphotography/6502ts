@@ -71,3 +71,11 @@ test("Verify page boundary detection", () => {
   expect(memory.OffsetCrossesPageBoundary(0x01ff, 0x0001)).toBe(true);
   expect(memory.OffsetCrossesPageBoundary(0xffff, 0x0001)).toBe(true);
 });
+
+test("Verify clear", () => {
+  const memory = new Memory();
+
+  memory.writeByte(0x00, 0x42);
+  memory.Clear();
+  expect(memory.readByte(0x00)).toBe(0x00);
+})

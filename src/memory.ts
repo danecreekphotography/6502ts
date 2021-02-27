@@ -11,6 +11,20 @@ export default class Memory {
   private memory = Array<number>(this.MAX_ADDRESS + 1);
 
   /**
+   * Creates a new memory instance filled with 0x00.
+   */
+  public constructor() {
+    this.Clear();
+  }
+
+  /**
+   * Sets every location in memory to 0x00.
+   */
+  public Clear(): void {
+    this.memory.fill(0x00);
+  }
+
+  /**
    * Verifies a memory address is within the memory's valid address range.
    * @param address The address to verify
    */
