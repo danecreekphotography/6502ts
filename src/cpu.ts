@@ -175,15 +175,33 @@ export default class CPU {
   }
 
   /**
-   * Updates the program counter to point to a different location in memory,
-   * pushing the previous location onto the stack.
-   * @param memory The memory containing the data
-   * @param addressMode The address mode to use when reading the data
+   * Updates the program counter to point to a different location in memory
+   * @param memory The memory containing the location
+   * @param addressMode The address mode to use when reading the location
    */
   private Jump(memory: Memory, addressMode: AddressModes): void {
     switch (addressMode) {
       case AddressModes.Absolute: {
         this.PC = memory.readWord(this.PC);
+        this.consumedCycles += 2;
+        break;
+      }
+      case AddressModes.Indirect: {
+        const lowByte = memory.readByte(this.PC) & 0x00ff;
+        this.consumedCycles++;
+
+        // The high byte comes from the next location of the program counter but
+        // without wrapping across the page boundary. Funky.
+        let highByteAddress = 0;
+        if ((this.PC & 0xff) == 0xff) {
+          highByteAddress = this.PC & 0x00;
+        } else {
+          highByteAddress = this.PC + 1;
+        }
+        const highByte = memory.readByte(highByteAddress) & 0x00ff;
+        this.consumedCycles++;
+
+        this.PC = memory.readWord((highByte << 8) | lowByte);
         this.consumedCycles += 2;
         break;
       }
@@ -277,6 +295,11 @@ export default class CPU {
           this.Jump(memory, AddressModes.Absolute);
           break;
         }
+        case Opcodes.JPM_Indirect: {
+          this.Jump(memory, AddressModes.Indirect);
+          break;
+        }
+
         default: {
           throw Error(`Read an invalid opcode at memory address 0x${this.PC.toString(16)}.`);
         }

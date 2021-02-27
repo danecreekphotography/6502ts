@@ -32,3 +32,23 @@ test("Verify JMP absolute", () => {
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.PC).toBe(JMP_LOCATION + 2);
 });
+
+test("Verify JMP indirect", () => {
+  const JMP_LOCATION = 0x7000; // Where the indirect address will get stored
+  const INDIRECT_ADDRESS_LOCATION = 0x7050; // The actual address to jump to
+
+  // Store the jump instruction and jump location
+  memory.writeByte(CODE_LOCATION, Opcodes.JPM_Indirect);
+  memory.writeWord(CODE_LOCATION + 1, JMP_LOCATION);
+
+  // Store the address to jump to
+  memory.writeWord(JMP_LOCATION, INDIRECT_ADDRESS_LOCATION);
+
+  // Store something to execute at the code location
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION + 1, 0x42);
+
+  expect(cpu.Execute(7, memory)).toBe(7);
+  expect(cpu.Registers.A).toBe(0x42);
+  expect(cpu.PC).toBe(INDIRECT_ADDRESS_LOCATION + 2);
+});
