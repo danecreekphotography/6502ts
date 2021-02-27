@@ -9,15 +9,13 @@ import Opcodes from "../src/opcodes";
 
 const CODE_LOCATION = 0x6000;
 
-var cpu: CPU;
-var memory: Memory;
+const cpu = new CPU();
+const memory = new Memory();
 
-// Before each test create a new CPU and memory and set the
-// memory up so the CPU's reset vector points to the code location
-// to start execution.
+// Before each test clear the memory, set the code location in the reset vector
+// and initialize the CPU.
 beforeEach(() => {
-  cpu = new CPU();
-  memory = new Memory();
+  memory.Clear();
   memory.writeWord(cpu.RESET_VECTOR, CODE_LOCATION);
 
   cpu.Initialize(memory);
