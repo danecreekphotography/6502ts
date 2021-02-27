@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
+
 enum Opcodes {
   LDA_Immediate = 0xa9,
   LDX_Immediate = 0xa2,
@@ -16,6 +18,10 @@ enum Opcodes {
   LDA_Absolute = 0xad,
   LDX_Absolute = 0xae,
   LDY_Absolute = 0xac,
+  LDA_AbsoluteX = 0xbd,
+  LDA_AbsoluteY = 0xb9,
+  LDX_AbsoluteY = 0xbe,
+  LDY_AbsoluteX = 0xbc,
 }
 
 export default Opcodes;
