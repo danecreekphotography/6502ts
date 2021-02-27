@@ -316,10 +316,20 @@ test("Verify LDA Indirect Y", () => {
   memory.writeByte(CODE_LOCATION, Opcodes.LDA_IndirectY);
   memory.writeByte(CODE_LOCATION + 1, 0x86); // This is the zero page address
   memory.writeWord(0x86, 0x4028); // This is the base memory location of the data
-  cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
 
   // Positive non-zero number case, memory location doesn't wrap zero page
+  cpu.Registers.Y = 0x10; // This is the offset to add to the value in the base memory location
   memory.writeWord(0x4028 + 0x10, 0x42); // This is the actual data to read
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(cpu.Registers.A).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+
+  // Positive non-zero number case, memory location crosses page boundary
+  cpu.Initialize(memory);
+  cpu.Registers.Y = 0xff; // This is the offset to add to the value stored in the zero page address location
+  memory.writeWord(0x4028 + 0xff, 0x42); // This is the actual data to read
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
@@ -328,8 +338,9 @@ test("Verify LDA Indirect Y", () => {
 
   // Zero number case
   cpu.Initialize(memory);
+  cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
   memory.writeWord(0x4028 + 0x10, 0x00); // This is the actual data to read
-  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Execute(5, memory)).toBe(5);
   expect(cpu.Registers.A).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
@@ -337,8 +348,9 @@ test("Verify LDA Indirect Y", () => {
 
   // Negative number case, memory location doesn't wrap zero page
   cpu.Initialize(memory);
+  cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
   memory.writeWord(0x4028 + 0x10, 0b10010101); // This is the actual data to read
-  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Execute(5, memory)).toBe(5);
   expect(cpu.Registers.A).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(true);
