@@ -175,6 +175,24 @@ export default class CPU {
   }
 
   /**
+   * Updates the program counter to point to a different location in memory,
+   * pushing the previous location onto the stack.
+   * @param memory The memory containing the data
+   * @param addressMode The address mode to use when reading the data
+   */
+  private Jump(memory: Memory, addressMode: AddressModes): void {
+    switch (addressMode) {
+      case AddressModes.Absolute: {
+        this.PC = memory.readWord(this.PC);
+        this.consumedCycles += 2;
+        break;
+      }
+      default:
+        throw Error("Invalid jump address mode");
+    }
+  }
+
+  /**
    * Executes a given number of cycles reading from the supplied memory
    * @param cyclesToExecute The number of cycles to execute
    * @param memory The memory to reference during execution
@@ -255,6 +273,10 @@ export default class CPU {
           break;
         }
 
+        case Opcodes.JMP_Absolute: {
+          this.Jump(memory, AddressModes.Absolute);
+          break;
+        }
         default: {
           throw Error(`Read an invalid opcode at memory address 0x${this.PC.toString(16)}.`);
         }

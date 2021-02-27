@@ -24,6 +24,9 @@ enum Opcodes {
   LDY_AbsoluteX = 0xbc,
   LDA_IndirectX = 0xa1,
   LDA_IndirectY = 0xb1,
+
+  JMP_Absolute = 0x4c,
+  JPM_Indirect = 0x6c,
 }
 
 export default Opcodes;
