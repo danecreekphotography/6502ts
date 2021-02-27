@@ -126,11 +126,9 @@ export default class CPU {
       case AddressModes.Absolute:
       case AddressModes.AbsoluteX:
       case AddressModes.AbsoluteY: {
-        const dataAddressHighByte = memory.readByte(this.PC++);
-        this.consumedCycles++;
-        const dataAddressLowByte = memory.readByte(this.PC++);
-        this.consumedCycles++;
-        let dataAddress = (dataAddressHighByte << 8) | dataAddressLowByte;
+        let dataAddress = memory.readWord(this.PC);
+        this.PC += 2;
+        this.consumedCycles += 2;
 
         // The AbsoluteX and AbsoluteY address modes don't cost an extra
         // consumed clock cycle so there is no consumedCycles++ here.
