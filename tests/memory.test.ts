@@ -78,4 +78,4 @@ test("Verify clear", () => {
   memory.writeByte(0x00, 0x42);
   memory.Clear();
   expect(memory.readByte(0x00)).toBe(0x00);
-})
+});

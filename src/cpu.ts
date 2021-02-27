@@ -32,7 +32,7 @@ export default class CPU {
    */
   public Registers = new Registers();
 
-  /** 
+  /**
    * The status flags
    */
   public Flags = new Flags();
@@ -135,10 +135,12 @@ export default class CPU {
         this.consumedCycles++;
         // Read the base address from the zero page location
         const baseAddress = memory.readWord(zeroPageAddress);
-        this.consumedCycles += 2;
+        this.consumedCycles += 1;
         // Add the value of the Y register.
         const dataAddress = baseAddress + this.Registers.Y;
         this.consumedCycles++;
+        // Check and see if the addition crosses a page boundary
+        if (memory.OffsetCrossesPageBoundary(baseAddress, this.Registers.Y)) this.consumedCycles++;
         // Actually read the data.
         data = memory.readByte(dataAddress);
         this.consumedCycles++;
