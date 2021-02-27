@@ -7,8 +7,24 @@ import CPU from "../src/cpu";
 import Memory from "../src/memory";
 import Opcodes from "../src/opcodes";
 
+const CODE_LOCATION = 0x6000;
+
+var cpu: CPU;
+var memory: Memory;
+
+// Before each test create a new CPU and memory and set the
+// memory up so the CPU's reset vector points to the code location
+// to start execution.
+beforeEach(() => {
+  cpu = new CPU();
+  memory = new Memory();
+  memory.writeWord(cpu.RESET_VECTOR, CODE_LOCATION);
+
+  cpu.Initialize(memory);
+});
+
 function verifyCpuInitialization(cpu: CPU): void {
-  expect(cpu.PC).toBe(cpu.RESET_VECTOR);
+  expect(cpu.PC).toBe(CODE_LOCATION);
   expect(cpu.SP).toBe(0x0000);
   expect(cpu.Registers.A).toBe(0);
   expect(cpu.Registers.X).toBe(0);
@@ -23,29 +39,32 @@ function verifyCpuInitialization(cpu: CPU): void {
 }
 
 test("Verify CPU constructor", () => {
-  const cpu = new CPU();
-
   verifyCpuInitialization(cpu);
 });
 
 test("Verify CPU initialization", () => {
-  const cpu = new CPU();
-
   // Set the program counter and stack pointer to some value
   // then initialize the CPU to make sure everything resets.
   cpu.PC = 0x0042;
   cpu.SP = 0x0050;
-  cpu.Initialize();
+  cpu.Initialize(memory);
 
   verifyCpuInitialization(cpu);
 });
 
-test("Verify reading an invalid opcode", () => {
-  const cpu = new CPU();
-  const memory = new Memory();
+test("Verify CPU reset vector", () => {
+  // Write a basic command at the reset vector code location and ensure it executes correctly.
+  memory.writeByte(CODE_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(CODE_LOCATION + 1, 0x42);
 
-  memory.writeByte(cpu.RESET_VECTOR, Opcodes.LDA_Immediate);
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x42);
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0x42);
+
+});
+
+test("Verify reading an invalid opcode", () => {
+  memory.writeByte(CODE_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(CODE_LOCATION + 1, 0x42);
 
   expect(() => {
     cpu.Execute(3, memory);

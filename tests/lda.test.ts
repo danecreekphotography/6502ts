@@ -8,33 +8,47 @@ import Memory from "../src/memory";
 import Opcodes from "../src/opcodes";
 import Registers from "../src/registers";
 
+const CODE_LOCATION = 0x6000;
+
+var cpu: CPU;
+var memory: Memory;
+
+// Before each test create a new CPU and memory and set the
+// memory up so the CPU's reset vector points to the code location
+// to start execution.
+beforeEach(() => {
+  cpu = new CPU();
+
+  memory = new Memory();
+  memory.writeWord(cpu.RESET_VECTOR, CODE_LOCATION);
+
+  cpu.Initialize(memory);
+});
+
 // Verifies load immediate works for the specified register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
 function verifyLoadImmediate(opcode: Opcodes, register: keyof Registers) {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, opcode);
+  memory.writeByte(CODE_LOCATION, opcode);
 
   // Positive non-zero number case
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x42);
+  memory.writeByte(CODE_LOCATION + 1, 0x42);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case
-  cpu.Initialize();
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
+  cpu.Initialize(memory);
+  memory.writeByte(CODE_LOCATION + 1, 0x00);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case
-  cpu.Initialize();
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0b10010101);
+  cpu.Initialize(memory);
+  memory.writeByte(CODE_LOCATION + 1, 0b10010101);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[register]).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
@@ -45,11 +59,8 @@ function verifyLoadImmediate(opcode: Opcodes, register: keyof Registers) {
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
 function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, opcode);
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeByte(CODE_LOCATION + 1, 0x00);
 
   // Positive non-zero number case
   memory.writeByte(0x00, 0x42);
@@ -59,7 +70,7 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x00, 0x00);
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Registers[register]).toBe(0x00);
@@ -67,7 +78,7 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x00, 0b10010101);
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Registers[register]).toBe(0b10010101);
@@ -81,11 +92,8 @@ function verifyLoadZeroPage(opcode: Opcodes, register: keyof Registers) {
 // accumulator flags.
 
 function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: keyof Registers) {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, opcode);
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x00);
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeByte(CODE_LOCATION + 1, 0x00);
   cpu.Registers[offsetRegister] = 0x01;
 
   // Positive non-zero number case
@@ -96,7 +104,7 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x01, 0x00);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x00);
@@ -104,7 +112,7 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x01, 0b10010101);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0b10010101);
@@ -116,11 +124,8 @@ function verifyLoadZeroPagePlusRegister(opcode: Opcodes, register: keyof Registe
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
 function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, opcode);
-  memory.writeWord(cpu.RESET_VECTOR + 1, 0x2040);
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeWord(CODE_LOCATION + 1, 0x2040);
 
   // Positive non-zero number case
   memory.writeByte(0x2040, 0x42);
@@ -130,7 +135,7 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x2040, 0x00);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0x00);
@@ -138,7 +143,7 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeByte(0x2040, 0b10010101);
   expect(cpu.Execute(4, memory)).toBe(4);
   expect(cpu.Registers[register]).toBe(0b10010101);
@@ -151,11 +156,8 @@ function verifyLoadAbsolute(opcode: Opcodes, register: keyof Registers) {
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
 function verifyLoadAbsolutePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: keyof Registers) {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, opcode);
-  memory.writeWord(cpu.RESET_VECTOR + 1, 0x2040);
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeWord(CODE_LOCATION + 1, 0x2040);
   cpu.Registers[offsetRegister] = 0x01;
 
   // Positive non-zero number case, no page boundary crossed
@@ -166,7 +168,7 @@ function verifyLoadAbsolutePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(false);
 
   // Positive non-zero number case, page boundary crossed
-  cpu.Initialize();
+  cpu.Initialize(memory);
   cpu.Registers[offsetRegister] = 0xff;
   memory.writeByte(0x2040 + 0xff, 0x42);
   expect(cpu.Execute(5, memory)).toBe(5);
@@ -175,7 +177,7 @@ function verifyLoadAbsolutePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case, page boundary crossed
-  cpu.Initialize();
+  cpu.Initialize(memory);
   cpu.Registers[offsetRegister] = 0xff;
   memory.writeByte(0x2040 + 0xff, 0x00);
   expect(cpu.Execute(5, memory)).toBe(5);
@@ -184,7 +186,7 @@ function verifyLoadAbsolutePlusRegister(opcode: Opcodes, register: keyof Registe
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case, page boundary not crossed
-  cpu.Initialize();
+  cpu.Initialize(memory);
   cpu.Registers[offsetRegister] = 0x01;
   memory.writeByte(0x2040 + 0x01, 0b10010101);
   expect(cpu.Execute(4, memory)).toBe(4);
@@ -254,11 +256,8 @@ test("Verify LDY Absolute Plus Register", () => {
 });
 
 test("Verify LDA Indirect X", () => {
-  const cpu = new CPU();
-  const memory = new Memory();
-
-  memory.writeByte(cpu.RESET_VECTOR, Opcodes.LDA_IndirectX);
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x20); // This is the base zero page address
+  memory.writeByte(CODE_LOCATION, Opcodes.LDA_IndirectX);
+  memory.writeByte(CODE_LOCATION + 1, 0x20); // This is the base zero page address
   cpu.Registers.X = 0x04; // This is the offset to add to the zero page address
 
   // Positive non-zero number case, memory location doesn't wrap zero page
@@ -270,7 +269,7 @@ test("Verify LDA Indirect X", () => {
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case, memory location doesn't wrap zero page
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
   memory.writeByte(0x2070, 0x00); // This is the actual data in the target location
   expect(cpu.Execute(6, memory)).toBe(6);
@@ -279,7 +278,7 @@ test("Verify LDA Indirect X", () => {
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case, memory location doesn't wrap zero page
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
   memory.writeByte(0x2070, 0b10010101); // This is the actual data in the target location
   expect(cpu.Execute(6, memory)).toBe(6);
@@ -288,8 +287,8 @@ test("Verify LDA Indirect X", () => {
   expect(cpu.Flags.N).toBe(true);
 
   // Positive non-zero number case, memory location wraps the zero page address space.
-  cpu.Initialize();
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0xff); // Base zero page address at the end of zero page address space.
+  cpu.Initialize(memory);
+  memory.writeByte(CODE_LOCATION + 1, 0xff); // Base zero page address at the end of zero page address space.
   cpu.Registers.X = 2; // This will get added to 0xFF resulting in a wrapped value of 0x01.
   memory.writeWord(0x01, 0x2070); // This is the target location in memory that contains the actual data
   memory.writeByte(0x2070, 0x42); // This is the actual data in the target location
@@ -300,11 +299,9 @@ test("Verify LDA Indirect X", () => {
 });
 
 test("Verify LDA Indirect Y", () => {
-  const cpu = new CPU();
-  const memory = new Memory();
 
-  memory.writeByte(cpu.RESET_VECTOR, Opcodes.LDA_IndirectY);
-  memory.writeByte(cpu.RESET_VECTOR + 1, 0x86); // This is the zero page address
+  memory.writeByte(CODE_LOCATION, Opcodes.LDA_IndirectY);
+  memory.writeByte(CODE_LOCATION + 1, 0x86); // This is the zero page address
   memory.writeWord(0x86, 0x4028); // This is the base memory location of the data
   cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
 
@@ -316,7 +313,7 @@ test("Verify LDA Indirect Y", () => {
   expect(cpu.Flags.N).toBe(false);
 
   // Zero number case
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeWord(0x4028 + 0x10, 0x00); // This is the actual data to read
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0x00);
@@ -324,7 +321,7 @@ test("Verify LDA Indirect Y", () => {
   expect(cpu.Flags.N).toBe(false);
 
   // Negative number case, memory location doesn't wrap zero page
-  cpu.Initialize();
+  cpu.Initialize(memory);
   memory.writeWord(0x4028 + 0x10, 0b10010101); // This is the actual data to read
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0b10010101);
