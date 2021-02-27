@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import AddressModes from "./addressModes";
 import Memory from "./memory";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
@@ -83,48 +84,54 @@ export default class CPU {
   }
 
   /**
-   * Loads the data from memory at the current PC location into the specified
-   * register.
-   * Causes the program counter to increment by one and consumes one cycle.
-   * @param memory The memory containing the data
-   * @param register The register to load the data into
-   * @param address The base address to use for the data
-   * @param offsetRegister The register to add to the base address
+   * Reads from memory using the specified access mode
+   * @param memory Memory to read from
+   * @param addressMode Address mode to use
    */
-  private LoadRegisterImmediate(
-    memory: Memory,
-    register: keyof Registers,
-    address: number,
-    offsetRegister?: keyof Registers,
-  ): void {
-    let dataAddress = address;
-    if (offsetRegister) {
-      dataAddress += this.Registers[offsetRegister];
-      this.consumedCycles++;
+  private ReadDataViaAddressMode(memory: Memory, addressMode: AddressModes): number {
+    let data = 0x00;
+
+    switch (addressMode) {
+      // Read directly from memory at the current program counter location.
+      case AddressModes.Immediate: {
+        data = memory.read(this.PC++);
+        this.consumedCycles++;
+        break;
+      }
+      // Read from the single byte memory address stored at the current program
+      // counter location, adding in the offset from X or Y if appropriate.
+      case AddressModes.ZeroPage:
+      case AddressModes.ZeroPageX:
+      case AddressModes.ZeroPageY: {
+        let dataAddress = memory.read(this.PC++);
+        this.consumedCycles++;
+
+        if (addressMode === AddressModes.ZeroPageX) {
+          dataAddress += this.Registers.X;
+          this.consumedCycles++;
+        }
+        if (addressMode === AddressModes.ZeroPageY) {
+          dataAddress += this.Registers.Y;
+          this.consumedCycles++;
+        }
+
+        data = memory.read(dataAddress);
+        this.consumedCycles++;
+        break;
+      }
     }
-    this.Registers[register] = memory.read(dataAddress);
-    this.consumedCycles++;
-    this.SetFlagsOnRegisterLoad(register);
+
+    return data;
   }
 
   /**
-   * Loads the zero page address from memory at the current PC location
-   * then loads the data at the zero page address into the specified register.
-   * Causes the program counter to increment by one and consumes two cycles (without an offset)
-   * or three cycles (if an offsetRegister is provided)
+   * Loads the specified register with data using the requested addressMode.
    * @param memory The memory containing the data
    * @param register The register to load the data into
-   * @param offsetRegister The register to add to the zero page address prior to reading
+   * @param addressMode The addressMode to use when reading the data
    */
-  private LoadRegisterZeroPage(memory: Memory, register: keyof Registers, offsetRegister?: keyof Registers): void {
-    let zeroPageAddress = memory.read(this.PC++);
-    this.consumedCycles++;
-    if (offsetRegister) {
-      zeroPageAddress += this.Registers[offsetRegister];
-      this.consumedCycles++;
-    }
-    this.Registers[register] = memory.read(zeroPageAddress);
-    this.consumedCycles++;
+  private LoadRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes): void {
+    this.Registers[register] = this.ReadDataViaAddressMode(memory, addressMode);
     this.SetFlagsOnRegisterLoad(register);
   }
 
@@ -157,51 +164,45 @@ export default class CPU {
 
       switch (opcode) {
         case Opcodes.LDA_Immediate:
-          this.LoadRegisterImmediate(memory, "A", this.PC++);
+          this.LoadRegister(memory, "A", AddressModes.Immediate);
           break;
         case Opcodes.LDX_Immediate:
-          this.LoadRegisterImmediate(memory, "X", this.PC++);
+          this.LoadRegister(memory, "X", AddressModes.Immediate);
           break;
         case Opcodes.LDY_Immediate:
-          this.LoadRegisterImmediate(memory, "Y", this.PC++);
+          this.LoadRegister(memory, "Y", AddressModes.Immediate);
           break;
 
         case Opcodes.LDA_Zero_Page:
-          this.LoadRegisterZeroPage(memory, "A");
+          this.LoadRegister(memory, "A", AddressModes.ZeroPage);
           break;
         case Opcodes.LDX_Zero_Page:
-          this.LoadRegisterZeroPage(memory, "X");
+          this.LoadRegister(memory, "X", AddressModes.ZeroPage);
           break;
         case Opcodes.LDY_Zero_Page:
-          this.LoadRegisterZeroPage(memory, "Y");
+          this.LoadRegister(memory, "Y", AddressModes.ZeroPage);
           break;
 
         case Opcodes.LDA_Zero_PageX:
-          this.LoadRegisterZeroPage(memory, "A", "X");
+          this.LoadRegister(memory, "A", AddressModes.ZeroPageX);
           break;
         case Opcodes.LDX_Zero_PageY:
-          this.LoadRegisterZeroPage(memory, "X", "Y");
+          this.LoadRegister(memory, "X", AddressModes.ZeroPageY);
           break;
         case Opcodes.LDY_Zero_PageX:
-          this.LoadRegisterZeroPage(memory, "Y", "X");
+          this.LoadRegister(memory, "Y", AddressModes.ZeroPageX);
           break;
 
         case Opcodes.LDA_Absolute: {
-          const address = memory.read(this.PC++);
-          this.consumedCycles++;
-          this.LoadRegisterImmediate(memory, "A", address);
+          this.LoadRegister(memory, "A", AddressModes.Absolute);
           break;
         }
         case Opcodes.LDX_Absolute: {
-          const address = memory.read(this.PC++);
-          this.consumedCycles++;
-          this.LoadRegisterImmediate(memory, "X", address);
+          this.LoadRegister(memory, "X", AddressModes.Absolute);
           break;
         }
         case Opcodes.LDY_Absolute: {
-          const address = memory.read(this.PC++);
-          this.consumedCycles++;
-          this.LoadRegisterImmediate(memory, "Y", address);
+          this.LoadRegister(memory, "Y", AddressModes.Absolute);
           break;
         }
       }
