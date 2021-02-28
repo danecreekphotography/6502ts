@@ -32,6 +32,15 @@ enum Opcodes {
   STX_Zero_Page = 0x86,
   STY_Zero_Page = 0x84,
   STA_Zero_PageX = 0x95,
+  STY_Zero_PageX = 0x94,
+  STX_Zero_PageY = 0x96,
+  STA_Absolute = 0x8d,
+  STX_Absolute = 0x8e,
+  STY_Absolute = 0x8c,
+  STA_AbsoluteX = 0x9d,
+  STA_AbsoluteY = 0x99,
+  STA_IndirectX = 0x81,
+  STA_IndirectY = 0x91,
 }
 
 export default Opcodes;

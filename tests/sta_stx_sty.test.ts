@@ -33,6 +33,18 @@ function verifyStoreZeroPage(opcode: Opcodes, register: keyof Registers) {
   expect(cpu.PC).toBe(CODE_LOCATION + 2);
 }
 
+function verifyStoreZeroPagePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: "X" | "Y") {
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeByte(CODE_LOCATION + 1, 0x40); // Location to write the accumulator value
+
+  cpu.Registers[offsetRegister] = 0x01; // This gets added to the zero page location
+  cpu.Registers[register] = 0xff;
+
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x40 + 0x01)).toBe(0xff);
+  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+}
+
 test("Verify STA zero page", () => {
   verifyStoreZeroPage(Opcodes.STA_Zero_Page, "A");
 });
@@ -43,4 +55,16 @@ test("Verify STX zero page", () => {
 
 test("Verify STY zero page", () => {
   verifyStoreZeroPage(Opcodes.STY_Zero_Page, "Y");
+});
+
+test("Verify STA zero page plus X", () => {
+  verifyStoreZeroPagePlusRegister(Opcodes.STA_Zero_PageX, "A", "X");
+});
+
+test("Verify STX zero page plus Y", () => {
+  verifyStoreZeroPagePlusRegister(Opcodes.STX_Zero_PageY, "X", "Y");
+});
+
+test("Verify STY zero page plus X", () => {
+  verifyStoreZeroPagePlusRegister(Opcodes.STY_Zero_PageX, "Y", "X");
 });

@@ -185,12 +185,17 @@ export default class CPU {
       // Write the register data to the zero page location specified,
       // adding in the offset from X or Y if appropriate.
       case AddressModes.ZeroPage:
-      case AddressModes.ZeroPageX: {
+      case AddressModes.ZeroPageX:
+      case AddressModes.ZeroPageY: {
         let dataAddress = memory.readByte(this.PC++);
         this.consumedCycles++;
 
         if (addressMode === AddressModes.ZeroPageX) {
           dataAddress += this.Registers.X;
+          this.consumedCycles++;
+        }
+        if (addressMode === AddressModes.ZeroPageY) {
+          dataAddress += this.Registers.Y;
           this.consumedCycles++;
         }
 
@@ -349,6 +354,14 @@ export default class CPU {
 
         case Opcodes.STA_Zero_PageX: {
           this.StoreRegister(memory, "A", AddressModes.ZeroPageX);
+          break;
+        }
+        case Opcodes.STX_Zero_PageY: {
+          this.StoreRegister(memory, "X", AddressModes.ZeroPageY);
+          break;
+        }
+        case Opcodes.STY_Zero_PageX: {
+          this.StoreRegister(memory, "Y", AddressModes.ZeroPageX);
           break;
         }
 
