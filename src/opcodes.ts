@@ -27,6 +27,11 @@ enum Opcodes {
 
   JMP_Absolute = 0x4c,
   JPM_Indirect = 0x6c,
+
+  STA_Zero_Page = 0x85,
+  STX_Zero_Page = 0x86,
+  STY_Zero_Page = 0x84,
+  STA_Zero_PageX = 0x95,
 }
 
 export default Opcodes;
