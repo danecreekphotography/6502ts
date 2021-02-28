@@ -45,6 +45,36 @@ function verifyStoreZeroPagePlusRegister(opcode: Opcodes, register: keyof Regist
   expect(cpu.PC).toBe(CODE_LOCATION + 2);
 }
 
+function verifyStoreAbsolute(opcode: Opcodes, register: keyof Registers) {
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeWord(CODE_LOCATION + 1, 0x4000); // Location to write the accumulator value
+
+  cpu.Registers[register] = 0xff;
+
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x4000)).toBe(0xff);
+  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+}
+
+function verifyStoreAbsolutePlusOffset(opcode: Opcodes, register: keyof Registers, offsetRegister: "X" | "Y") {
+  memory.writeByte(CODE_LOCATION, opcode);
+  memory.writeWord(CODE_LOCATION + 1, 0x4000); // Location to write the accumulator value
+
+  cpu.Registers[offsetRegister] = 0x01;
+  cpu.Registers[register] = 0xff;
+
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0xff);
+  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+
+  // Check across a page boundary
+  memory.writeWord(CODE_LOCATION + 1, 0x40ff); // Location to write the accumulator value
+  cpu.Initialize(memory);
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x40ff + 0x01)).toBe(0xff);
+  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+}
+
 test("Verify STA zero page", () => {
   verifyStoreZeroPage(Opcodes.STA_Zero_Page, "A");
 });
@@ -67,4 +97,24 @@ test("Verify STX zero page plus Y", () => {
 
 test("Verify STY zero page plus X", () => {
   verifyStoreZeroPagePlusRegister(Opcodes.STY_Zero_PageX, "Y", "X");
+});
+
+test("Verify STA absolute", () => {
+  verifyStoreAbsolute(Opcodes.STA_Absolute, "A");
+});
+
+test("Verify STX absolute", () => {
+  verifyStoreAbsolute(Opcodes.STX_Absolute, "X");
+});
+
+test("Verify STY absolute", () => {
+  verifyStoreAbsolute(Opcodes.STY_Absolute, "Y");
+});
+
+test("Verify STA absolute plus X", () => {
+  verifyStoreAbsolutePlusOffset(Opcodes.STA_AbsoluteX, "A", "X");
+});
+
+test("Verify STA absolute plus Y", () => {
+  verifyStoreAbsolutePlusOffset(Opcodes.STA_AbsoluteY, "A", "Y");
 });

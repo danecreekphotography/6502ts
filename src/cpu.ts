@@ -203,6 +203,28 @@ export default class CPU {
         this.consumedCycles++;
         break;
       }
+      case AddressModes.Absolute:
+      case AddressModes.AbsoluteX:
+      case AddressModes.AbsoluteY: {
+        let dataAddress = memory.readWord(this.PC);
+        this.PC += 2;
+        this.consumedCycles += 2;
+
+        if (addressMode === AddressModes.AbsoluteX) {
+          // Consume one cycle if the addition crosses a page boundary
+          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.X)) this.consumedCycles++;
+          dataAddress += this.Registers.X;
+        }
+        if (addressMode === AddressModes.AbsoluteY) {
+          // Consume one cycle if the addition crosses a page boundary
+          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.Y)) this.consumedCycles++;
+          dataAddress += this.Registers.Y;
+        }
+
+        memory.writeByte(dataAddress, this.Registers[register]);
+        this.consumedCycles++;
+        break;
+      }
     }
   }
 
@@ -362,6 +384,28 @@ export default class CPU {
         }
         case Opcodes.STY_Zero_PageX: {
           this.StoreRegister(memory, "Y", AddressModes.ZeroPageX);
+          break;
+        }
+
+        case Opcodes.STA_Absolute: {
+          this.StoreRegister(memory, "A", AddressModes.Absolute);
+          break;
+        }
+        case Opcodes.STX_Absolute: {
+          this.StoreRegister(memory, "X", AddressModes.Absolute);
+          break;
+        }
+        case Opcodes.STY_Absolute: {
+          this.StoreRegister(memory, "Y", AddressModes.Absolute);
+          break;
+        }
+
+        case Opcodes.STA_AbsoluteX: {
+          this.StoreRegister(memory, "A", AddressModes.AbsoluteX);
+          break;
+        }
+        case Opcodes.STA_AbsoluteY: {
+          this.StoreRegister(memory, "A", AddressModes.AbsoluteY);
           break;
         }
 
