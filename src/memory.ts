@@ -8,7 +8,7 @@ export default class Memory {
 
   // Memory runs from 0x0000 to 0xffff so need a plus one on the array, otherwise
   // the length would be 0x0000 to 0xfffe since it's origin zero.
-  private memory = Array<number>(this.MAX_ADDRESS + 1);
+  private memory = Buffer.alloc(this.MAX_ADDRESS + 1, 0x00);
 
   /**
    * Creates a new memory instance filled with 0x00.
