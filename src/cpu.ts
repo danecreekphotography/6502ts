@@ -175,6 +175,58 @@ export default class CPU {
   }
 
   /**
+   * Stores data from memory in the specified register.
+   * @param memory Memory to read the data from
+   * @param register Register to store the data in
+   * @param addressMode Address mode to use to find the data
+   */
+  private StoreRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes) {
+    switch (addressMode) {
+      // Write the register data to the zero page location specified,
+      // adding in the offset from X or Y if appropriate.
+      case AddressModes.ZeroPage:
+      case AddressModes.ZeroPageX:
+      case AddressModes.ZeroPageY: {
+        let dataAddress = memory.readByte(this.PC++);
+        this.consumedCycles++;
+
+        if (addressMode === AddressModes.ZeroPageX) {
+          dataAddress += this.Registers.X;
+          this.consumedCycles++;
+        }
+        if (addressMode === AddressModes.ZeroPageY) {
+          dataAddress += this.Registers.Y;
+          this.consumedCycles++;
+        }
+
+        memory.writeByte(dataAddress, this.Registers[register]);
+        this.consumedCycles++;
+        break;
+      }
+      case AddressModes.Absolute:
+      case AddressModes.AbsoluteX:
+      case AddressModes.AbsoluteY: {
+        let dataAddress = memory.readWord(this.PC);
+        this.PC += 2;
+        this.consumedCycles += 2;
+
+        if (addressMode === AddressModes.AbsoluteX) {
+          dataAddress += this.Registers.X;
+          this.consumedCycles++;
+        }
+        if (addressMode === AddressModes.AbsoluteY) {
+          dataAddress += this.Registers.Y;
+          this.consumedCycles++;
+        }
+
+        memory.writeByte(dataAddress, this.Registers[register]);
+        this.consumedCycles++;
+        break;
+      }
+    }
+  }
+
+  /**
    * Updates the program counter to point to a different location in memory
    * @param memory The memory containing the location
    * @param addressMode The address mode to use when reading the location
@@ -307,8 +359,56 @@ export default class CPU {
           break;
         }
 
+        case Opcodes.STA_Zero_Page: {
+          this.StoreRegister(memory, "A", AddressModes.ZeroPage);
+          break;
+        }
+        case Opcodes.STX_Zero_Page: {
+          this.StoreRegister(memory, "X", AddressModes.ZeroPage);
+          break;
+        }
+        case Opcodes.STY_Zero_Page: {
+          this.StoreRegister(memory, "Y", AddressModes.ZeroPage);
+          break;
+        }
+
+        case Opcodes.STA_Zero_PageX: {
+          this.StoreRegister(memory, "A", AddressModes.ZeroPageX);
+          break;
+        }
+        case Opcodes.STX_Zero_PageY: {
+          this.StoreRegister(memory, "X", AddressModes.ZeroPageY);
+          break;
+        }
+        case Opcodes.STY_Zero_PageX: {
+          this.StoreRegister(memory, "Y", AddressModes.ZeroPageX);
+          break;
+        }
+
+        case Opcodes.STA_Absolute: {
+          this.StoreRegister(memory, "A", AddressModes.Absolute);
+          break;
+        }
+        case Opcodes.STX_Absolute: {
+          this.StoreRegister(memory, "X", AddressModes.Absolute);
+          break;
+        }
+        case Opcodes.STY_Absolute: {
+          this.StoreRegister(memory, "Y", AddressModes.Absolute);
+          break;
+        }
+
+        case Opcodes.STA_AbsoluteX: {
+          this.StoreRegister(memory, "A", AddressModes.AbsoluteX);
+          break;
+        }
+        case Opcodes.STA_AbsoluteY: {
+          this.StoreRegister(memory, "A", AddressModes.AbsoluteY);
+          break;
+        }
+
         default: {
-          throw Error(`Read an invalid opcode at memory address 0x${this.PC.toString(16)}.`);
+          throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
         }
       }
     }
