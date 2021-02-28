@@ -63,15 +63,8 @@ function verifyStoreAbsolutePlusOffset(opcode: Opcodes, register: keyof Register
   cpu.Registers[offsetRegister] = 0x01;
   cpu.Registers[register] = 0xff;
 
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(memory.readByte(0x4000 + 0x01)).toBe(0xff);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
-
-  // Check across a page boundary
-  memory.writeWord(CODE_LOCATION + 1, 0x40ff); // Location to write the accumulator value
-  cpu.Initialize(memory);
   expect(cpu.Execute(5, memory)).toBe(5);
-  expect(memory.readByte(0x40ff + 0x01)).toBe(0xff);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0xff);
   expect(cpu.PC).toBe(CODE_LOCATION + 3);
 }
 

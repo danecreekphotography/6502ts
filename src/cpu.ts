@@ -211,14 +211,12 @@ export default class CPU {
         this.consumedCycles += 2;
 
         if (addressMode === AddressModes.AbsoluteX) {
-          // Consume one cycle if the addition crosses a page boundary
-          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.X)) this.consumedCycles++;
           dataAddress += this.Registers.X;
+          this.consumedCycles++;
         }
         if (addressMode === AddressModes.AbsoluteY) {
-          // Consume one cycle if the addition crosses a page boundary
-          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.Y)) this.consumedCycles++;
           dataAddress += this.Registers.Y;
+          this.consumedCycles++;
         }
 
         memory.writeByte(dataAddress, this.Registers[register]);
