@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ca65: Compile and Link Current File",
+            "command": "./cc65/bin/cl65 ${file}",
+            "type": "shell",
+            "args": [],
+            "problemMatcher": [
+                "$ca65",
+                "$ld65",
+                "$ld65-config",
+                "$ld65-unresolved"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": "build"
+        }
+    ]
+}
