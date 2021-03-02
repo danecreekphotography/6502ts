@@ -1,3 +1,4 @@
+; 0001 - Verify load file
 .segment "VECTORS"
 
 .word $eaea

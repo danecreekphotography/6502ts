@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "ca65: Compile and Link Current File",
-            "command": "./cc65/bin/cl65 ${file}",
+            "command": "./cc65/bin/cl65 -o ./tests/roms/${fileBasenameNoExtension} ${file}",
             "type": "shell",
             "args": [],
             "problemMatcher": [
