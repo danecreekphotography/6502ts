@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import Memory from "../src/memory";
+import Opcodes from "../src/opcodes";
 
 test("Verify read byte address bounds", () => {
   const memory = new Memory();
@@ -48,6 +49,7 @@ test("Verify write byte address bounds", () => {
     memory.writeByte(-1, 0);
   }).toThrowError();
 });
+
 test("Verify read and write byte", () => {
   const memory = new Memory();
 
@@ -79,3 +81,14 @@ test("Verify clear", () => {
   memory.Clear();
   expect(memory.readByte(0x00)).toBe(0x00);
 });
+
+test("Verify load file", () => {
+  const CODEADDRESS = 0x0100;
+  const RESETVECTOR = 0xFFFA + 0x02;
+
+  const memory = new Memory(`${process.cwd()}/tests/assembly/0001`);
+
+  expect(memory.readWord(RESETVECTOR)).toBe(CODEADDRESS);
+  expect(memory.readByte(CODEADDRESS)).toBe(Opcodes.LDA_Immediate);
+  expect(memory.readWord(CODEADDRESS + 1)).toBe(0x42);
+})

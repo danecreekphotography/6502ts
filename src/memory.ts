@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as fs from 'fs';
+
 export default class Memory {
   public readonly MAX_ADDRESS = 0xffff;
 
@@ -11,10 +13,16 @@ export default class Memory {
   private memory = Buffer.alloc(this.MAX_ADDRESS + 1, 0x00);
 
   /**
-   * Creates a new memory instance filled with 0x00.
+   * Creates a new memory instance. If no filename is specified memory is filled with 0x00.
+   * @param filename File to load into memory.
    */
-  public constructor() {
-    this.Clear();
+  public constructor(filename?: string) {
+    if (filename) {
+      this.LoadFromFile(filename)
+    }
+    else {
+      this.Clear();
+    }
   }
 
   /**
@@ -22,6 +30,14 @@ export default class Memory {
    */
   public Clear(): void {
     this.memory.fill(0x00);
+  }
+
+  /**
+   * Loads a binary file into memory.
+   * @param filename File to load.
+   */
+  public LoadFromFile(filename: string): void {
+    this.memory = fs.readFileSync(filename, null); // Null encoding ensures a Buffer of binary data is returned.
   }
 
   /**
