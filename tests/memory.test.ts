@@ -82,8 +82,8 @@ test("Verify clear", () => {
   expect(memory.readByte(0x00)).toBe(0x00);
 });
 
-test("Verify load file", () => {
-  const CODEADDRESS = 0x0100;
+test("0001: Verify load file", () => {
+  const CODEADDRESS = 0x0200;
   const RESETVECTOR = 0xFFFA + 0x02;
 
   const memory = new Memory(`${process.cwd()}/tests/assembly/0001`);
