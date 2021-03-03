@@ -1,4 +1,4 @@
-; 0004 - STY Immediate
+; 0004 - LDY Immediate
 .segment "VECTORS"
 
 .word $eaea

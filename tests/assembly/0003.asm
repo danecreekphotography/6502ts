@@ -1,4 +1,4 @@
-; 0002 - STX Immediate
+; 0002 - LDX Immediate
 .segment "VECTORS"
 
 .word $eaea

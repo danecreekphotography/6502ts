@@ -1,4 +1,4 @@
-; 0002 - STA Immediate
+; 0002 - LDA Immediate
 .segment "VECTORS"
 
 .word $eaea
