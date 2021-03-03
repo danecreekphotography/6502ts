@@ -171,24 +171,20 @@ function verifyLoadAbsolutePlusRegister(
   expect(cpu.PC).toBe(CODE_LOCATION + 9);
 
   // Positive non-zero number case, page boundary crossed
-  // cpu.Initialize(memory);
-  // cpu.Registers[offsetRegister] = 0xff;
-  // memory.writeByte(0x2040 + 0xff, 0x42);
-  // expect(cpu.Execute(5, memory)).toBe(5);
-  // expect(cpu.Registers[register]).toBe(0x42);
-  // expect(cpu.Flags.Z).toBe(false);
-  // expect(cpu.Flags.N).toBe(false);
-  // expect(cpu.PC).toBe(CODE_LOCATION + 3);
+  cpu.Registers[offsetRegister] = 0x06;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(cpu.Registers[register]).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expect(cpu.PC).toBe(CODE_LOCATION + 12);
 
   // Zero number case, page boundary crossed
-  // cpu.Initialize(memory);
-  // cpu.Registers[offsetRegister] = 0xff;
-  // memory.writeByte(0x2040 + 0xff, 0x00);
-  // expect(cpu.Execute(5, memory)).toBe(5);
-  // expect(cpu.Registers[register]).toBe(0x00);
-  // expect(cpu.Flags.Z).toBe(true);
-  // expect(cpu.Flags.N).toBe(false);
-  // expect(cpu.PC).toBe(CODE_LOCATION + 3);
+  cpu.Registers[offsetRegister] = 0x09;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(cpu.Registers[register]).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+  expect(cpu.PC).toBe(CODE_LOCATION + 15);
 }
 
 test("0002 - Verify LDA Immediate", () => {

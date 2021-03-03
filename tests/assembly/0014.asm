@@ -22,6 +22,8 @@ data:
 .code
 
 init:
-    lda data,x
-    lda data + $01,x
-    lda data + $02,x
+    lda data,x          ; Positive number test, x will be $03
+    lda data + $01,x    ; Zero test, x will be $03
+    lda data + $02,x    ; Negative number test, x will be $03
+    lda data - $03,x    ; Positive number across page boundary test, x will be $06
+    lda data - $03,x    ; Zero across page boundary test, x will be $09
