@@ -324,12 +324,11 @@ test.only("Verify LDA Indirect Y", () => {
   expect(cpu.PC).toBe(expectedPCLocation);
 
   // Positive non-zero number case, memory location crosses page boundary
-  // cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
-  // expect(cpu.Execute(6, memory)).toBe(6);
-  // expect(cpu.Registers.A).toBe(0x42);
-  // expect(cpu.Flags.Z).toBe(false);
-  // expect(cpu.Flags.N).toBe(false);
-  // expect(cpu.PC).toBe(CODE_LOCATION + 2);
-  // expectedPCLocation += operationSize;
-  // expect(cpu.PC).toBe(expectedPCLocation);
+  cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Registers.A).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 });
