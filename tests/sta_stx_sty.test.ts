@@ -20,12 +20,31 @@ function verifyStoreZeroPage(testCaseNumber: string, register: keyof Registers) 
   const memory = createMemoryFromTestRom(testCaseNumber);
   cpu.Initialize(memory);
 
-  cpu.Registers[register] = 0xff;
+  const priorFlagStatus = cpu.Flags.Status;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(3, memory)).toBe(3);
-  expect(memory.readByte(0x00)).toBe(0xff);
+  expect(memory.readByte(0x00)).toBe(0x42);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(3, memory)).toBe(3);
+  expect(memory.readByte(0x00)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Negative number
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(3, memory)).toBe(3);
+  expect(memory.readByte(0x00)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 }
 
 function verifyStoreZeroPagePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: "X" | "Y") {
