@@ -47,40 +47,35 @@ export default class CPU {
   }
 
   /**
-   * Reads from memory using the specified access mode
+   * Returns an address based on the specified addressMode. Assumes PC is pointed
+   * to a location in memory with the base address.
+   *
+   * This consumes cycles based on the type of address mode provided.
    * @param memory Memory to read from
    * @param addressMode Address mode to use
    */
-  private ReadDataViaAddressMode(memory: Memory, addressMode: AddressModes): number {
-    let data = 0x00;
+  public CalculateAddressFromAddressMode(memory: Memory, addressMode: AddressModes): number {
+    let address = 0x00;
 
     switch (addressMode) {
-      // Read directly from memory at the current program counter location.
-      case AddressModes.Immediate: {
-        data = memory.readByte(this.PC++);
-        this.consumedCycles++;
-        break;
-      }
-
-      // Read from the single byte memory address stored at the current program
-      // counter location, adding in the offset from X or Y if appropriate.
       case AddressModes.ZeroPage:
       case AddressModes.ZeroPageX:
       case AddressModes.ZeroPageY: {
-        let dataAddress = memory.readByte(this.PC++);
+        address = memory.readByte(this.PC++);
         this.consumedCycles++;
 
         if (addressMode === AddressModes.ZeroPageX) {
-          dataAddress += this.Registers.X;
+          // Add RegisterX to get the actual address, but wrap it within the zero page address space.
+          address = (address + this.Registers.X) & 0xff; // This forces it to wrap within the zero page address space
           this.consumedCycles++;
         }
         if (addressMode === AddressModes.ZeroPageY) {
-          dataAddress += this.Registers.Y;
+          // Add RegisterY to get the actual address, but wrap it within the zero page address space.
+          // I haven't found explicit documentation to say this happens with Zero Page Y but it kinda has to otherwise
+          // the address mode makes no sense.
+          address = (address + this.Registers.Y) & 0xff; // This forces it to wrap within the zero page address space
           this.consumedCycles++;
         }
-
-        data = memory.readByte(dataAddress);
-        this.consumedCycles++;
         break;
       }
 
@@ -89,23 +84,20 @@ export default class CPU {
       case AddressModes.Absolute:
       case AddressModes.AbsoluteX:
       case AddressModes.AbsoluteY: {
-        let dataAddress = memory.readWord(this.PC);
+        address = memory.readWord(this.PC);
         this.PC += 2;
         this.consumedCycles += 2;
 
         // The AbsoluteX and AbsoluteY address modes only consume an extra cycle
         // if the base address + register cross a page boundary.
         if (addressMode === AddressModes.AbsoluteX) {
-          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.X)) this.consumedCycles++;
-          dataAddress += this.Registers.X;
+          if (memory.OffsetCrossesPageBoundary(address, this.Registers.X)) this.consumedCycles++;
+          address += this.Registers.X;
         }
         if (addressMode === AddressModes.AbsoluteY) {
-          if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.Y)) this.consumedCycles++;
-          dataAddress += this.Registers.Y;
+          if (memory.OffsetCrossesPageBoundary(address, this.Registers.Y)) this.consumedCycles++;
+          address += this.Registers.Y;
         }
-
-        data = memory.readByte(dataAddress);
-        this.consumedCycles++;
         break;
       }
 
@@ -119,11 +111,8 @@ export default class CPU {
         const zeroPageAddress = (baseZeroPageAddress + this.Registers.X) & 0xff; // This forces it to wrap within the zero page address space
         this.consumedCycles++;
         // Get the data address from the zero page memory location.
-        const dataAddress = memory.readWord(zeroPageAddress);
+        address = memory.readWord(zeroPageAddress);
         this.consumedCycles += 2;
-        // Actually read the data.
-        data = memory.readByte(dataAddress);
-        this.consumedCycles++;
         break;
       }
 
@@ -137,15 +126,37 @@ export default class CPU {
         const baseAddress = memory.readWord(zeroPageAddress);
         this.consumedCycles += 1;
         // Add the value of the Y register.
-        const dataAddress = baseAddress + this.Registers.Y;
+        address = baseAddress + this.Registers.Y;
         this.consumedCycles++;
         // Check and see if the addition crosses a page boundary
         if (memory.OffsetCrossesPageBoundary(baseAddress, this.Registers.Y)) this.consumedCycles++;
-        // Actually read the data.
-        data = memory.readByte(dataAddress);
-        this.consumedCycles++;
         break;
       }
+
+      default: {
+        throw new Error("Unsupported address mode passed to CalculateAddressFromAddressMode()");
+      }
+    }
+    return address;
+  }
+
+  /**
+   * Reads from memory using the specified access mode. Assumes PC is pointed
+   * to a location in memory with either the value (AddressModes.Immediate)
+   * or a memory location (all other address modes).
+   * @param memory Memory to read from
+   * @param addressMode Address mode to use
+   */
+  private ReadDataFromMemory(memory: Memory, addressMode: AddressModes): number {
+    let data = 0x00;
+
+    // Read directly from memory at the current program counter location.
+    if (addressMode === AddressModes.Immediate) {
+      data = memory.readByte(this.PC++);
+      this.consumedCycles++;
+    } else {
+      data = memory.readByte(this.CalculateAddressFromAddressMode(memory, addressMode));
+      this.consumedCycles++;
     }
 
     return data;
@@ -158,7 +169,7 @@ export default class CPU {
    * @param addressMode The addressMode to use when reading the data
    */
   private LoadRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes): void {
-    this.Registers[register] = this.ReadDataViaAddressMode(memory, addressMode);
+    this.Registers[register] = this.ReadDataFromMemory(memory, addressMode);
     this.SetFlagsOnRegisterLoad(register);
   }
 

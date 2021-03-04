@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import AddressModes from "../src/addressModes";
 import CPU from "../src/cpu";
 import Memory from "../src/memory";
 import Opcodes from "../src/opcodes";
@@ -67,5 +68,81 @@ test("Verify reading an invalid opcode", () => {
 
   expect(() => {
     cpu.Execute(3, memory);
+  }).toThrowError();
+});
+
+test("Verify address mode calculations", () => {
+  const baseAddressLocation = 0x2000;
+
+  // Absolute
+  cpu.PC = baseAddressLocation;
+  memory.writeWord(baseAddressLocation, 0x3000);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.Absolute)).toBe(0x3000);
+
+  // Absolute + X
+  memory.Clear();
+  cpu.PC = baseAddressLocation;
+  cpu.Registers.X = 0x01;
+  memory.writeWord(baseAddressLocation, 0x3000);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX)).toBe(0x3001);
+
+  // Absolute + Y
+  memory.Clear();
+  cpu.PC = baseAddressLocation;
+  cpu.Registers.Y = 0x01;
+  memory.writeWord(baseAddressLocation, 0x3000);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX)).toBe(0x3001);
+
+  // Zero page
+  memory.Clear();
+  cpu.PC = baseAddressLocation;
+  memory.writeByte(baseAddressLocation, 0x42);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPage)).toBe(0x42);
+
+  // Zero page + X, no wrap
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeByte(0x00, 0x42);
+  cpu.Registers.X = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX)).toBe(0x42 + 0x01);
+
+  // Zero page + X, wrap
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeByte(0x00, 0xff);
+  cpu.Registers.X = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX)).toBe(0x00);
+
+  // Zero page + Y
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeByte(0x00, 0x42);
+  cpu.Registers.Y = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY)).toBe(0x42 + 0x01);
+
+  // Zero page + X, wrap
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeByte(0x00, 0xff);
+  cpu.Registers.Y = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY)).toBe(0x00);
+
+  // Indirect X
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeWord(0x01, 0x4200);
+  cpu.Registers.X = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectX)).toBe(0x4200);
+
+  // Indirect Y
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeWord(0x00, 0x4200);
+  cpu.Registers.Y = 0x01;
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectY)).toBe(0x4201);
+
+  // Invalid address mode
+  expect(() => {
+    cpu.CalculateAddressFromAddressMode(memory, AddressModes.Immediate);
   }).toThrowError();
 });
