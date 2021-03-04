@@ -4,13 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import CPU from "../src/cpu";
-import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
 import Registers from "../src/registers";
 import { createMemoryFromTestRom } from "./helpers";
 
 const CODE_LOCATION = 0x0200;
-const DATA_LOCATION = 0x3000;
 
 const cpu = new CPU();
 
@@ -290,7 +287,7 @@ test("0017 - Verify LDA Indirect X", () => {
   expect(cpu.PC).toBe(expectedPCLocation);
 });
 
-test.only("Verify LDA Indirect Y", () => {
+test("Verify LDA Indirect Y", () => {
   const operationSize = 2;
   let expectedPCLocation = CODE_LOCATION;
   const memory = createMemoryFromTestRom("0018");
