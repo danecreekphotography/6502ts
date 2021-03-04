@@ -247,54 +247,47 @@ test("0016 - Verify LDY Absolute Plus Register", () => {
   verifyLoadAbsolutePlusRegister("0016", "Y", "X");
 });
 
-test("Verify LDA Indirect X", () => {
-  const memory = new Memory();
+test("0017 - Verify LDA Indirect X", () => {
+  const operationSize = 2;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom("0017");
   cpu.Initialize(memory);
 
-  memory.writeByte(CODE_LOCATION, Opcodes.LDA_IndirectX);
-  memory.writeByte(CODE_LOCATION + 1, 0x20); // This is the base zero page address
-  cpu.Registers.X = 0x04; // This is the offset to add to the zero page address
-
   // Positive non-zero number case, memory location doesn't wrap zero page
-  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
-  memory.writeByte(0x2070, 0x42); // This is the actual data in the target location
+  cpu.Registers.X = 0x01; // This is the offset to add to the zero page address
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 
   // Zero number case, memory location doesn't wrap zero page
-  cpu.Initialize(memory);
-  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
-  memory.writeByte(0x2070, 0x00); // This is the actual data in the target location
+  cpu.Registers.X = 0x03; // This is the offset to add to the zero page address
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 
   // Negative number case, memory location doesn't wrap zero page
-  cpu.Initialize(memory);
-  memory.writeWord(0x0020 + 0x04, 0x2070); // This is the target location in memory that contains the actual data
-  memory.writeByte(0x2070, 0b10010101); // This is the actual data in the target location
+  cpu.Registers.X = 0x05; // This is the offset to add to the zero page address
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 
   // Positive non-zero number case, memory location wraps the zero page address space.
-  cpu.Initialize(memory);
-  memory.writeByte(CODE_LOCATION + 1, 0xff); // Base zero page address at the end of zero page address space.
-  cpu.Registers.X = 2; // This will get added to 0xFF resulting in a wrapped value of 0x01.
-  memory.writeWord(0x01, 0x2070); // This is the target location in memory that contains the actual data
-  memory.writeByte(0x2070, 0x42); // This is the actual data in the target location
+  cpu.Registers.X = 0x02; // This will get added to 0xFF resulting in a wrapped value of 0x01.
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 });
 
 test("Verify LDA Indirect Y", () => {
