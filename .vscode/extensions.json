@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "tlgkccampbell.code-ca65",
-        "slevesque.vscode-hexdump"
+        "slevesque.vscode-hexdump",
+        "esbenp.prettier-vscode"
     ]
 }
