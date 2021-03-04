@@ -115,19 +115,37 @@ function verifyStoreAbsolute(testCaseNumber: string, register: keyof Registers) 
 }
 
 function verifyStoreAbsolutePlusOffset(testCaseNumber: string, register: keyof Registers, offsetRegister: "X" | "Y") {
-  const operationSize = 2;
+  const operationSize = 3;
   let expectedPCLocation = CODE_LOCATION;
   const memory = createMemoryFromTestRom(testCaseNumber);
   cpu.Initialize(memory);
 
   const priorFlagStatus = cpu.Flags.Status;
-
   cpu.Registers[offsetRegister] = 0x01;
-  cpu.Registers[register] = 0xff;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(5, memory)).toBe(5);
-  expect(memory.readByte(0x4000 + 0x01)).toBe(0xff);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0x42);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number case
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
+
+  // Negative number case
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
 }
 
 test("0100 - Verify STA zero page", () => {
