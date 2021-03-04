@@ -34,7 +34,7 @@ function assemble(sourceFile) {
 }
 
 function build() {
-  return gulp.src("tests/assembly/*.asm")
+  return gulp.src("tests/assembly/**/*.asm")
     .pipe(tap((file) => assemble(file)));
 }
 
