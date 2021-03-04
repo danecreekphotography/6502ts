@@ -290,50 +290,46 @@ test("0017 - Verify LDA Indirect X", () => {
   expect(cpu.PC).toBe(expectedPCLocation);
 });
 
-test("Verify LDA Indirect Y", () => {
-  const memory = new Memory();
+test.only("Verify LDA Indirect Y", () => {
+  const operationSize = 2;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom("0018");
   cpu.Initialize(memory);
 
-  memory.writeByte(CODE_LOCATION, Opcodes.LDA_IndirectY);
-  memory.writeByte(CODE_LOCATION + 1, 0x86); // This is the zero page address
-  memory.writeWord(0x86, 0x4028); // This is the base memory location of the data
-
   // Positive non-zero number case, memory location doesn't wrap zero page
-  cpu.Registers.Y = 0x10; // This is the offset to add to the value in the base memory location
-  memory.writeWord(0x4028 + 0x10, 0x42); // This is the actual data to read
+  cpu.Registers.Y = 0x00; // This is the offset to add to the value in the base memory location
   expect(cpu.Execute(5, memory)).toBe(5);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
-
-  // Positive non-zero number case, memory location crosses page boundary
-  cpu.Initialize(memory);
-  cpu.Registers.Y = 0xff; // This is the offset to add to the value stored in the zero page address location
-  memory.writeWord(0x4028 + 0xff, 0x42); // This is the actual data to read
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 
   // Zero number case
-  cpu.Initialize(memory);
-  cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
-  memory.writeWord(0x4028 + 0x10, 0x00); // This is the actual data to read
+  cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
   expect(cpu.Execute(5, memory)).toBe(5);
   expect(cpu.Registers.A).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 
   // Negative number case, memory location doesn't wrap zero page
-  cpu.Initialize(memory);
-  cpu.Registers.Y = 0x10; // This is the offset to add to the value stored in the zero page address location
-  memory.writeWord(0x4028 + 0x10, 0b10010101); // This is the actual data to read
+  cpu.Registers.Y = 0x02; // This is the offset to add to the value stored in the zero page address location
   expect(cpu.Execute(5, memory)).toBe(5);
   expect(cpu.Registers.A).toBe(0b10010101);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Positive non-zero number case, memory location crosses page boundary
+  // cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
+  // expect(cpu.Execute(6, memory)).toBe(6);
+  // expect(cpu.Registers.A).toBe(0x42);
+  // expect(cpu.Flags.Z).toBe(false);
+  // expect(cpu.Flags.N).toBe(false);
+  // expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  // expectedPCLocation += operationSize;
+  // expect(cpu.PC).toBe(expectedPCLocation);
 });
