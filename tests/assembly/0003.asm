@@ -1,4 +1,4 @@
-; 0001 - Verify load file
+; 0002 - LDX Immediate
 .segment "VECTORS"
 
 .word $eaea
@@ -8,4 +8,6 @@
 .code
 
 init:
-    lda #$42
+    ldx #$42
+    ldx #$00
+    ldx #%10010101

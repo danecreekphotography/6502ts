@@ -5,6 +5,7 @@
 
 import Memory from "../src/memory";
 import Opcodes from "../src/opcodes";
+import * as helpers from "./helpers";
 
 test("Verify read byte address bounds", () => {
   const memory = new Memory();
@@ -82,11 +83,11 @@ test("Verify clear", () => {
   expect(memory.readByte(0x00)).toBe(0x00);
 });
 
-test("Verify load file", () => {
-  const CODEADDRESS = 0x0100;
+test("0001: Verify load file", () => {
+  const CODEADDRESS = 0x0200;
   const RESETVECTOR = 0xFFFA + 0x02;
 
-  const memory = new Memory(`${process.cwd()}/tests/assembly/0001`);
+  const memory = helpers.createMemoryFromTestRom("0001");
 
   expect(memory.readWord(RESETVECTOR)).toBe(CODEADDRESS);
   expect(memory.readByte(CODEADDRESS)).toBe(Opcodes.LDA_Immediate);

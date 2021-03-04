@@ -1,4 +1,4 @@
-; 0001 - Verify load file
+; 0004 - LDY Immediate
 .segment "VECTORS"
 
 .word $eaea
@@ -8,4 +8,6 @@
 .code
 
 init:
-    lda #$42
+    ldy #$42
+    ldy #$00
+    ldy #%10010101

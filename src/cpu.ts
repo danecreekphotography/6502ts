@@ -96,12 +96,12 @@ export default class CPU {
         // The AbsoluteX and AbsoluteY address modes only consume an extra cycle
         // if the base address + register cross a page boundary.
         if (addressMode === AddressModes.AbsoluteX) {
-          dataAddress += this.Registers.X;
           if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.X)) this.consumedCycles++;
+          dataAddress += this.Registers.X;
         }
         if (addressMode === AddressModes.AbsoluteY) {
-          dataAddress += this.Registers.Y;
           if (memory.OffsetCrossesPageBoundary(dataAddress, this.Registers.Y)) this.consumedCycles++;
+          dataAddress += this.Registers.Y;
         }
 
         data = memory.readByte(dataAddress);

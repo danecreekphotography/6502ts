@@ -1,4 +1,4 @@
-; 0001 - Verify load file
+; 0002 - LDA Immediate
 .segment "VECTORS"
 
 .word $eaea
@@ -9,3 +9,5 @@
 
 init:
     lda #$42
+    lda #$00
+    lda #%10010101
