@@ -70,7 +70,6 @@ function verifyLoadZeroPage(testCaseNumber: string, register: keyof Registers) {
 // offset register, register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-
 function verifyLoadZeroPagePlusRegister(
   testCaseNumber: string,
   register: keyof Registers,

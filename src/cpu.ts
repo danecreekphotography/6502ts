@@ -54,7 +54,7 @@ export default class CPU {
    * @param memory Memory to read from
    * @param addressMode Address mode to use
    */
-  private CalculateAddressFromAddressMode(memory: Memory, addressMode: AddressModes): number {
+  public CalculateAddressFromAddressMode(memory: Memory, addressMode: AddressModes): number {
     let address = 0x00;
 
     switch (addressMode) {
@@ -65,11 +65,15 @@ export default class CPU {
         this.consumedCycles++;
 
         if (addressMode === AddressModes.ZeroPageX) {
-          address += this.Registers.X;
+          // Add RegisterX to get the actual address, but wrap it within the zero page address space.
+          address = (address + this.Registers.X) & 0xff; // This forces it to wrap within the zero page address space
           this.consumedCycles++;
         }
         if (addressMode === AddressModes.ZeroPageY) {
-          address += this.Registers.Y;
+          // Add RegisterY to get the actual address, but wrap it within the zero page address space.
+          // I haven't found explicit documentation to say this happens with Zero Page Y but it kinda has to otherwise
+          // the address mode makes no sense.
+          address = (address + this.Registers.Y) & 0xff; // This forces it to wrap within the zero page address space
           this.consumedCycles++;
         }
         break;
