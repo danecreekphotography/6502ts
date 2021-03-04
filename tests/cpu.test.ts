@@ -34,6 +34,8 @@ function verifyCpuInitialization(cpu: CPU): void {
   expect(cpu.Flags.N).toBe(false);
   expect(cpu.Flags.V).toBe(false);
   expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.Unused).toBe(true);
+  expect(cpu.Flags.Status).toBe(0b00100000);
 }
 
 test("Verify CPU constructor", () => {
@@ -57,7 +59,6 @@ test("Verify CPU reset vector", () => {
 
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers.A).toBe(0x42);
-
 });
 
 test("Verify reading an invalid opcode", () => {
