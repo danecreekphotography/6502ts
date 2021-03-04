@@ -264,8 +264,6 @@ export default class CPU {
         this.consumedCycles++;
         break;
       }
-      default:
-        throw Error("Invalid jump address mode");
     }
   }
 
