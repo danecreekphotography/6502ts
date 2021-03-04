@@ -20,89 +20,174 @@ function verifyStoreZeroPage(testCaseNumber: string, register: keyof Registers) 
   const memory = createMemoryFromTestRom(testCaseNumber);
   cpu.Initialize(memory);
 
-  cpu.Registers[register] = 0xff;
+  const priorFlagStatus = cpu.Flags.Status;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(3, memory)).toBe(3);
-  expect(memory.readByte(0x00)).toBe(0xff);
+  expect(memory.readByte(0x00)).toBe(0x42);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(3, memory)).toBe(3);
+  expect(memory.readByte(0x00)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Negative number
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(3, memory)).toBe(3);
+  expect(memory.readByte(0x00)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 }
 
-function verifyStoreZeroPagePlusRegister(opcode: Opcodes, register: keyof Registers, offsetRegister: "X" | "Y") {
-  memory.writeByte(CODE_LOCATION, opcode);
-  memory.writeByte(CODE_LOCATION + 1, 0x40); // Location to write the accumulator value
+function verifyStoreZeroPagePlusRegister(testCaseNumber: string, register: keyof Registers, offsetRegister: "X" | "Y") {
+  const operationSize = 2;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom(testCaseNumber);
+  cpu.Initialize(memory);
 
   cpu.Registers[offsetRegister] = 0x01; // This gets added to the zero page location
-  cpu.Registers[register] = 0xff;
+  const priorFlagStatus = cpu.Flags.Status;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(4, memory)).toBe(4);
-  expect(memory.readByte(0x40 + 0x01)).toBe(0xff);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0x42);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number case
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Negative number case
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
 }
 
-function verifyStoreAbsolute(opcode: Opcodes, register: keyof Registers) {
-  memory.writeByte(CODE_LOCATION, opcode);
-  memory.writeWord(CODE_LOCATION + 1, 0x4000); // Location to write the accumulator value
+function verifyStoreAbsolute(testCaseNumber: string, register: keyof Registers) {
+  const operationSize = 3;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom(testCaseNumber);
+  cpu.Initialize(memory);
 
-  cpu.Registers[register] = 0xff;
+  const priorFlagStatus = cpu.Flags.Status;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(4, memory)).toBe(4);
-  expect(memory.readByte(0x4000)).toBe(0xff);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+  expect(memory.readByte(0x4000)).toBe(0x42);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number case
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x4000)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Negative number case
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(memory.readByte(0x4000)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 }
 
-function verifyStoreAbsolutePlusOffset(opcode: Opcodes, register: keyof Registers, offsetRegister: "X" | "Y") {
-  memory.writeByte(CODE_LOCATION, opcode);
-  memory.writeWord(CODE_LOCATION + 1, 0x4000); // Location to write the accumulator value
+function verifyStoreAbsolutePlusOffset(testCaseNumber: string, register: keyof Registers, offsetRegister: "X" | "Y") {
+  const operationSize = 3;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom(testCaseNumber);
+  cpu.Initialize(memory);
 
+  const priorFlagStatus = cpu.Flags.Status;
   cpu.Registers[offsetRegister] = 0x01;
-  cpu.Registers[register] = 0xff;
 
+  // Positive number case
+  cpu.Registers[register] = 0x42;
   expect(cpu.Execute(5, memory)).toBe(5);
-  expect(memory.readByte(0x4000 + 0x01)).toBe(0xff);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0x42);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
+
+  // Zero number case
+  cpu.Registers[register] = 0x00;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0x00);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
+
+  // Negative number case
+  cpu.Registers[register] = 0b10010101;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x4000 + 0x01)).toBe(0b10010101);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
 }
 
-test("Verify STA zero page", () => {
+test("0100 - Verify STA zero page", () => {
   verifyStoreZeroPage("0100", "A");
 });
 
-test("Verify STX zero page", () => {
+test("0101 - Verify STX zero page", () => {
   verifyStoreZeroPage("0101", "X");
 });
 
-test("Verify STY zero page", () => {
+test("0102 - Verify STY zero page", () => {
   verifyStoreZeroPage("0102", "Y");
 });
 
-test("Verify STA zero page plus X", () => {
-  verifyStoreZeroPagePlusRegister(Opcodes.STA_Zero_PageX, "A", "X");
+test("0103 - Verify STA zero page plus X", () => {
+  verifyStoreZeroPagePlusRegister("0103", "A", "X");
 });
 
-test("Verify STX zero page plus Y", () => {
-  verifyStoreZeroPagePlusRegister(Opcodes.STX_Zero_PageY, "X", "Y");
+test("0104 - Verify STX zero page plus Y", () => {
+  verifyStoreZeroPagePlusRegister("0104", "X", "Y");
 });
 
-test("Verify STY zero page plus X", () => {
-  verifyStoreZeroPagePlusRegister(Opcodes.STY_Zero_PageX, "Y", "X");
+test("0105 - Verify STY zero page plus X", () => {
+  verifyStoreZeroPagePlusRegister("0105", "Y", "X");
 });
 
-test("Verify STA absolute", () => {
-  verifyStoreAbsolute(Opcodes.STA_Absolute, "A");
+test("0106 - Verify STA absolute", () => {
+  verifyStoreAbsolute("0106", "A");
 });
 
-test("Verify STX absolute", () => {
-  verifyStoreAbsolute(Opcodes.STX_Absolute, "X");
+test("0107 - Verify STX absolute", () => {
+  verifyStoreAbsolute("0107", "X");
 });
 
-test("Verify STY absolute", () => {
-  verifyStoreAbsolute(Opcodes.STY_Absolute, "Y");
+test("0108 - Verify STY absolute", () => {
+  verifyStoreAbsolute("0108", "Y");
 });
 
 test("Verify STA absolute plus X", () => {
-  verifyStoreAbsolutePlusOffset(Opcodes.STA_AbsoluteX, "A", "X");
+  verifyStoreAbsolutePlusOffset("0109", "A", "X");
 });
 
 test("Verify STA absolute plus Y", () => {
-  verifyStoreAbsolutePlusOffset(Opcodes.STA_AbsoluteY, "A", "Y");
+  verifyStoreAbsolutePlusOffset("0110", "A", "Y");
 });

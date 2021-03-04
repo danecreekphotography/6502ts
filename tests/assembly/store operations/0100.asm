@@ -8,6 +8,6 @@
 .code
 
 init:
-    sta $00  ; Positive number, A will be 0x42.
-    sta $00  ; Zero, A will be 0x00.
-    sta $00  ; Negative number, A will be 0b10010101.
+    sta $00  ; Positive number, A will be $42.
+    sta $00  ; Zero, A will be $00.
+    sta $00  ; Negative number, A will be %10010101.

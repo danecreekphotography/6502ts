@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import Memory from "../src/memory";
+import path from "path";
 
 export function createMemoryFromTestRom(testCase: string): Memory {
-    return new Memory(`${process.cwd()}/tests/roms/${testCase}`);
+  return new Memory(path.join(process.cwd(), `/tests/roms/${testCase}`));
 }
