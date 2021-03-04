@@ -135,7 +135,6 @@ export default class CPU {
 
       default: {
         throw new Error("Unsupported address mode passed to CalculateAddressFromAddressMode()");
-        break;
       }
     }
     return address;
