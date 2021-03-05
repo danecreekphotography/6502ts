@@ -6,7 +6,6 @@
 import AddressModes from "./addressModes";
 import Flags from "./flags";
 import Memory from "./memory";
-import MemoryUses from "./memoryUses";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
 
