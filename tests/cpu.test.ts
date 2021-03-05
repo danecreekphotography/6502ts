@@ -77,72 +77,95 @@ test("Verify address mode calculations", () => {
   // Absolute
   cpu.PC = baseAddressLocation;
   memory.writeWord(baseAddressLocation, 0x3000);
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.Absolute)).toBe(0x3000);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.Absolute, true)).toEqual(0x3000);
 
   // Absolute + X
   memory.Clear();
   cpu.PC = baseAddressLocation;
   cpu.Registers.X = 0x01;
   memory.writeWord(baseAddressLocation, 0x3000);
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX)).toBe(0x3001);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX, true)).toEqual(0x3001);
+
+  // Absolute + X across page boundary
+  memory.Clear();
+  cpu.PC = baseAddressLocation;
+  cpu.Registers.X = 0x01;
+  memory.writeWord(baseAddressLocation, 0x30ff);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX, true)).toEqual(0x30ff + 0x01);
 
   // Absolute + Y
   memory.Clear();
   cpu.PC = baseAddressLocation;
   cpu.Registers.Y = 0x01;
   memory.writeWord(baseAddressLocation, 0x3000);
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX)).toBe(0x3001);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX, true)).toEqual(0x3001);
+
+  // Absolute + Y across page boundary
+  memory.Clear();
+  cpu.PC = baseAddressLocation;
+  cpu.Registers.Y = 0x01;
+  memory.writeWord(baseAddressLocation, 0x30ff);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.AbsoluteX, true)).toEqual(0x30ff + 0x01);
 
   // Zero page
   memory.Clear();
   cpu.PC = baseAddressLocation;
   memory.writeByte(baseAddressLocation, 0x42);
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPage)).toBe(0x42);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPage, true)).toEqual(0x42);
 
   // Zero page + X, no wrap
   memory.Clear();
   cpu.PC = 0x00;
   memory.writeByte(0x00, 0x42);
   cpu.Registers.X = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX)).toBe(0x42 + 0x01);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX, true)).toEqual(0x42 + 0x01);
 
   // Zero page + X, wrap
   memory.Clear();
   cpu.PC = 0x00;
   memory.writeByte(0x00, 0xff);
   cpu.Registers.X = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX)).toBe(0x00);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageX, true)).toEqual(0x00);
 
   // Zero page + Y
   memory.Clear();
   cpu.PC = 0x00;
   memory.writeByte(0x00, 0x42);
   cpu.Registers.Y = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY)).toBe(0x42 + 0x01);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY, true)).toEqual(0x42 + 0x01);
 
   // Zero page + X, wrap
   memory.Clear();
   cpu.PC = 0x00;
   memory.writeByte(0x00, 0xff);
   cpu.Registers.Y = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY)).toBe(0x00);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.ZeroPageY, true)).toEqual(0x00);
 
   // Indirect X
   memory.Clear();
   cpu.PC = 0x00;
   memory.writeWord(0x01, 0x4200);
   cpu.Registers.X = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectX)).toBe(0x4200);
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectX, true)).toEqual(0x4200);
 
   // Indirect Y
   memory.Clear();
   cpu.PC = 0x00;
-  memory.writeWord(0x00, 0x4200);
-  cpu.Registers.Y = 0x01;
-  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectY)).toBe(0x4201);
+  memory.writeByte(0x00, 0x01); // Stores the zero page address location that has the actual address
+  memory.writeWord(0x01, 0x4200); // Stores the address
+  cpu.Registers.Y = 0x01; // The value to add to the address retrieved from zero page
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectY, true)).toEqual(0x4200 + 0x01);
+
+  // Indirect Y across page boundary
+  memory.Clear();
+  cpu.PC = 0x00;
+  memory.writeByte(0x00, 0x01); // Stores the zero page address location that has the actual address
+  memory.writeWord(0x01, 0x42ff); // Stores the address
+  cpu.Registers.Y = 0x01; // The value to add to the address retrieved from zero page
+  expect(cpu.CalculateAddressFromAddressMode(memory, AddressModes.IndirectY, true)).toEqual(0x42ff + 0x01);
 
   // Invalid address mode
   expect(() => {
-    cpu.CalculateAddressFromAddressMode(memory, AddressModes.Immediate);
+    cpu.CalculateAddressFromAddressMode(memory, AddressModes.Immediate, true);
   }).toThrowError();
 });
