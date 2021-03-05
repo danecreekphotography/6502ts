@@ -24,7 +24,7 @@ beforeEach(() => {
 
 function verifyCpuInitialization(cpu: CPU): void {
   expect(cpu.PC).toBe(CODE_LOCATION);
-  expect(cpu.SP).toBe(0x0000);
+  expect(cpu.Registers.SP).toBe(0x0000);
   expect(cpu.Registers.A).toBe(0);
   expect(cpu.Registers.X).toBe(0);
   expect(cpu.Registers.Y).toBe(0);
@@ -47,7 +47,7 @@ test("Verify CPU initialization", () => {
   // Set the program counter and stack pointer to some value
   // then initialize the CPU to make sure everything resets.
   cpu.PC = 0x0042;
-  cpu.SP = 0x0050;
+  cpu.Registers.SP = 0x0050;
   cpu.Initialize(memory);
 
   verifyCpuInitialization(cpu);

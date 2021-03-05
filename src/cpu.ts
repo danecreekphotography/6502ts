@@ -23,11 +23,6 @@ export default class CPU {
   public PC: number;
 
   /**
-   * The stack pointer.
-   */
-  public SP: number;
-
-  /**
    * The registers.
    */
   public Registers = new Registers();
@@ -43,7 +38,7 @@ export default class CPU {
    */
   public Initialize(memory: Memory): void {
     this.PC = memory.readWord(this.RESET_VECTOR);
-    this.SP = 0x0000;
+    this.Registers.SP = 0x0000;
   }
 
   /**

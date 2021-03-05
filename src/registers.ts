@@ -16,4 +16,8 @@ export default class Registers {
    * Y register
    */
   Y = 0;
+  /**
+   * Stack pointer register
+   */
+  SP = 0;
 }
