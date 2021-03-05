@@ -207,7 +207,11 @@ export default class CPU {
     const dataAddress = this.CalculateAddressFromAddressMode(memory, addressMode, false);
 
     // Storing using any of these indirect modes consumes an additional cycle for some reason
-    if (addressMode === AddressModes.AbsoluteX || addressMode === AddressModes.AbsoluteY) {
+    if (
+      addressMode === AddressModes.AbsoluteX ||
+      addressMode === AddressModes.AbsoluteY ||
+      addressMode === AddressModes.IndirectY
+    ) {
       this.consumedCycles++;
     }
     memory.writeByte(dataAddress, this.Registers[register]);

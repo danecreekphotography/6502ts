@@ -7,8 +7,8 @@
 
 .segment "ZEROPAGE"
 
-.byte $00   ; Pad with an empty byte
-.word $3000   ; Location of positive number
+.byte $00     ; Pad with an empty byte
+.word $3000   ; Location of number
 
 .code
 
