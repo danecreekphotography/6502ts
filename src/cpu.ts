@@ -383,7 +383,6 @@ export default class CPU {
           this.StoreRegister(memory, "Y", AddressModes.Absolute);
           break;
         }
-
         case Opcodes.STA_AbsoluteX: {
           this.StoreRegister(memory, "A", AddressModes.AbsoluteX);
           break;
@@ -392,7 +391,14 @@ export default class CPU {
           this.StoreRegister(memory, "A", AddressModes.AbsoluteY);
           break;
         }
-
+        case Opcodes.STA_IndirectX: {
+          this.StoreRegister(memory, "A", AddressModes.IndirectX);
+          break;
+        }
+        case Opcodes.STA_IndirectY: {
+          this.StoreRegister(memory, "A", AddressModes.IndirectY);
+          break;
+        }
         default: {
           throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
         }

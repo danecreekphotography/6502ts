@@ -5,14 +5,11 @@
 
 import CPU from "../src/cpu";
 import Registers from "../src/registers";
-import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
 import { createMemoryFromTestRom } from "./helpers";
 
 const CODE_LOCATION = 0x0200;
 
 const cpu = new CPU();
-const memory = new Memory();
 
 function verifyStoreZeroPage(testCaseNumber: string, register: keyof Registers) {
   const operationSize = 2;
@@ -184,10 +181,55 @@ test("0108 - Verify STY absolute", () => {
   verifyStoreAbsolute("0108", "Y");
 });
 
-test("Verify STA absolute plus X", () => {
+test("0109 - Verify STA absolute plus X", () => {
   verifyStoreAbsolutePlusOffset("0109", "A", "X");
 });
 
-test("Verify STA absolute plus Y", () => {
+test("0110 - Verify STA absolute plus Y", () => {
   verifyStoreAbsolutePlusOffset("0110", "A", "Y");
+});
+
+test.only("0111 - Verify STA indirect plus X", () => {
+  const operationSize = 2;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom("0111");
+  cpu.Initialize(memory);
+
+  // Positive non-zero number case, memory location doesn't wrap zero page
+  cpu.Registers.X = 0x01; // This is the offset to add to the zero page address
+  cpu.Registers.A = 0x42;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Zero number case, memory location doesn't wrap zero page
+  cpu.Registers.A = 0x00;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Negative number case, memory location doesn't wrap zero page
+  cpu.Registers.A = 0b10010101;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0b10010101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Positive non-zero number case, memory location wraps the zero page address space.
+  cpu.Registers.X = 0x02; // This will get added to 0xFF resulting in a wrapped value of 0x01.
+  cpu.Registers.A = 0x42;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
 });
