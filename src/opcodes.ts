@@ -41,6 +41,13 @@ enum Opcodes {
   STA_AbsoluteY = 0x99,
   STA_IndirectX = 0x81,
   STA_IndirectY = 0x91,
+
+  TAX = 0xaa,
+  TAY = 0xa8,
+  TXA = 0x8a,
+  TYA = 0x98,
+  TSX = 0xba,
+  TXS = 0x9a,
 }
 
 export default Opcodes;

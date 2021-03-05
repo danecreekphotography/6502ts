@@ -219,6 +219,18 @@ export default class CPU {
   }
 
   /**
+   * Transfers data from one register to another, setting the zero and negative
+   * flags based on the resulting value in the destination register.
+   * @param sourceRegister The register to read the data from.
+   * @param destinationRegister The register to store the data in.
+   */
+  private TransferRegister(sourceRegister: keyof Registers, destinationRegister: keyof Registers) {
+    this.Registers[destinationRegister] = this.Registers[sourceRegister];
+    this.consumedCycles++;
+    this.SetFlagsOnRegisterLoad(destinationRegister);
+  }
+
+  /**
    * Updates the program counter to point to a different location in memory
    * @param memory The memory containing the location
    * @param addressMode The address mode to use when reading the location
@@ -403,6 +415,24 @@ export default class CPU {
           this.StoreRegister(memory, "A", AddressModes.IndirectY);
           break;
         }
+
+        case Opcodes.TAX: {
+          this.TransferRegister("A", "X");
+          break;
+        }
+        case Opcodes.TAY: {
+          this.TransferRegister("A", "Y");
+          break;
+        }
+        case Opcodes.TXA: {
+          this.TransferRegister("X", "A");
+          break;
+        }
+        case Opcodes.TYA: {
+          this.TransferRegister("Y", "A");
+          break;
+        }
+
         default: {
           throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
         }
