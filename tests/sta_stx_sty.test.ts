@@ -78,7 +78,7 @@ function verifyStoreZeroPagePlusRegister(testCaseNumber: string, register: keyof
   expect(memory.readByte(0x00 + 0x01)).toBe(0b10010101);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
-  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 }
 
 function verifyStoreAbsolute(testCaseNumber: string, register: keyof Registers) {
@@ -137,7 +137,7 @@ function verifyStoreAbsolutePlusOffset(testCaseNumber: string, register: keyof R
   expect(memory.readByte(0x4000 + 0x01)).toBe(0x00);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
-  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 
   // Negative number case
   cpu.Registers[register] = 0b10010101;
@@ -145,7 +145,7 @@ function verifyStoreAbsolutePlusOffset(testCaseNumber: string, register: keyof R
   expect(memory.readByte(0x4000 + 0x01)).toBe(0b10010101);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
-  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags  
+  expect(cpu.Flags.Status).toBe(priorFlagStatus); // Operation shouldn't modify the flags
 }
 
 test("0100 - Verify STA zero page", () => {

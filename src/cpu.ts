@@ -6,6 +6,7 @@
 import AddressModes from "./addressModes";
 import Flags from "./flags";
 import Memory from "./memory";
+import MemoryUses from "./memoryUses";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
 
@@ -53,8 +54,14 @@ export default class CPU {
    * This consumes cycles based on the type of address mode provided.
    * @param memory Memory to read from
    * @param addressMode Address mode to use
+   * @param pageBoundaryConsumesCycle True if crossing a page boundary should consume an extra cycle
+   * @returns The address and a boolean indicating if a page boundary was crossed.
    */
-  public CalculateAddressFromAddressMode(memory: Memory, addressMode: AddressModes): number {
+  public CalculateAddressFromAddressMode(
+    memory: Memory,
+    addressMode: AddressModes,
+    pageBoundaryConsumesCycle: boolean,
+  ): number {
     let address = 0x00;
 
     switch (addressMode) {
@@ -91,11 +98,15 @@ export default class CPU {
         // The AbsoluteX and AbsoluteY address modes only consume an extra cycle
         // if the base address + register cross a page boundary.
         if (addressMode === AddressModes.AbsoluteX) {
-          if (memory.OffsetCrossesPageBoundary(address, this.Registers.X)) this.consumedCycles++;
+          if (pageBoundaryConsumesCycle && memory.OffsetCrossesPageBoundary(address, this.Registers.X)) {
+            this.consumedCycles++;
+          }
           address += this.Registers.X;
         }
         if (addressMode === AddressModes.AbsoluteY) {
-          if (memory.OffsetCrossesPageBoundary(address, this.Registers.Y)) this.consumedCycles++;
+          if (pageBoundaryConsumesCycle && memory.OffsetCrossesPageBoundary(address, this.Registers.Y)) {
+            this.consumedCycles++;
+          }
           address += this.Registers.Y;
         }
         break;
@@ -129,7 +140,9 @@ export default class CPU {
         address = baseAddress + this.Registers.Y;
         this.consumedCycles++;
         // Check and see if the addition crosses a page boundary
-        if (memory.OffsetCrossesPageBoundary(baseAddress, this.Registers.Y)) this.consumedCycles++;
+        if (pageBoundaryConsumesCycle && memory.OffsetCrossesPageBoundary(baseAddress, this.Registers.Y)) {
+          this.consumedCycles++;
+        }
         break;
       }
 
@@ -155,7 +168,7 @@ export default class CPU {
       data = memory.readByte(this.PC++);
       this.consumedCycles++;
     } else {
-      data = memory.readByte(this.CalculateAddressFromAddressMode(memory, addressMode));
+      data = memory.readByte(this.CalculateAddressFromAddressMode(memory, addressMode, true));
       this.consumedCycles++;
     }
 
@@ -192,49 +205,9 @@ export default class CPU {
    * @param addressMode Address mode to use to find the data
    */
   private StoreRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes) {
-    switch (addressMode) {
-      // Write the register data to the zero page location specified,
-      // adding in the offset from X or Y if appropriate.
-      case AddressModes.ZeroPage:
-      case AddressModes.ZeroPageX:
-      case AddressModes.ZeroPageY: {
-        let dataAddress = memory.readByte(this.PC++);
-        this.consumedCycles++;
-
-        if (addressMode === AddressModes.ZeroPageX) {
-          dataAddress += this.Registers.X;
-          this.consumedCycles++;
-        }
-        if (addressMode === AddressModes.ZeroPageY) {
-          dataAddress += this.Registers.Y;
-          this.consumedCycles++;
-        }
-
-        memory.writeByte(dataAddress, this.Registers[register]);
-        this.consumedCycles++;
-        break;
-      }
-      case AddressModes.Absolute:
-      case AddressModes.AbsoluteX:
-      case AddressModes.AbsoluteY: {
-        let dataAddress = memory.readWord(this.PC);
-        this.PC += 2;
-        this.consumedCycles += 2;
-
-        if (addressMode === AddressModes.AbsoluteX) {
-          dataAddress += this.Registers.X;
-          this.consumedCycles++;
-        }
-        if (addressMode === AddressModes.AbsoluteY) {
-          dataAddress += this.Registers.Y;
-          this.consumedCycles++;
-        }
-
-        memory.writeByte(dataAddress, this.Registers[register]);
-        this.consumedCycles++;
-        break;
-      }
-    }
+    const dataAddress = this.CalculateAddressFromAddressMode(memory, addressMode, false);
+    memory.writeByte(dataAddress, this.Registers[register]);
+    this.consumedCycles++;
   }
 
   /**
