@@ -34,8 +34,6 @@ function verifyRegisterTransfer(
   cpu.Registers[sourceRegister] = 0x00;
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers[destinationRegister]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
 
@@ -49,6 +47,38 @@ function verifyRegisterTransfer(
   expect(cpu.PC).toBe(expectedPCLocation);
 }
 
+function verifyTransferToStackPointer(testCaseNumber: string): void {
+  const operationSize = 1;
+  let expectedPCLocation = CODE_LOCATION;
+  const memory = createMemoryFromTestRom(testCaseNumber);
+  cpu.Initialize(memory);
+
+  const previousFlagStatus = cpu.Flags.Status;
+
+  // Positive number case
+  cpu.Registers.X = 0x42;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.SP).toBe(0x42);
+  expect(cpu.Flags.Status).toEqual(previousFlagStatus);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Zero number case
+  cpu.Registers.X = 0x00;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.SP).toBe(0x00);
+  expect(cpu.Flags.Status).toEqual(previousFlagStatus);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+
+  // Negative number case
+  cpu.Registers.X = 0b10010101;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.SP).toBe(0b10010101);
+  expect(cpu.Flags.Status).toEqual(previousFlagStatus);
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+}
 test("0200 - Verify TAX", () => {
   verifyRegisterTransfer("0200", "A", "X");
 });
@@ -63,4 +93,12 @@ test("0202 - Verify TXA", () => {
 
 test("0203 - Verify TYA", () => {
   verifyRegisterTransfer("0203", "Y", "A");
+});
+
+test("0203 - Verify TSX", () => {
+  verifyRegisterTransfer("0204", "SP", "X");
+});
+
+test("0203 - Verify TXS", () => {
+  verifyTransferToStackPointer("0205");
 });

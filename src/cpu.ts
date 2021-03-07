@@ -222,7 +222,11 @@ export default class CPU {
   private TransferRegister(sourceRegister: keyof Registers, destinationRegister: keyof Registers) {
     this.Registers[destinationRegister] = this.Registers[sourceRegister];
     this.consumedCycles++;
-    this.SetFlagsOnRegisterLoad(destinationRegister);
+
+    // Flags only get set on transfers to A, X, and Y registers.
+    if (destinationRegister != "SP") {
+      this.SetFlagsOnRegisterLoad(destinationRegister);
+    }
   }
 
   /**
@@ -425,6 +429,14 @@ export default class CPU {
         }
         case Opcodes.TYA: {
           this.TransferRegister("Y", "A");
+          break;
+        }
+        case Opcodes.TSX: {
+          this.TransferRegister("SP", "X");
+          break;
+        }
+        case Opcodes.TXS: {
+          this.TransferRegister("X", "SP");
           break;
         }
 
