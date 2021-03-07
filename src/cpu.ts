@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
-import Flags from "./flags";
+import Flags, { FlagMask } from "./flags";
 import Memory from "./memory";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
@@ -270,6 +270,14 @@ export default class CPU {
     }
   }
 
+  private LogicalAnd(memory: Memory, addressMode: AddressModes): void {
+    const valueToTest = this.ReadDataFromMemory(memory, addressMode);
+    const result = valueToTest & this.Registers.A;
+
+    this.Flags.Z = (result & FlagMask.Z) > 0;
+    this.Flags.N = (result & FlagMask.N) > 0;
+  }
+
   /**
    * Executes a given number of cycles reading from the supplied memory
    * @param cyclesToExecute The number of cycles to execute
@@ -437,6 +445,11 @@ export default class CPU {
         }
         case Opcodes.TXS: {
           this.TransferRegister("X", "SP");
+          break;
+        }
+
+        case Opcodes.AND_Immediate: {
+          this.LogicalAnd(memory, AddressModes.Immediate);
           break;
         }
 

@@ -48,6 +48,15 @@ enum Opcodes {
   TYA = 0x98,
   TSX = 0xba,
   TXS = 0x9a,
+
+  AND_Immediate = 0x29,
+  AND_Zeropage = 0x25,
+  AND_ZeropageX = 0x35,
+  AND_Absolute = 0x2d,
+  AND_AbsoluteX = 0x3d,
+  AND_AbsoluteY = 0x39,
+  AND_IndirectX = 0x21,
+  AND_IndirectY = 0x31,
 }
 
 export default Opcodes;
