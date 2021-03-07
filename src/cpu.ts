@@ -23,11 +23,6 @@ export default class CPU {
   public PC: number;
 
   /**
-   * The stack pointer.
-   */
-  public SP: number;
-
-  /**
    * The registers.
    */
   public Registers = new Registers();
@@ -43,7 +38,7 @@ export default class CPU {
    */
   public Initialize(memory: Memory): void {
     this.PC = memory.readWord(this.RESET_VECTOR);
-    this.SP = 0x0000;
+    this.Registers.SP = 0x0000;
   }
 
   /**
@@ -216,6 +211,22 @@ export default class CPU {
     }
     memory.writeByte(dataAddress, this.Registers[register]);
     this.consumedCycles++;
+  }
+
+  /**
+   * Transfers data from one register to another, setting the zero and negative
+   * flags based on the resulting value in the destination register.
+   * @param sourceRegister The register to read the data from.
+   * @param destinationRegister The register to store the data in.
+   */
+  private TransferRegister(sourceRegister: keyof Registers, destinationRegister: keyof Registers) {
+    this.Registers[destinationRegister] = this.Registers[sourceRegister];
+    this.consumedCycles++;
+
+    // Flags only get set on transfers to A, X, and Y registers.
+    if (destinationRegister != "SP") {
+      this.SetFlagsOnRegisterLoad(destinationRegister);
+    }
   }
 
   /**
@@ -403,6 +414,32 @@ export default class CPU {
           this.StoreRegister(memory, "A", AddressModes.IndirectY);
           break;
         }
+
+        case Opcodes.TAX: {
+          this.TransferRegister("A", "X");
+          break;
+        }
+        case Opcodes.TAY: {
+          this.TransferRegister("A", "Y");
+          break;
+        }
+        case Opcodes.TXA: {
+          this.TransferRegister("X", "A");
+          break;
+        }
+        case Opcodes.TYA: {
+          this.TransferRegister("Y", "A");
+          break;
+        }
+        case Opcodes.TSX: {
+          this.TransferRegister("SP", "X");
+          break;
+        }
+        case Opcodes.TXS: {
+          this.TransferRegister("X", "SP");
+          break;
+        }
+
         default: {
           throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
         }
