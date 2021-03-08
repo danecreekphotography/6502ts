@@ -470,8 +470,7 @@ export default class CPU {
         case Opcodes.BIT_Zeropage:
         case Opcodes.BIT_Absolute:
         case Opcodes.NOP: {
-          const opcodeFunction = OpcodeFunctions.get(opcode);
-          opcodeFunction.execute(this, memory, opcodeFunction.addressMode);
+          OpcodeFunctions.get(opcode)(this, memory);
           break;
         }
 

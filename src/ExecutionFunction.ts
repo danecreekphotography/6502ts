@@ -8,5 +8,5 @@ import CPU from "./cpu";
 import Memory from "./memory";
 
 export default interface ExecutionFunction {
-  (cpu: CPU, memory: Memory, addressMode: AddressModes): void;
+  (cpu: CPU, memory: Memory): void;
 }

@@ -7,11 +7,7 @@ import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
 import * as logical from "./opcodes/logical";
 import * as system from "./opcodes/system";
-
-interface OpcodeFunction {
-  addressMode: AddressModes;
-  execute: ExecutionFunction;
-}
+import * as transfer from "./opcodes/transfer";
 
 // Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
 export enum Opcodes {
@@ -93,36 +89,43 @@ export enum Opcodes {
   RTI = 0x40,
 }
 
-export const OpcodeFunctions = new Map<number, OpcodeFunction>([
-  [0x29, { addressMode: AddressModes.Immediate, execute: logical.and }],
-  [0x25, { addressMode: AddressModes.ZeroPage, execute: logical.and }],
-  [0x35, { addressMode: AddressModes.ZeroPageX, execute: logical.and }],
-  [0x2d, { addressMode: AddressModes.Absolute, execute: logical.and }],
-  [0x3d, { addressMode: AddressModes.AbsoluteX, execute: logical.and }],
-  [0x39, { addressMode: AddressModes.AbsoluteY, execute: logical.and }],
-  [0x21, { addressMode: AddressModes.IndirectX, execute: logical.and }],
-  [0x31, { addressMode: AddressModes.IndirectY, execute: logical.and }],
+export const OpcodeFunctions = new Map<number, ExecutionFunction>([
+  [0xaa, (cpu, memory) => transfer.TransferRegister(cpu, "A", "X")],
+  [0xa8, (cpu, memory) => transfer.TransferRegister(cpu, "A", "Y")],
+  [0x8a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "A")],
+  [0x98, (cpu, memory) => transfer.TransferRegister(cpu, "Y", "A")],
+  [0xba, (cpu, memory) => transfer.TransferRegister(cpu, "SP", "X")],
+  [0x9a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "SP")],
 
-  [0x49, { addressMode: AddressModes.Immediate, execute: logical.eor }],
-  [0x45, { addressMode: AddressModes.ZeroPage, execute: logical.eor }],
-  [0x55, { addressMode: AddressModes.ZeroPageX, execute: logical.eor }],
-  [0x4d, { addressMode: AddressModes.Absolute, execute: logical.eor }],
-  [0x5d, { addressMode: AddressModes.AbsoluteX, execute: logical.eor }],
-  [0x59, { addressMode: AddressModes.AbsoluteY, execute: logical.eor }],
-  [0x41, { addressMode: AddressModes.IndirectX, execute: logical.eor }],
-  [0x51, { addressMode: AddressModes.IndirectY, execute: logical.eor }],
+  [0x29, (cpu, memory) => logical.and(cpu, memory, AddressModes.Immediate)],
+  [0x25, (cpu, memory) => logical.and(cpu, memory, AddressModes.ZeroPage)],
+  [0x35, (cpu, memory) => logical.and(cpu, memory, AddressModes.ZeroPageX)],
+  [0x2d, (cpu, memory) => logical.and(cpu, memory, AddressModes.Absolute)],
+  [0x3d, (cpu, memory) => logical.and(cpu, memory, AddressModes.AbsoluteX)],
+  [0x39, (cpu, memory) => logical.and(cpu, memory, AddressModes.AbsoluteY)],
+  [0x21, (cpu, memory) => logical.and(cpu, memory, AddressModes.IndirectX)],
+  [0x31, (cpu, memory) => logical.and(cpu, memory, AddressModes.IndirectY)],
 
-  [0x09, { addressMode: AddressModes.Immediate, execute: logical.ora }],
-  [0x05, { addressMode: AddressModes.ZeroPage, execute: logical.ora }],
-  [0x15, { addressMode: AddressModes.ZeroPageX, execute: logical.ora }],
-  [0x0d, { addressMode: AddressModes.Absolute, execute: logical.ora }],
-  [0x1d, { addressMode: AddressModes.AbsoluteX, execute: logical.ora }],
-  [0x19, { addressMode: AddressModes.AbsoluteY, execute: logical.ora }],
-  [0x01, { addressMode: AddressModes.IndirectX, execute: logical.ora }],
-  [0x11, { addressMode: AddressModes.IndirectY, execute: logical.ora }],
+  [0x49, (cpu, memory) => logical.eor(cpu, memory, AddressModes.Immediate)],
+  [0x45, (cpu, memory) => logical.eor(cpu, memory, AddressModes.ZeroPage)],
+  [0x55, (cpu, memory) => logical.eor(cpu, memory, AddressModes.ZeroPageX)],
+  [0x4d, (cpu, memory) => logical.eor(cpu, memory, AddressModes.Absolute)],
+  [0x5d, (cpu, memory) => logical.eor(cpu, memory, AddressModes.AbsoluteX)],
+  [0x59, (cpu, memory) => logical.eor(cpu, memory, AddressModes.AbsoluteY)],
+  [0x41, (cpu, memory) => logical.eor(cpu, memory, AddressModes.IndirectX)],
+  [0x51, (cpu, memory) => logical.eor(cpu, memory, AddressModes.IndirectY)],
 
-  [0x24, { addressMode: AddressModes.ZeroPage, execute: logical.bit }],
-  [0x2c, { addressMode: AddressModes.Absolute, execute: logical.bit }],
+  [0x09, (cpu, memory) => logical.ora(cpu, memory, AddressModes.Immediate)],
+  [0x05, (cpu, memory) => logical.ora(cpu, memory, AddressModes.ZeroPage)],
+  [0x15, (cpu, memory) => logical.ora(cpu, memory, AddressModes.ZeroPageX)],
+  [0x0d, (cpu, memory) => logical.ora(cpu, memory, AddressModes.Absolute)],
+  [0x1d, (cpu, memory) => logical.ora(cpu, memory, AddressModes.AbsoluteX)],
+  [0x19, (cpu, memory) => logical.ora(cpu, memory, AddressModes.AbsoluteY)],
+  [0x01, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectX)],
+  [0x11, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectY)],
 
-  [0xea, { addressMode: AddressModes.Implied, execute: system.nop }],
+  [0x24, (cpu, memory) => logical.bit(cpu, memory, AddressModes.ZeroPage)],
+  [0x2c, (cpu, memory) => logical.bit(cpu, memory, AddressModes.Absolute)],
+
+  [0xea, (cpu, memory) => system.nop(cpu, memory, AddressModes.Implied)],
 ]);
