@@ -6,7 +6,7 @@
 import AddressModes from "./addressModes";
 import Flags, { FlagMask } from "./flags";
 import Memory from "./memory";
-import { Opcodes, OpcodeFunctions } from "./opcodes";
+import OpcodeFunctions from "./opcodes";
 import Registers from "./registers";
 
 export default class CPU {
@@ -199,79 +199,10 @@ export default class CPU {
       const opcode = memory.readByte(this.PC++);
       this.consumedCycles++;
 
-      switch (opcode) {
-        case Opcodes.JMP_Absolute:
-        case Opcodes.JPM_Indirect:
-        case Opcodes.LDA_Immediate:
-        case Opcodes.LDX_Immediate:
-        case Opcodes.LDY_Immediate:
-        case Opcodes.LDA_Zero_Page:
-        case Opcodes.LDX_Zero_Page:
-        case Opcodes.LDY_Zero_Page:
-        case Opcodes.LDA_Zero_PageX:
-        case Opcodes.LDX_Zero_PageY:
-        case Opcodes.LDY_Zero_PageX:
-        case Opcodes.LDA_Absolute:
-        case Opcodes.LDX_Absolute:
-        case Opcodes.LDY_Absolute:
-        case Opcodes.LDA_AbsoluteX:
-        case Opcodes.LDX_AbsoluteY:
-        case Opcodes.LDY_AbsoluteX:
-        case Opcodes.LDA_IndirectX:
-        case Opcodes.LDA_IndirectY:
-        case Opcodes.STA_Zero_Page:
-        case Opcodes.STX_Zero_Page:
-        case Opcodes.STY_Zero_Page:
-        case Opcodes.STA_Zero_PageX:
-        case Opcodes.STX_Zero_PageY:
-        case Opcodes.STY_Zero_PageX:
-        case Opcodes.STA_Absolute:
-        case Opcodes.STX_Absolute:
-        case Opcodes.STY_Absolute:
-        case Opcodes.STA_AbsoluteX:
-        case Opcodes.STA_AbsoluteY:
-        case Opcodes.STA_IndirectX:
-        case Opcodes.STA_IndirectY:
-        case Opcodes.TAX:
-        case Opcodes.TAY:
-        case Opcodes.TXA:
-        case Opcodes.TYA:
-        case Opcodes.TSX:
-        case Opcodes.TXS:
-        case Opcodes.AND_Immediate:
-        case Opcodes.AND_Zeropage:
-        case Opcodes.AND_ZeropageX:
-        case Opcodes.AND_Absolute:
-        case Opcodes.AND_AbsoluteX:
-        case Opcodes.AND_AbsoluteY:
-        case Opcodes.AND_IndirectX:
-        case Opcodes.AND_IndirectY:
-        case Opcodes.EOR_Immediate:
-        case Opcodes.EOR_Zeropage:
-        case Opcodes.EOR_ZeropageX:
-        case Opcodes.EOR_Absolute:
-        case Opcodes.EOR_AbsoluteX:
-        case Opcodes.EOR_AbsoluteY:
-        case Opcodes.EOR_IndirectX:
-        case Opcodes.EOR_IndirectY:
-        case Opcodes.ORA_Immediate:
-        case Opcodes.ORA_Zeropage:
-        case Opcodes.ORA_ZeropageX:
-        case Opcodes.ORA_Absolute:
-        case Opcodes.ORA_AbsoluteX:
-        case Opcodes.ORA_AbsoluteY:
-        case Opcodes.ORA_IndirectX:
-        case Opcodes.ORA_IndirectY:
-        case Opcodes.BIT_Zeropage:
-        case Opcodes.BIT_Absolute:
-        case Opcodes.NOP: {
-          OpcodeFunctions.get(opcode)(this, memory);
-          break;
-        }
-
-        default: {
-          throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
-        }
+      if (OpcodeFunctions.has(opcode)) {
+        OpcodeFunctions.get(opcode)(this, memory);
+      } else {
+        throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
       }
     }
 
