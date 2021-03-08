@@ -185,47 +185,6 @@ export default class CPU {
   }
 
   /**
-   * Updates the program counter to point to a different location in memory
-   * @param memory The memory containing the location
-   * @param addressMode The address mode to use when reading the location
-   */
-  private Jump(memory: Memory, addressMode: AddressModes): void {
-    switch (addressMode) {
-      case AddressModes.Absolute: {
-        this.PC = memory.readWord(this.PC);
-        this.consumedCycles += 2;
-        break;
-      }
-      case AddressModes.Indirect: {
-        // This gives us a two byte address in memory to read from.
-        // We need to read two bytes of data from that address, but without wrapping across a page boundary.
-        const indirectAddress = memory.readWord(this.PC);
-        this.consumedCycles += 2;
-
-        // Read the low byte data first since that's easy.
-        const lowByteData = memory.readByte(indirectAddress);
-        this.consumedCycles++;
-
-        // The high byte comes from indirectAddress + 1, but does not
-        // cross over a page boundary. Do some funky checks to ensure that's what happens
-        let highByteDataAddress = 0;
-        if ((indirectAddress & 0xff) == 0xff) {
-          highByteDataAddress = indirectAddress & 0xff00;
-        } else {
-          highByteDataAddress = indirectAddress + 1;
-        }
-        const highByteData = memory.readByte(highByteDataAddress);
-        this.consumedCycles++;
-
-        // Set the program counter to the indirect address
-        this.PC = (highByteData << 8) | lowByteData;
-        this.consumedCycles++;
-        break;
-      }
-    }
-  }
-
-  /**
    * Executes a given number of cycles reading from the supplied memory
    * @param cyclesToExecute The number of cycles to execute
    * @param memory The memory to reference during execution
@@ -241,15 +200,8 @@ export default class CPU {
       this.consumedCycles++;
 
       switch (opcode) {
-        case Opcodes.JMP_Absolute: {
-          this.Jump(memory, AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.JPM_Indirect: {
-          this.Jump(memory, AddressModes.Indirect);
-          break;
-        }
-
+        case Opcodes.JMP_Absolute:
+        case Opcodes.JPM_Indirect:
         case Opcodes.LDA_Immediate:
         case Opcodes.LDX_Immediate:
         case Opcodes.LDY_Immediate:

@@ -5,6 +5,7 @@
 
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
+import * as jump from "./opcodes/jump";
 import * as load from "./opcodes/load";
 import * as logical from "./opcodes/logical";
 import * as store from "./opcodes/store";
@@ -174,6 +175,10 @@ export const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x19, (cpu, memory) => logical.ora(cpu, memory, AddressModes.AbsoluteY)],
   [0x01, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectX)],
   [0x11, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectY)],
+
+  // JMP
+  [0x4c, (cpu, memory) => jump.jmp(cpu, memory, AddressModes.Absolute)],
+  [0x6c, (cpu, memory) => jump.jmp(cpu, memory, AddressModes.Indirect)],
 
   // BIT
   [0x24, (cpu, memory) => logical.bit(cpu, memory, AddressModes.ZeroPage)],
