@@ -3,18 +3,10 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-enum AddressModes {
-  Implied,
-  Immediate,
-  ZeroPage,
-  ZeroPageX,
-  ZeroPageY,
-  Absolute,
-  AbsoluteX,
-  AbsoluteY,
-  Indirect,
-  IndirectX,
-  IndirectY,
-}
+import AddressModes from "./addressModes";
+import CPU from "./cpu";
+import Memory from "./memory";
 
-export default AddressModes;
+export default interface ExecutionFunction {
+  (cpu: CPU, memory: Memory): void;
+}

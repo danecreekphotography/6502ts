@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
 import * as helpers from "./helpers";
 
 test("Verify read byte address bounds", () => {
@@ -85,11 +84,11 @@ test("Verify clear", () => {
 
 test("0001: Verify load file", () => {
   const CODEADDRESS = 0x0200;
-  const RESETVECTOR = 0xFFFA + 0x02;
+  const RESETVECTOR = 0xfffa + 0x02;
 
   const memory = helpers.createMemoryFromTestRom("0001");
 
   expect(memory.readWord(RESETVECTOR)).toBe(CODEADDRESS);
-  expect(memory.readByte(CODEADDRESS)).toBe(Opcodes.LDA_Immediate);
+  expect(memory.readByte(CODEADDRESS)).toBe(0xa9); // LDA Indirect
   expect(memory.readWord(CODEADDRESS + 1)).toBe(0x42);
-})
+});

@@ -6,7 +6,6 @@
 import AddressModes from "../src/addressModes";
 import CPU from "../src/cpu";
 import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
 
 const CODE_LOCATION = 0x6000;
 
@@ -55,7 +54,7 @@ test("Verify CPU initialization", () => {
 
 test("Verify CPU reset vector", () => {
   // Write a basic command at the reset vector code location and ensure it executes correctly.
-  memory.writeByte(CODE_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(CODE_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(CODE_LOCATION + 1, 0x42);
 
   expect(cpu.Execute(2, memory)).toBe(2);
@@ -63,7 +62,7 @@ test("Verify CPU reset vector", () => {
 });
 
 test("Verify reading an invalid opcode", () => {
-  memory.writeByte(CODE_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(CODE_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(CODE_LOCATION + 1, 0x42);
 
   expect(() => {

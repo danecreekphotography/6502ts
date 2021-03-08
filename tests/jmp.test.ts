@@ -5,7 +5,6 @@
 
 import CPU from "../src/cpu";
 import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
 
 const CODE_LOCATION = 0x6000;
 
@@ -23,9 +22,9 @@ beforeEach(() => {
 
 test("Verify JMP absolute", () => {
   const JMP_LOCATION = 0x7000;
-  memory.writeByte(CODE_LOCATION, Opcodes.JMP_Absolute);
+  memory.writeByte(CODE_LOCATION, 0x4c); // JMP Absolute
   memory.writeWord(CODE_LOCATION + 1, JMP_LOCATION);
-  memory.writeByte(JMP_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(JMP_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(JMP_LOCATION + 1, 0x42);
 
   expect(cpu.Execute(5, memory)).toBe(5);
@@ -38,14 +37,14 @@ test("Verify JMP indirect", () => {
   const INDIRECT_ADDRESS_LOCATION = 0x7050; // The actual address to jump to
 
   // Store the jump instruction and jump location
-  memory.writeByte(CODE_LOCATION, Opcodes.JPM_Indirect);
+  memory.writeByte(CODE_LOCATION, 0x6c); // JMP Indirect
   memory.writeWord(CODE_LOCATION + 1, JMP_LOCATION);
 
   // Store the address to jump to
   memory.writeWord(JMP_LOCATION, INDIRECT_ADDRESS_LOCATION);
 
   // Store something to execute at the code location
-  memory.writeByte(INDIRECT_ADDRESS_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(INDIRECT_ADDRESS_LOCATION + 1, 0x42);
 
   // Six cycles for the JMP indirect, 2 for the LDA immediate
@@ -60,7 +59,7 @@ test("Verify JMP indirect across page boundary", () => {
   const INDIRECT_ADDRESS_LOCATION = 0x4080; // The actual address to jump to
 
   // Store the jump instruction and jump location
-  memory.writeByte(CODE_LOCATION, Opcodes.JPM_Indirect);
+  memory.writeByte(CODE_LOCATION, 0x6c); // JMP Indirect
   memory.writeWord(CODE_LOCATION + 1, JMP_LOCATION);
 
   // Store the address to jump to.
@@ -68,7 +67,7 @@ test("Verify JMP indirect across page boundary", () => {
   memory.writeByte(0x30ff, 0x80); // This should be the low byte
 
   // Store something to execute at the code location
-  memory.writeByte(INDIRECT_ADDRESS_LOCATION, Opcodes.LDA_Immediate);
+  memory.writeByte(INDIRECT_ADDRESS_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(INDIRECT_ADDRESS_LOCATION + 1, 0x42);
 
   // Six cycles for the JMP indirect, 2 for the LDA immediate
