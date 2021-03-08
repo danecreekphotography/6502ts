@@ -271,11 +271,8 @@ export default class CPU {
   }
 
   private LogicalAnd(memory: Memory, addressMode: AddressModes): void {
-    const valueToTest = this.ReadDataFromMemory(memory, addressMode);
-    const result = valueToTest & this.Registers.A;
-
-    this.Flags.Z = (result & FlagMask.Z) > 0;
-    this.Flags.N = (result & FlagMask.N) > 0;
+    this.Registers.A &= this.ReadDataFromMemory(memory, addressMode);
+    this.SetFlagsOnRegisterLoad("A");
   }
 
   /**
