@@ -78,6 +78,10 @@ enum Opcodes {
 
   BIT_Zeropage = 0x24,
   BIT_Absolute = 0x2c,
+
+  BRK = 0x00,
+  NOP = 0xea,
+  RTI = 0x40,
 }
 
 export default Opcodes;
