@@ -8,5 +8,5 @@
 .code
 
 init:
-    and #%10000000   ; Test zero
     and #%10000000   ; Test negative
+    and #%10000000   ; Test zero

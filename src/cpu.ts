@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
-import Flags, { FlagMask } from "./flags";
+import Flags from "./flags";
 import Memory from "./memory";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
@@ -447,6 +447,34 @@ export default class CPU {
 
         case Opcodes.AND_Immediate: {
           this.LogicalAnd(memory, AddressModes.Immediate);
+          break;
+        }
+        case Opcodes.AND_Zeropage: {
+          this.LogicalAnd(memory, AddressModes.ZeroPage);
+          break;
+        }
+        case Opcodes.AND_ZeropageX: {
+          this.LogicalAnd(memory, AddressModes.ZeroPageX);
+          break;
+        }
+        case Opcodes.AND_Absolute: {
+          this.LogicalAnd(memory, AddressModes.Absolute);
+          break;
+        }
+        case Opcodes.AND_AbsoluteX: {
+          this.LogicalAnd(memory, AddressModes.AbsoluteX);
+          break;
+        }
+        case Opcodes.AND_AbsoluteY: {
+          this.LogicalAnd(memory, AddressModes.AbsoluteY);
+          break;
+        }
+        case Opcodes.AND_IndirectX: {
+          this.LogicalAnd(memory, AddressModes.IndirectX);
+          break;
+        }
+        case Opcodes.AND_IndirectY: {
+          this.LogicalAnd(memory, AddressModes.IndirectY);
           break;
         }
 
