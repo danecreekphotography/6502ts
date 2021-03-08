@@ -48,6 +48,36 @@ enum Opcodes {
   TYA = 0x98,
   TSX = 0xba,
   TXS = 0x9a,
+
+  AND_Immediate = 0x29,
+  AND_Zeropage = 0x25,
+  AND_ZeropageX = 0x35,
+  AND_Absolute = 0x2d,
+  AND_AbsoluteX = 0x3d,
+  AND_AbsoluteY = 0x39,
+  AND_IndirectX = 0x21,
+  AND_IndirectY = 0x31,
+
+  EOR_Immediate = 0x49,
+  EOR_Zeropage = 0x45,
+  EOR_ZeropageX = 0x55,
+  EOR_Absolute = 0x4d,
+  EOR_AbsoluteX = 0x5d,
+  EOR_AbsoluteY = 0x59,
+  EOR_IndirectX = 0x41,
+  EOR_IndirectY = 0x51,
+
+  ORA_Immediate = 0x09,
+  ORA_Zeropage = 0x05,
+  ORA_ZeropageX = 0x15,
+  ORA_Absolute = 0x0d,
+  ORA_AbsoluteX = 0x1d,
+  ORA_AbsoluteY = 0x19,
+  ORA_IndirectX = 0x01,
+  ORA_IndirectY = 0x11,
+
+  BIT_Zeropage = 0x24,
+  BIT_Absolute = 0x2c,
 }
 
 export default Opcodes;
