@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
-import Flags from "./flags";
+import Flags, { FlagMask } from "./flags";
 import Memory from "./memory";
 import Opcodes from "./opcodes";
 import Registers from "./registers";
@@ -291,6 +291,19 @@ export default class CPU {
   }
 
   /**
+   * Executes the BIT operand, reading the value to compare using the specified address mode.
+   * @param memory The memory to reference during execution
+   * @param addressMode The addressing mode to use when reading from memory
+   */
+  private LogicalBit(memory: Memory, addressMode: AddressModes): void {
+    const data = this.ReadDataFromMemory(memory, addressMode);
+
+    this.Flags.N = (data & FlagMask.N) > 0;
+    this.Flags.V = (data & FlagMask.V) > 0;
+    this.Flags.Z = (data & this.Registers.A) === 0;
+  }
+
+  /**
    * Executes the ORA operand, reading the value to compare using the specified address mode.
    * @param memory The memory to reference during execution
    * @param addressMode The addressing mode to use when reading from memory
@@ -566,6 +579,15 @@ export default class CPU {
         }
         case Opcodes.ORA_IndirectY: {
           this.LogicalOra(memory, AddressModes.IndirectY);
+          break;
+        }
+
+        case Opcodes.BIT_Zeropage: {
+          this.LogicalBit(memory, AddressModes.ZeroPage);
+          break;
+        }
+        case Opcodes.BIT_Absolute: {
+          this.LogicalBit(memory, AddressModes.Absolute);
           break;
         }
 

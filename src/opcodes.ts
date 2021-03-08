@@ -75,6 +75,9 @@ enum Opcodes {
   ORA_AbsoluteY = 0x19,
   ORA_IndirectX = 0x01,
   ORA_IndirectY = 0x11,
+
+  BIT_Zeropage = 0x24,
+  BIT_Absolute = 0x2c,
 }
 
 export default Opcodes;
