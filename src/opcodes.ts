@@ -5,8 +5,8 @@
 
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
-import { bit } from "./opcodes/logical";
-import { nop } from "./opcodes/system";
+import * as logical from "./opcodes/logical";
+import * as system from "./opcodes/system";
 
 interface OpcodeFunction {
   addressMode: AddressModes;
@@ -94,7 +94,35 @@ export enum Opcodes {
 }
 
 export const OpcodeFunctions = new Map<number, OpcodeFunction>([
-  [0x24, { addressMode: AddressModes.ZeroPage, execute: bit }], // BIT Zeropage
-  [0x2c, { addressMode: AddressModes.Absolute, execute: bit }], // BIT Absolute
-  [0xea, { addressMode: AddressModes.Implied, execute: nop }], // NOP implied
+  [0x29, { addressMode: AddressModes.Immediate, execute: logical.and }],
+  [0x25, { addressMode: AddressModes.ZeroPage, execute: logical.and }],
+  [0x35, { addressMode: AddressModes.ZeroPageX, execute: logical.and }],
+  [0x2d, { addressMode: AddressModes.Absolute, execute: logical.and }],
+  [0x3d, { addressMode: AddressModes.AbsoluteX, execute: logical.and }],
+  [0x39, { addressMode: AddressModes.AbsoluteY, execute: logical.and }],
+  [0x21, { addressMode: AddressModes.IndirectX, execute: logical.and }],
+  [0x31, { addressMode: AddressModes.IndirectY, execute: logical.and }],
+
+  [0x49, { addressMode: AddressModes.Immediate, execute: logical.eor }],
+  [0x45, { addressMode: AddressModes.ZeroPage, execute: logical.eor }],
+  [0x55, { addressMode: AddressModes.ZeroPageX, execute: logical.eor }],
+  [0x4d, { addressMode: AddressModes.Absolute, execute: logical.eor }],
+  [0x5d, { addressMode: AddressModes.AbsoluteX, execute: logical.eor }],
+  [0x59, { addressMode: AddressModes.AbsoluteY, execute: logical.eor }],
+  [0x41, { addressMode: AddressModes.IndirectX, execute: logical.eor }],
+  [0x51, { addressMode: AddressModes.IndirectY, execute: logical.eor }],
+
+  [0x09, { addressMode: AddressModes.Immediate, execute: logical.ora }],
+  [0x05, { addressMode: AddressModes.ZeroPage, execute: logical.ora }],
+  [0x15, { addressMode: AddressModes.ZeroPageX, execute: logical.ora }],
+  [0x0d, { addressMode: AddressModes.Absolute, execute: logical.ora }],
+  [0x1d, { addressMode: AddressModes.AbsoluteX, execute: logical.ora }],
+  [0x19, { addressMode: AddressModes.AbsoluteY, execute: logical.ora }],
+  [0x01, { addressMode: AddressModes.IndirectX, execute: logical.ora }],
+  [0x11, { addressMode: AddressModes.IndirectY, execute: logical.ora }],
+
+  [0x24, { addressMode: AddressModes.ZeroPage, execute: logical.bit }],
+  [0x2c, { addressMode: AddressModes.Absolute, execute: logical.bit }],
+
+  [0xea, { addressMode: AddressModes.Implied, execute: system.nop }],
 ]);

@@ -187,7 +187,7 @@ export default class CPU {
    * Sets the Z and N flag based on the value stored in a register.
    * @param register The register to reference (A, X or Y).
    */
-  private SetFlagsOnRegisterLoad(register: keyof Registers): void {
+  public SetFlagsOnRegisterLoad(register: keyof Registers): void {
     // Zero flag is set if the register value is zero.
     this.Flags.Z = this.Registers[register] == 0;
 
@@ -271,36 +271,6 @@ export default class CPU {
         break;
       }
     }
-  }
-
-  /**
-   * Executes the AND operand, reading the value to compare using the specified address mode.
-   * @param memory The memory to reference during execution
-   * @param addressMode The addressing mode to use when reading from memory
-   */
-  private LogicalAnd(memory: Memory, addressMode: AddressModes): void {
-    this.Registers.A &= this.ReadDataFromMemory(memory, addressMode);
-    this.SetFlagsOnRegisterLoad("A");
-  }
-
-  /**
-   * Executes the EOR operand, reading the value to compare using the specified address mode.
-   * @param memory The memory to reference during execution
-   * @param addressMode The addressing mode to use when reading from memory
-   */
-  private LogicalEor(memory: Memory, addressMode: AddressModes): void {
-    this.Registers.A ^= this.ReadDataFromMemory(memory, addressMode);
-    this.SetFlagsOnRegisterLoad("A");
-  }
-
-  /**
-   * Executes the ORA operand, reading the value to compare using the specified address mode.
-   * @param memory The memory to reference during execution
-   * @param addressMode The addressing mode to use when reading from memory
-   */
-  private LogicalOra(memory: Memory, addressMode: AddressModes): void {
-    this.Registers.A |= this.ReadDataFromMemory(memory, addressMode);
-    this.SetFlagsOnRegisterLoad("A");
   }
 
   /**
@@ -473,105 +443,30 @@ export default class CPU {
           break;
         }
 
-        case Opcodes.AND_Immediate: {
-          this.LogicalAnd(memory, AddressModes.Immediate);
-          break;
-        }
-        case Opcodes.AND_Zeropage: {
-          this.LogicalAnd(memory, AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.AND_ZeropageX: {
-          this.LogicalAnd(memory, AddressModes.ZeroPageX);
-          break;
-        }
-        case Opcodes.AND_Absolute: {
-          this.LogicalAnd(memory, AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.AND_AbsoluteX: {
-          this.LogicalAnd(memory, AddressModes.AbsoluteX);
-          break;
-        }
-        case Opcodes.AND_AbsoluteY: {
-          this.LogicalAnd(memory, AddressModes.AbsoluteY);
-          break;
-        }
-        case Opcodes.AND_IndirectX: {
-          this.LogicalAnd(memory, AddressModes.IndirectX);
-          break;
-        }
-        case Opcodes.AND_IndirectY: {
-          this.LogicalAnd(memory, AddressModes.IndirectY);
-          break;
-        }
-
-        case Opcodes.EOR_Immediate: {
-          this.LogicalEor(memory, AddressModes.Immediate);
-          break;
-        }
-        case Opcodes.EOR_Zeropage: {
-          this.LogicalEor(memory, AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.EOR_ZeropageX: {
-          this.LogicalEor(memory, AddressModes.ZeroPageX);
-          break;
-        }
-        case Opcodes.EOR_Absolute: {
-          this.LogicalEor(memory, AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.EOR_AbsoluteX: {
-          this.LogicalEor(memory, AddressModes.AbsoluteX);
-          break;
-        }
-        case Opcodes.EOR_AbsoluteY: {
-          this.LogicalEor(memory, AddressModes.AbsoluteY);
-          break;
-        }
-        case Opcodes.EOR_IndirectX: {
-          this.LogicalEor(memory, AddressModes.IndirectX);
-          break;
-        }
-        case Opcodes.EOR_IndirectY: {
-          this.LogicalEor(memory, AddressModes.IndirectY);
-          break;
-        }
-
-        case Opcodes.ORA_Immediate: {
-          this.LogicalOra(memory, AddressModes.Immediate);
-          break;
-        }
-        case Opcodes.ORA_Zeropage: {
-          this.LogicalOra(memory, AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.ORA_ZeropageX: {
-          this.LogicalOra(memory, AddressModes.ZeroPageX);
-          break;
-        }
-        case Opcodes.ORA_Absolute: {
-          this.LogicalOra(memory, AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.ORA_AbsoluteX: {
-          this.LogicalOra(memory, AddressModes.AbsoluteX);
-          break;
-        }
-        case Opcodes.ORA_AbsoluteY: {
-          this.LogicalOra(memory, AddressModes.AbsoluteY);
-          break;
-        }
-        case Opcodes.ORA_IndirectX: {
-          this.LogicalOra(memory, AddressModes.IndirectX);
-          break;
-        }
-        case Opcodes.ORA_IndirectY: {
-          this.LogicalOra(memory, AddressModes.IndirectY);
-          break;
-        }
-
+        case Opcodes.AND_Immediate:
+        case Opcodes.AND_Zeropage:
+        case Opcodes.AND_ZeropageX:
+        case Opcodes.AND_Absolute:
+        case Opcodes.AND_AbsoluteX:
+        case Opcodes.AND_AbsoluteY:
+        case Opcodes.AND_IndirectX:
+        case Opcodes.AND_IndirectY:
+        case Opcodes.EOR_Immediate:
+        case Opcodes.EOR_Zeropage:
+        case Opcodes.EOR_ZeropageX:
+        case Opcodes.EOR_Absolute:
+        case Opcodes.EOR_AbsoluteX:
+        case Opcodes.EOR_AbsoluteY:
+        case Opcodes.EOR_IndirectX:
+        case Opcodes.EOR_IndirectY:
+        case Opcodes.ORA_Immediate:
+        case Opcodes.ORA_Zeropage:
+        case Opcodes.ORA_ZeropageX:
+        case Opcodes.ORA_Absolute:
+        case Opcodes.ORA_AbsoluteX:
+        case Opcodes.ORA_AbsoluteY:
+        case Opcodes.ORA_IndirectX:
+        case Opcodes.ORA_IndirectY:
         case Opcodes.BIT_Zeropage:
         case Opcodes.BIT_Absolute:
         case Opcodes.NOP: {
