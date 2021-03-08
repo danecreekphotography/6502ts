@@ -86,3 +86,15 @@ test("0305 - AND absolute plus Y", () => {
   cpu.Registers.Y = 0x01;
   verifyZeroAndNegative(3, 4);
 });
+
+test("0306 - AND indirect plus X", () => {
+  initialize("0306");
+  cpu.Registers.X = 0x01;
+  verifyZeroAndNegative(2, 6);
+});
+
+test("0307 - AND indirect plus Y", () => {
+  initialize("0307");
+  cpu.Registers.Y = 0x01;
+  verifyZeroAndNegative(2, 5);
+});

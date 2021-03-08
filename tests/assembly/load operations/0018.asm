@@ -14,9 +14,6 @@
 
 data:
 
-; Pad the first three positions with empty space so the X register can have
-; a three in it for the test case.
-
 .byte $42
 .byte $00
 .byte %10010101

@@ -17,7 +17,7 @@
                 "$ld65-unresolved"
             ],
             "presentation": {
-                "reveal": "always"
+                "reveal": "silent"
             },
             "group": "build"
         },
