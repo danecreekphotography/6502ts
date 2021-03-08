@@ -91,20 +91,26 @@ export enum Opcodes {
 }
 
 export const OpcodeFunctions = new Map<number, ExecutionFunction>([
-  [0x85, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.ZeroPage)],
-  [0x86, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.ZeroPage)],
-  [0x84, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.ZeroPage)],
-  [0x95, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.ZeroPageX)],
-  [0x94, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.ZeroPageX)],
-  [0x96, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.ZeroPageY)],
-  [0x8d, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.Absolute)],
-  [0x8e, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.Absolute)],
-  [0x8c, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.Absolute)],
-  [0x9d, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.AbsoluteX)],
-  [0x99, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.AbsoluteY)],
-  [0x81, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.IndirectX)],
-  [0x91, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.IndirectY)],
+  // STA
+  [0x85, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPage, "A")],
+  [0x95, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPageX, "A")],
+  [0x8d, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.Absolute, "A")],
+  [0x9d, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.AbsoluteX, "A")],
+  [0x99, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.AbsoluteY, "A")],
+  [0x81, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.IndirectX, "A")],
+  [0x91, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.IndirectY, "A")],
 
+  // STX
+  [0x86, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPage, "X")],
+  [0x96, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPageY, "X")],
+  [0x8e, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.Absolute, "X")],
+
+  // STY
+  [0x84, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPage, "Y")],
+  [0x94, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPageX, "Y")],
+  [0x8c, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.Absolute, "Y")],
+
+  // TAX, TAY, TXA, TYA, TSX, TXS
   [0xaa, (cpu, memory) => transfer.TransferRegister(cpu, "A", "X")],
   [0xa8, (cpu, memory) => transfer.TransferRegister(cpu, "A", "Y")],
   [0x8a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "A")],
@@ -112,6 +118,7 @@ export const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0xba, (cpu, memory) => transfer.TransferRegister(cpu, "SP", "X")],
   [0x9a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "SP")],
 
+  // AND
   [0x29, (cpu, memory) => logical.and(cpu, memory, AddressModes.Immediate)],
   [0x25, (cpu, memory) => logical.and(cpu, memory, AddressModes.ZeroPage)],
   [0x35, (cpu, memory) => logical.and(cpu, memory, AddressModes.ZeroPageX)],
@@ -121,6 +128,7 @@ export const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x21, (cpu, memory) => logical.and(cpu, memory, AddressModes.IndirectX)],
   [0x31, (cpu, memory) => logical.and(cpu, memory, AddressModes.IndirectY)],
 
+  // EOR
   [0x49, (cpu, memory) => logical.eor(cpu, memory, AddressModes.Immediate)],
   [0x45, (cpu, memory) => logical.eor(cpu, memory, AddressModes.ZeroPage)],
   [0x55, (cpu, memory) => logical.eor(cpu, memory, AddressModes.ZeroPageX)],
@@ -130,6 +138,7 @@ export const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x41, (cpu, memory) => logical.eor(cpu, memory, AddressModes.IndirectX)],
   [0x51, (cpu, memory) => logical.eor(cpu, memory, AddressModes.IndirectY)],
 
+  // ORA
   [0x09, (cpu, memory) => logical.ora(cpu, memory, AddressModes.Immediate)],
   [0x05, (cpu, memory) => logical.ora(cpu, memory, AddressModes.ZeroPage)],
   [0x15, (cpu, memory) => logical.ora(cpu, memory, AddressModes.ZeroPageX)],
@@ -139,8 +148,10 @@ export const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x01, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectX)],
   [0x11, (cpu, memory) => logical.ora(cpu, memory, AddressModes.IndirectY)],
 
+  // BIT
   [0x24, (cpu, memory) => logical.bit(cpu, memory, AddressModes.ZeroPage)],
   [0x2c, (cpu, memory) => logical.bit(cpu, memory, AddressModes.Absolute)],
 
+  // NOP
   [0xea, (cpu, memory) => system.nop(cpu, memory, AddressModes.Implied)],
 ]);

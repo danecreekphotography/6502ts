@@ -14,7 +14,7 @@ import Registers from "../registers";
  * @param register Register to store the data in
  * @param addressMode Address mode to use to find the data
  */
-export function StoreRegister(cpu: CPU, memory: Memory, register: keyof Registers, addressMode: AddressModes) {
+export function StoreRegister(cpu: CPU, memory: Memory, addressMode: AddressModes, register: keyof Registers) {
   const dataAddress = cpu.CalculateAddressFromAddressMode(memory, addressMode, false);
 
   // Storing using any of these indirect modes consumes an additional cycle for some reason
