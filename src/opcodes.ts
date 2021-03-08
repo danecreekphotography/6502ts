@@ -5,6 +5,7 @@
 
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
+import { bit } from "./opcodes/logical";
 import { nop } from "./opcodes/system";
 
 interface OpcodeFunction {
@@ -93,5 +94,7 @@ export enum Opcodes {
 }
 
 export const OpcodeFunctions = new Map<number, OpcodeFunction>([
+  [0x24, { addressMode: AddressModes.ZeroPage, execute: bit }], // BIT Zeropage
+  [0x2c, { addressMode: AddressModes.Absolute, execute: bit }], // BIT Absolute
   [0xea, { addressMode: AddressModes.Implied, execute: nop }], // NOP implied
 ]);

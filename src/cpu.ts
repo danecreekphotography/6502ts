@@ -157,7 +157,7 @@ export default class CPU {
    * @param memory Memory to read from
    * @param addressMode Address mode to use
    */
-  private ReadDataFromMemory(memory: Memory, addressMode: AddressModes): number {
+  public ReadDataFromMemory(memory: Memory, addressMode: AddressModes): number {
     let data = 0x00;
 
     // Read directly from memory at the current program counter location.
@@ -291,19 +291,6 @@ export default class CPU {
   private LogicalEor(memory: Memory, addressMode: AddressModes): void {
     this.Registers.A ^= this.ReadDataFromMemory(memory, addressMode);
     this.SetFlagsOnRegisterLoad("A");
-  }
-
-  /**
-   * Executes the BIT operand, reading the value to compare using the specified address mode.
-   * @param memory The memory to reference during execution
-   * @param addressMode The addressing mode to use when reading from memory
-   */
-  private LogicalBit(memory: Memory, addressMode: AddressModes): void {
-    const data = this.ReadDataFromMemory(memory, addressMode);
-
-    this.Flags.N = (data & FlagMask.N) > 0;
-    this.Flags.V = (data & FlagMask.V) > 0;
-    this.Flags.Z = (data & this.Registers.A) === 0;
   }
 
   /**
@@ -585,15 +572,8 @@ export default class CPU {
           break;
         }
 
-        case Opcodes.BIT_Zeropage: {
-          this.LogicalBit(memory, AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.BIT_Absolute: {
-          this.LogicalBit(memory, AddressModes.Absolute);
-          break;
-        }
-
+        case Opcodes.BIT_Zeropage:
+        case Opcodes.BIT_Absolute:
         case Opcodes.NOP: {
           const opcodeFunction = OpcodeFunctions.get(opcode);
           opcodeFunction.execute(this, memory, opcodeFunction.addressMode);
