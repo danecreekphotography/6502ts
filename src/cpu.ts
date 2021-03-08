@@ -6,11 +6,14 @@
 import AddressModes from "./addressModes";
 import Flags, { FlagMask } from "./flags";
 import Memory from "./memory";
-import Opcodes from "./opcodes";
+import { Opcodes, OpcodeFunctions } from "./opcodes";
 import Registers from "./registers";
 
 export default class CPU {
-  private consumedCycles: number;
+  /**
+   * Number of cycles consumed during operand execution.
+   */
+  public consumedCycles: number;
 
   /**
    * Location in memory where the reset vector is stored.
@@ -592,7 +595,8 @@ export default class CPU {
         }
 
         case Opcodes.NOP: {
-          this.consumedCycles++;
+          const opcodeFunction = OpcodeFunctions.get(opcode);
+          opcodeFunction.execute(this, memory, opcodeFunction.addressMode);
           break;
         }
 

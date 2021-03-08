@@ -6,7 +6,7 @@
 import AddressModes from "../src/addressModes";
 import CPU from "../src/cpu";
 import Memory from "../src/memory";
-import Opcodes from "../src/opcodes";
+import { Opcodes } from "../src/opcodes";
 
 const CODE_LOCATION = 0x6000;
 

@@ -3,9 +3,17 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
+import AddressModes from "./addressModes";
+import ExecutionFunction from "./ExecutionFunction";
+import { nop } from "./opcodes/system";
 
-enum Opcodes {
+interface OpcodeFunction {
+  addressMode: AddressModes;
+  execute: ExecutionFunction;
+}
+
+// Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
+export enum Opcodes {
   LDA_Immediate = 0xa9,
   LDX_Immediate = 0xa2,
   LDY_Immediate = 0xa0,
@@ -84,4 +92,6 @@ enum Opcodes {
   RTI = 0x40,
 }
 
-export default Opcodes;
+export const OpcodeFunctions = new Map<number, OpcodeFunction>([
+  [0xea, { addressMode: AddressModes.Implied, execute: nop }], // NOP implied
+]);
