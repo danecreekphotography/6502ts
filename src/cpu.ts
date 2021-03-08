@@ -194,11 +194,11 @@ export default class CPU {
     this.consumedCycles = 0;
 
     while (this.consumedCycles < cyclesToExecute) {
-      // Grab the opcode from memory, incrementing the program counter
-      // and consuming one cycle.
+      // Grab the opcode from memory, incrementing the program counter and consuming one cycle.
       const opcode = memory.readByte(this.PC++);
       this.consumedCycles++;
 
+      // Look up the function to execute for the opcode and run it.
       if (OpcodeFunctions.has(opcode)) {
         OpcodeFunctions.get(opcode)(this, memory);
       } else {
