@@ -1,16 +1,12 @@
-; 0301 - AND zeropage
+; 0301 - EOR immediate
 .segment "VECTORS"
 
 .word $eaea
 .word init
 .word $eaea
 
-.segment "ZEROPAGE"
-
-.byte %10000000
-
 .code
 
 init:
-    and $00   ; Test negative
-    and $00   ; Test zero
+    eor #%10000000   ; Test negative
+    eor #%10000000   ; Test zero
