@@ -4,289 +4,134 @@
  *--------------------------------------------------------------------------------------------*/
 
 import CPU from "../src/cpu";
+import Memory from "../src/memory";
 import Registers from "../src/registers";
 import { createMemoryFromTestRom } from "./helpers";
 
 const CODE_LOCATION = 0x0200;
 
 const cpu = new CPU();
+let memory: Memory;
+let expectedPCLocation: number;
+
+function initialize(testCaseNumber: string) {
+  memory = createMemoryFromTestRom(testCaseNumber);
+  cpu.Initialize(memory);
+  expectedPCLocation = CODE_LOCATION;
+}
+
+function verifyProgramCounter(operationSize: number) {
+  expectedPCLocation += operationSize;
+  expect(cpu.PC).toBe(expectedPCLocation);
+}
+
+function verifyPositiveNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
+  expect(cpu.Execute(cycles, memory)).toBe(cycles);
+  expect(cpu.Registers[register]).toBe(0x42);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+  verifyProgramCounter(operationSize);
+}
+
+function verifyZeroNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
+  expect(cpu.Execute(cycles, memory)).toBe(cycles);
+  expect(cpu.Registers[register]).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+  verifyProgramCounter(operationSize);
+}
+
+function verifyNegativeNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
+  expect(cpu.Execute(cycles, memory)).toBe(cycles);
+  expect(cpu.Registers[register]).toBe(0b10010101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+  verifyProgramCounter(operationSize);
+}
 
 // Verifies load immediate works for the specified register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-function verifyLoadImmediate(testCaseNumber: string, register: keyof Registers) {
-  const memory = createMemoryFromTestRom(testCaseNumber);
-  cpu.Initialize(memory);
+function verifyLoadImmediate(register: keyof Registers) {
+  const operationSize = 2;
 
-  // Positive non-zero number case
-  expect(cpu.Execute(2, memory)).toBe(2);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
-
-  // Zero number case
-  expect(cpu.Execute(2, memory)).toBe(2);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 4);
-
-  // Negative number case
-  expect(cpu.Execute(2, memory)).toBe(2);
-  expect(cpu.Registers[register]).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 6);
+  verifyPositiveNumber(cpu, operationSize, 2, register);
+  verifyZeroNumber(cpu, operationSize, 2, register);
+  verifyNegativeNumber(cpu, operationSize, 2, register);
 }
 
 // Verifies load zero page works for the specified register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-function verifyLoadZeroPage(testCaseNumber: string, register: keyof Registers) {
-  const memory = createMemoryFromTestRom(testCaseNumber);
-  cpu.Initialize(memory);
+function verifyLoadZeroPage(register: keyof Registers) {
+  const operationSize = 2;
 
-  // Positive non-zero number case
-  expect(cpu.Execute(3, memory)).toBe(3);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-
-  // Zero number case
-  expect(cpu.Execute(3, memory)).toBe(3);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-
-  // Negative number case
-  expect(cpu.Execute(3, memory)).toBe(3);
-  expect(cpu.Registers[register]).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
+  verifyPositiveNumber(cpu, operationSize, 3, register);
+  verifyZeroNumber(cpu, operationSize, 3, register);
+  verifyNegativeNumber(cpu, operationSize, 3, register);
 }
 
 // Verifies load zero page plus an offset from a register works for the specified
 // offset register, register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-function verifyLoadZeroPagePlusRegister(
-  testCaseNumber: string,
-  register: keyof Registers,
-  offsetRegister: keyof Registers,
-) {
-  const memory = createMemoryFromTestRom(testCaseNumber);
-  cpu.Initialize(memory);
+function verifyLoadZeroPagePlusRegister(register: keyof Registers, offsetRegister: keyof Registers) {
+  const operationSize = 2;
+  cpu.Registers[offsetRegister] = 0x01;
 
-  cpu.Registers[offsetRegister] = 0x03;
-
-  // Positive non-zero number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 2);
-
-  // Zero number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 4);
-
-  // Negative number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 6);
+  verifyPositiveNumber(cpu, operationSize, 4, register);
+  verifyZeroNumber(cpu, operationSize, 4, register);
+  verifyNegativeNumber(cpu, operationSize, 4, register);
 }
 
 // Verifies load absolute works for the specified register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-function verifyLoadAbsolute(testCaseNumber: string, register: keyof Registers) {
-  const memory = createMemoryFromTestRom(testCaseNumber);
-  cpu.Initialize(memory);
+function verifyLoadAbsolute(register: keyof Registers) {
+  const operationSize = 3;
 
-  // Positive non-zero number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
-
-  // Zero number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 6);
-
-  // Negative number case
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 9);
+  verifyPositiveNumber(cpu, operationSize, 4, register);
+  verifyZeroNumber(cpu, operationSize, 4, register);
+  verifyNegativeNumber(cpu, operationSize, 4, register);
 }
 
 // Verifies load absolute plus an offset from a register works for the specified
 // offset register, register and value.
 // Additionally tests that zero and negative numbers properly set the
 // accumulator flags.
-function verifyLoadAbsolutePlusRegister(
-  testCaseNumber: string,
-  register: keyof Registers,
-  offsetRegister: keyof Registers,
-) {
-  const memory = createMemoryFromTestRom(testCaseNumber);
-  cpu.Initialize(memory);
+function verifyLoadAbsolutePlusRegister(register: keyof Registers, offsetRegister: keyof Registers) {
+  const operationSize = 3;
+
+  // No page boundary crossed
+  cpu.Registers[offsetRegister] = 0x01;
+  verifyPositiveNumber(cpu, operationSize, 4, register);
+  verifyZeroNumber(cpu, operationSize, 4, register);
+  verifyNegativeNumber(cpu, operationSize, 4, register);
+
+  // Page boundary crossed
+  cpu.Registers[offsetRegister] = 0x02;
+  verifyPositiveNumber(cpu, operationSize, 5, register);
 
   cpu.Registers[offsetRegister] = 0x03;
-
-  // Positive non-zero number case, no page boundary crossed
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 3);
-
-  // Zero number case, page boundary not crossed
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 6);
-
-  // Negative number case, page boundary not crossed
-  expect(cpu.Execute(4, memory)).toBe(4);
-  expect(cpu.Registers[register]).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expect(cpu.PC).toBe(CODE_LOCATION + 9);
-
-  // Positive non-zero number case, page boundary crossed
-  cpu.Registers[offsetRegister] = 0x06;
-  expect(cpu.Execute(5, memory)).toBe(5);
-  expect(cpu.Registers[register]).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 12);
-
-  // Zero number case, page boundary crossed
-  cpu.Registers[offsetRegister] = 0x09;
-  expect(cpu.Execute(5, memory)).toBe(5);
-  expect(cpu.Registers[register]).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expect(cpu.PC).toBe(CODE_LOCATION + 15);
+  verifyZeroNumber(cpu, operationSize, 5, register);
 }
 
-test("0002 - Verify LDA Immediate", () => {
-  verifyLoadImmediate("0002", "A");
-});
-
-test("0003 - Verify LDX Immediate", () => {
-  verifyLoadImmediate("0003", "X");
-});
-
-test("0004 - Verify LDY Immediate", () => {
-  verifyLoadImmediate("0004", "Y");
-});
-
-test("0005 - Verify LDA Zero Page", () => {
-  verifyLoadZeroPage("0005", "A");
-});
-
-test("0006 - Verify LDX Zero Page", () => {
-  verifyLoadZeroPage("0006", "X");
-});
-
-test("0007 - Verify LDY Zero Page", () => {
-  verifyLoadZeroPage("0007", "Y");
-});
-
-test("0008 - Verify LDA Zero Page Plus X", () => {
-  verifyLoadZeroPagePlusRegister("0008", "A", "X");
-});
-
-test("0009 - Verify LDX Zero Page Plus Y", () => {
-  verifyLoadZeroPagePlusRegister("0009", "X", "Y");
-});
-
-test("0010 - Verify LDY Zero Page Plus X", () => {
-  verifyLoadZeroPagePlusRegister("0010", "Y", "X");
-});
-
-test("0011 - Verify LDA Absolute", () => {
-  verifyLoadAbsolute("0011", "A");
-});
-
-test("0012 - Verify LDX Absolute", () => {
-  verifyLoadAbsolute("0012", "X");
-});
-
-test("0013 - Verify LDY Absolute", () => {
-  verifyLoadAbsolute("0013", "Y");
-});
-
-test("0014 - Verify LDA Absolute Plus Register", () => {
-  verifyLoadAbsolutePlusRegister("0014", "A", "X");
-});
-
-test("0015 - Verify LDX Absolute Plus Register", () => {
-  verifyLoadAbsolutePlusRegister("0015", "X", "Y");
-});
-
-test("0016 - Verify LDY Absolute Plus Register", () => {
-  verifyLoadAbsolutePlusRegister("0016", "Y", "X");
-});
-
-test("0017 - Verify LDA Indirect X", () => {
+function verifyIndirectX() {
   const operationSize = 2;
-  let expectedPCLocation = CODE_LOCATION;
-  const memory = createMemoryFromTestRom("0017");
-  cpu.Initialize(memory);
 
-  // Positive non-zero number case, memory location doesn't wrap zero page
-  cpu.Registers.X = 0x01; // This is the offset to add to the zero page address
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
-
-  // Zero number case, memory location doesn't wrap zero page
-  cpu.Registers.X = 0x03; // This is the offset to add to the zero page address
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
-
-  // Negative number case, memory location doesn't wrap zero page
-  cpu.Registers.X = 0x05; // This is the offset to add to the zero page address
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
+  cpu.Registers.X = 0x01;
+  verifyPositiveNumber(cpu, operationSize, 6, "A");
+  cpu.Registers.X = 0x03;
+  verifyZeroNumber(cpu, operationSize, 6, "A");
+  cpu.Registers.X = 0x05;
+  verifyNegativeNumber(cpu, operationSize, 6, "A");
 
   // Positive non-zero number case, memory location wraps the zero page address space.
-  cpu.Registers.X = 0x02; // This will get added to 0xFF resulting in a wrapped value of 0x01.
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
-});
+  cpu.Registers.X = 0x06; // This will get added to 0xFF resulting in a wrapped value of 0x5.
+  verifyPositiveNumber(cpu, operationSize, 6, "A");
+}
 
-test("Verify LDA Indirect Y", () => {
+function verifyIndirectY() {
   const operationSize = 2;
   let expectedPCLocation = CODE_LOCATION;
   const memory = createMemoryFromTestRom("0018");
@@ -327,4 +172,47 @@ test("Verify LDA Indirect Y", () => {
   expect(cpu.Flags.N).toBe(false);
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
+}
+
+// The order of the test cases in this file depends on the order of the
+// tests in the associated ROM. It should always be:
+// * Immediate
+// * Zero page
+// * Zero page plus X
+// * Absolute
+// * Absolute plus X
+// * Absolute plus Y
+// * Indirect plus X
+// * Indirect plus Y
+//
+// Tests that don't apply to the register (e.g. there's no zero page plus X on LDX) should be skipped.
+
+test("0002 - Verify LDA", () => {
+  initialize("0002");
+  verifyLoadImmediate("A");
+  verifyLoadZeroPage("A");
+  verifyLoadZeroPagePlusRegister("A", "X");
+  verifyLoadAbsolute("A");
+  verifyLoadAbsolutePlusRegister("A", "X");
+  verifyLoadAbsolutePlusRegister("A", "Y");
+  verifyIndirectX();
+  // verifyIndirectY();
+});
+
+test("Verify LDX", () => {
+  initialize("0003");
+  verifyLoadImmediate("X");
+  verifyLoadZeroPage("X");
+  verifyLoadZeroPagePlusRegister("X", "Y");
+  verifyLoadAbsolute("X");
+  verifyLoadAbsolutePlusRegister("X", "Y");
+});
+
+test("Verify LDY", () => {
+  initialize("0004");
+  verifyLoadImmediate("Y");
+  verifyLoadZeroPage("Y");
+  verifyLoadZeroPagePlusRegister("Y", "X");
+  verifyLoadAbsolute("Y");
+  verifyLoadAbsolutePlusRegister("Y", "X");
 });
