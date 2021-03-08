@@ -173,17 +173,6 @@ export default class CPU {
   }
 
   /**
-   * Loads the specified register with data using the requested addressMode.
-   * @param memory The memory containing the data
-   * @param register The register to load the data into
-   * @param addressMode The addressMode to use when reading the data
-   */
-  private LoadRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes): void {
-    this.Registers[register] = this.ReadDataFromMemory(memory, addressMode);
-    this.SetFlagsOnRegisterLoad(register);
-  }
-
-  /**
    * Sets the Z and N flag based on the value stored in a register.
    * @param register The register to reference (A, X or Y).
    */
@@ -252,71 +241,6 @@ export default class CPU {
       this.consumedCycles++;
 
       switch (opcode) {
-        case Opcodes.LDA_Immediate:
-          this.LoadRegister(memory, "A", AddressModes.Immediate);
-          break;
-        case Opcodes.LDX_Immediate:
-          this.LoadRegister(memory, "X", AddressModes.Immediate);
-          break;
-        case Opcodes.LDY_Immediate:
-          this.LoadRegister(memory, "Y", AddressModes.Immediate);
-          break;
-
-        case Opcodes.LDA_Zero_Page:
-          this.LoadRegister(memory, "A", AddressModes.ZeroPage);
-          break;
-        case Opcodes.LDX_Zero_Page:
-          this.LoadRegister(memory, "X", AddressModes.ZeroPage);
-          break;
-        case Opcodes.LDY_Zero_Page:
-          this.LoadRegister(memory, "Y", AddressModes.ZeroPage);
-          break;
-
-        case Opcodes.LDA_Zero_PageX:
-          this.LoadRegister(memory, "A", AddressModes.ZeroPageX);
-          break;
-        case Opcodes.LDX_Zero_PageY:
-          this.LoadRegister(memory, "X", AddressModes.ZeroPageY);
-          break;
-        case Opcodes.LDY_Zero_PageX:
-          this.LoadRegister(memory, "Y", AddressModes.ZeroPageX);
-          break;
-
-        case Opcodes.LDA_Absolute: {
-          this.LoadRegister(memory, "A", AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.LDX_Absolute: {
-          this.LoadRegister(memory, "X", AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.LDY_Absolute: {
-          this.LoadRegister(memory, "Y", AddressModes.Absolute);
-          break;
-        }
-
-        case Opcodes.LDA_AbsoluteX: {
-          this.LoadRegister(memory, "A", AddressModes.AbsoluteX);
-          break;
-        }
-        case Opcodes.LDX_AbsoluteY: {
-          this.LoadRegister(memory, "X", AddressModes.AbsoluteY);
-          break;
-        }
-        case Opcodes.LDY_AbsoluteX: {
-          this.LoadRegister(memory, "Y", AddressModes.AbsoluteX);
-          break;
-        }
-
-        case Opcodes.LDA_IndirectX: {
-          this.LoadRegister(memory, "A", AddressModes.IndirectX);
-          break;
-        }
-        case Opcodes.LDA_IndirectY: {
-          this.LoadRegister(memory, "A", AddressModes.IndirectY);
-          break;
-        }
-
         case Opcodes.JMP_Absolute: {
           this.Jump(memory, AddressModes.Absolute);
           break;
@@ -326,6 +250,23 @@ export default class CPU {
           break;
         }
 
+        case Opcodes.LDA_Immediate:
+        case Opcodes.LDX_Immediate:
+        case Opcodes.LDY_Immediate:
+        case Opcodes.LDA_Zero_Page:
+        case Opcodes.LDX_Zero_Page:
+        case Opcodes.LDY_Zero_Page:
+        case Opcodes.LDA_Zero_PageX:
+        case Opcodes.LDX_Zero_PageY:
+        case Opcodes.LDY_Zero_PageX:
+        case Opcodes.LDA_Absolute:
+        case Opcodes.LDX_Absolute:
+        case Opcodes.LDY_Absolute:
+        case Opcodes.LDA_AbsoluteX:
+        case Opcodes.LDX_AbsoluteY:
+        case Opcodes.LDY_AbsoluteX:
+        case Opcodes.LDA_IndirectX:
+        case Opcodes.LDA_IndirectY:
         case Opcodes.STA_Zero_Page:
         case Opcodes.STX_Zero_Page:
         case Opcodes.STY_Zero_Page:

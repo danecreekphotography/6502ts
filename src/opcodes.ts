@@ -5,6 +5,7 @@
 
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
+import * as load from "./opcodes/load";
 import * as logical from "./opcodes/logical";
 import * as store from "./opcodes/store";
 import * as system from "./opcodes/system";
@@ -13,23 +14,25 @@ import * as transfer from "./opcodes/transfer";
 // Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
 export enum Opcodes {
   LDA_Immediate = 0xa9,
-  LDX_Immediate = 0xa2,
-  LDY_Immediate = 0xa0,
   LDA_Zero_Page = 0xa5,
-  LDX_Zero_Page = 0xa6,
-  LDY_Zero_Page = 0xa4,
   LDA_Zero_PageX = 0xb5,
-  LDX_Zero_PageY = 0xb6,
-  LDY_Zero_PageX = 0xb4,
   LDA_Absolute = 0xad,
-  LDX_Absolute = 0xae,
-  LDY_Absolute = 0xac,
   LDA_AbsoluteX = 0xbd,
   LDA_AbsoluteY = 0xb9,
-  LDX_AbsoluteY = 0xbe,
-  LDY_AbsoluteX = 0xbc,
   LDA_IndirectX = 0xa1,
   LDA_IndirectY = 0xb1,
+
+  LDX_Immediate = 0xa2,
+  LDX_Zero_Page = 0xa6,
+  LDX_Zero_PageY = 0xb6,
+  LDX_Absolute = 0xae,
+  LDX_AbsoluteY = 0xbe,
+
+  LDY_Immediate = 0xa0,
+  LDY_Zero_Page = 0xa4,
+  LDY_Zero_PageX = 0xb4,
+  LDY_Absolute = 0xac,
+  LDY_AbsoluteX = 0xbc,
 
   JMP_Absolute = 0x4c,
   JPM_Indirect = 0x6c,
@@ -91,6 +94,30 @@ export enum Opcodes {
 }
 
 export const OpcodeFunctions = new Map<number, ExecutionFunction>([
+  // LDA
+  [0xa9, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Immediate, "A")],
+  [0xa5, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPage, "A")],
+  [0xb5, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPageX, "A")],
+  [0xad, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Absolute, "A")],
+  [0xbd, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.AbsoluteX, "A")],
+  [0xb9, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.AbsoluteY, "A")],
+  [0xa1, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.IndirectX, "A")],
+  [0xb1, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.IndirectY, "A")],
+
+  // LDX
+  [0xa2, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Immediate, "X")],
+  [0xa6, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPage, "X")],
+  [0xb6, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPageY, "X")],
+  [0xae, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Absolute, "X")],
+  [0xbe, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.AbsoluteY, "X")],
+
+  // LDY
+  [0xa0, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Immediate, "Y")],
+  [0xa4, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPage, "Y")],
+  [0xb4, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.ZeroPageX, "Y")],
+  [0xac, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.Absolute, "Y")],
+  [0xbc, (cpu, memory) => load.LoadRegister(cpu, memory, AddressModes.AbsoluteX, "Y")],
+
   // STA
   [0x85, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPage, "A")],
   [0x95, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.ZeroPageX, "A")],

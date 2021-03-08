@@ -10,9 +10,10 @@ import Registers from "../registers";
 
 /**
  * Stores data from memory in the specified register.
- * @param memory Memory to read the data from
- * @param register Register to store the data in
- * @param addressMode Address mode to use to find the data
+ * @param cpu The CPU to use when executing the command.
+ * @param memory Memory to read the data from.
+ * @param addressMode Address mode to use to find the data.
+ * @param register The register to store the data in.
  */
 export function StoreRegister(cpu: CPU, memory: Memory, addressMode: AddressModes, register: keyof Registers) {
   const dataAddress = cpu.CalculateAddressFromAddressMode(memory, addressMode, false);
