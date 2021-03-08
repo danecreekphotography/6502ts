@@ -4,7 +4,11 @@
       "path": "."
     }
   ],
-  "settings": {},
+  "settings": {
+    "cSpell.words": [
+      "Zeropage"
+    ]
+  },
   "extensions": {
     "recommendations": [
       "tlgkccampbell.code-ca65",
