@@ -591,6 +591,11 @@ export default class CPU {
           break;
         }
 
+        case Opcodes.NOP: {
+          this.consumedCycles++;
+          break;
+        }
+
         default: {
           throw Error(`Read invalid opcode 0x${opcode.toString(16)} at memory address 0x${this.PC.toString(16)}.`);
         }
