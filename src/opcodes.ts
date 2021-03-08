@@ -6,6 +6,7 @@
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
 import * as logical from "./opcodes/logical";
+import * as store from "./opcodes/store";
 import * as system from "./opcodes/system";
 import * as transfer from "./opcodes/transfer";
 
@@ -90,6 +91,20 @@ export enum Opcodes {
 }
 
 export const OpcodeFunctions = new Map<number, ExecutionFunction>([
+  [0x85, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.ZeroPage)],
+  [0x86, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.ZeroPage)],
+  [0x84, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.ZeroPage)],
+  [0x95, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.ZeroPageX)],
+  [0x94, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.ZeroPageX)],
+  [0x96, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.ZeroPageY)],
+  [0x8d, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.Absolute)],
+  [0x8e, (cpu, memory) => store.StoreRegister(cpu, memory, "X", AddressModes.Absolute)],
+  [0x8c, (cpu, memory) => store.StoreRegister(cpu, memory, "Y", AddressModes.Absolute)],
+  [0x9d, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.AbsoluteX)],
+  [0x99, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.AbsoluteY)],
+  [0x81, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.IndirectX)],
+  [0x91, (cpu, memory) => store.StoreRegister(cpu, memory, "A", AddressModes.IndirectY)],
+
   [0xaa, (cpu, memory) => transfer.TransferRegister(cpu, "A", "X")],
   [0xa8, (cpu, memory) => transfer.TransferRegister(cpu, "A", "Y")],
   [0x8a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "A")],

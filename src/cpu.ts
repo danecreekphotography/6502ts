@@ -196,43 +196,6 @@ export default class CPU {
   }
 
   /**
-   * Stores data from memory in the specified register.
-   * @param memory Memory to read the data from
-   * @param register Register to store the data in
-   * @param addressMode Address mode to use to find the data
-   */
-  private StoreRegister(memory: Memory, register: keyof Registers, addressMode: AddressModes) {
-    const dataAddress = this.CalculateAddressFromAddressMode(memory, addressMode, false);
-
-    // Storing using any of these indirect modes consumes an additional cycle for some reason
-    if (
-      addressMode === AddressModes.AbsoluteX ||
-      addressMode === AddressModes.AbsoluteY ||
-      addressMode === AddressModes.IndirectY
-    ) {
-      this.consumedCycles++;
-    }
-    memory.writeByte(dataAddress, this.Registers[register]);
-    this.consumedCycles++;
-  }
-
-  /**
-   * Transfers data from one register to another, setting the zero and negative
-   * flags based on the resulting value in the destination register.
-   * @param sourceRegister The register to read the data from.
-   * @param destinationRegister The register to store the data in.
-   */
-  private TransferRegister(sourceRegister: keyof Registers, destinationRegister: keyof Registers) {
-    this.Registers[destinationRegister] = this.Registers[sourceRegister];
-    this.consumedCycles++;
-
-    // Flags only get set on transfers to A, X, and Y registers.
-    if (destinationRegister != "SP") {
-      this.SetFlagsOnRegisterLoad(destinationRegister);
-    }
-  }
-
-  /**
    * Updates the program counter to point to a different location in memory
    * @param memory The memory containing the location
    * @param addressMode The address mode to use when reading the location
@@ -363,86 +326,25 @@ export default class CPU {
           break;
         }
 
-        case Opcodes.STA_Zero_Page: {
-          this.StoreRegister(memory, "A", AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.STX_Zero_Page: {
-          this.StoreRegister(memory, "X", AddressModes.ZeroPage);
-          break;
-        }
-        case Opcodes.STY_Zero_Page: {
-          this.StoreRegister(memory, "Y", AddressModes.ZeroPage);
-          break;
-        }
-
-        case Opcodes.STA_Zero_PageX: {
-          this.StoreRegister(memory, "A", AddressModes.ZeroPageX);
-          break;
-        }
-        case Opcodes.STX_Zero_PageY: {
-          this.StoreRegister(memory, "X", AddressModes.ZeroPageY);
-          break;
-        }
-        case Opcodes.STY_Zero_PageX: {
-          this.StoreRegister(memory, "Y", AddressModes.ZeroPageX);
-          break;
-        }
-
-        case Opcodes.STA_Absolute: {
-          this.StoreRegister(memory, "A", AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.STX_Absolute: {
-          this.StoreRegister(memory, "X", AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.STY_Absolute: {
-          this.StoreRegister(memory, "Y", AddressModes.Absolute);
-          break;
-        }
-        case Opcodes.STA_AbsoluteX: {
-          this.StoreRegister(memory, "A", AddressModes.AbsoluteX);
-          break;
-        }
-        case Opcodes.STA_AbsoluteY: {
-          this.StoreRegister(memory, "A", AddressModes.AbsoluteY);
-          break;
-        }
-        case Opcodes.STA_IndirectX: {
-          this.StoreRegister(memory, "A", AddressModes.IndirectX);
-          break;
-        }
-        case Opcodes.STA_IndirectY: {
-          this.StoreRegister(memory, "A", AddressModes.IndirectY);
-          break;
-        }
-
-        case Opcodes.TAX: {
-          this.TransferRegister("A", "X");
-          break;
-        }
-        case Opcodes.TAY: {
-          this.TransferRegister("A", "Y");
-          break;
-        }
-        case Opcodes.TXA: {
-          this.TransferRegister("X", "A");
-          break;
-        }
-        case Opcodes.TYA: {
-          this.TransferRegister("Y", "A");
-          break;
-        }
-        case Opcodes.TSX: {
-          this.TransferRegister("SP", "X");
-          break;
-        }
-        case Opcodes.TXS: {
-          this.TransferRegister("X", "SP");
-          break;
-        }
-
+        case Opcodes.STA_Zero_Page:
+        case Opcodes.STX_Zero_Page:
+        case Opcodes.STY_Zero_Page:
+        case Opcodes.STA_Zero_PageX:
+        case Opcodes.STX_Zero_PageY:
+        case Opcodes.STY_Zero_PageX:
+        case Opcodes.STA_Absolute:
+        case Opcodes.STX_Absolute:
+        case Opcodes.STY_Absolute:
+        case Opcodes.STA_AbsoluteX:
+        case Opcodes.STA_AbsoluteY:
+        case Opcodes.STA_IndirectX:
+        case Opcodes.STA_IndirectY:
+        case Opcodes.TAX:
+        case Opcodes.TAY:
+        case Opcodes.TXA:
+        case Opcodes.TYA:
+        case Opcodes.TSX:
+        case Opcodes.TXS:
         case Opcodes.AND_Immediate:
         case Opcodes.AND_Zeropage:
         case Opcodes.AND_ZeropageX:
