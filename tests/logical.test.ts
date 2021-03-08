@@ -69,3 +69,20 @@ test("0302 - AND zero page plus X", () => {
   cpu.Registers.X = 0x01;
   verifyZeroAndNegative(2, 4);
 });
+
+test("0303 - AND absolute", () => {
+  initialize("0303");
+  verifyZeroAndNegative(3, 4);
+});
+
+test("0304 - AND absolute plus X", () => {
+  initialize("0304");
+  cpu.Registers.X = 0x01;
+  verifyZeroAndNegative(3, 4);
+});
+
+test("0305 - AND absolute plus Y", () => {
+  initialize("0305");
+  cpu.Registers.Y = 0x01;
+  verifyZeroAndNegative(3, 4);
+});
