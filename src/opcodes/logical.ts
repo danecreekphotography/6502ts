@@ -15,7 +15,7 @@ import Memory from "../memory";
  * @param addressMode The addressing mode to use when reading from memory.
  */
 export function and(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
-  cpu.Registers.A &= cpu.ReadDataFromMemory(memory, addressMode);
+  cpu.Registers.A &= cpu.ReadByteFromMemory(memory, addressMode);
   cpu.SetFlagsOnRegisterLoad("A");
 }
 
@@ -26,7 +26,7 @@ export function and(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * @param addressMode The addressing mode to use when reading from memory.
  */
 export function eor(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
-  cpu.Registers.A ^= cpu.ReadDataFromMemory(memory, addressMode);
+  cpu.Registers.A ^= cpu.ReadByteFromMemory(memory, addressMode);
   cpu.SetFlagsOnRegisterLoad("A");
 }
 
@@ -37,7 +37,7 @@ export function eor(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * @param addressMode The addressing mode to use when reading from memory.
  */
 export function ora(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
-  cpu.Registers.A |= cpu.ReadDataFromMemory(memory, addressMode);
+  cpu.Registers.A |= cpu.ReadByteFromMemory(memory, addressMode);
   cpu.SetFlagsOnRegisterLoad("A");
 }
 
@@ -48,7 +48,7 @@ export function ora(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * @param addressMode The addressing mode to use when reading from memory.
  */
 export function bit(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
-  const data = cpu.ReadDataFromMemory(memory, addressMode);
+  const data = cpu.ReadByteFromMemory(memory, addressMode);
 
   cpu.Flags.N = (data & FlagMask.N) > 0;
   cpu.Flags.V = (data & FlagMask.V) > 0;

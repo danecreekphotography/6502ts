@@ -151,13 +151,13 @@ export default class CPU {
   }
 
   /**
-   * Reads from memory using the specified access mode. Assumes PC is pointed
+   * Reads a byte from memory using the specified access mode. Assumes PC is pointed
    * to a location in memory with either the value (AddressModes.Immediate)
    * or a memory location (all other address modes).
    * @param memory Memory to read from
    * @param addressMode Address mode to use
    */
-  public ReadDataFromMemory(memory: Memory, addressMode: AddressModes): number {
+  public ReadByteFromMemory(memory: Memory, addressMode: AddressModes): number {
     let data = 0x00;
 
     // Read directly from memory at the current program counter location.
@@ -182,6 +182,35 @@ export default class CPU {
 
     // Negative flag is set if the 7th bit in the register is one.
     this.Flags.N = (this.Registers[register] & 0b10000000) > 0;
+  }
+
+  /**
+   * Pushes a word of data onto the stack. Consumes three cycles.
+   * @param data The data to push onto the stack.
+   */
+  public StackPush(memory: Memory, data: number): void {
+    // Decrement the stack pointer to move it into location to write the data.
+    this.Registers.SP -= 2;
+    this.consumedCycles++;
+
+    // Store the data
+    memory.writeWord(this.Registers.SP, data);
+    this.consumedCycles += 2;
+  }
+
+  /**
+   * Pops a word of data from the stack. Consumes three cycles.
+   * @returns The data from the stack
+   */
+  public StackPop(memory: Memory): number {
+    const data = memory.readWord(this.Registers.SP);
+    this.consumedCycles += 2;
+
+    // Increment the stack pointer.
+    this.Registers.SP += 2;
+    this.consumedCycles++;
+
+    return data;
   }
 
   /**
