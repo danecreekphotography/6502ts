@@ -1,4 +1,4 @@
-; 0002 - LDA
+; Verifies LDA with all applicable addressing modes
 .segment "VECTORS"
 
 .word $eaea
@@ -23,7 +23,7 @@ indirectX:
 
 ; Used for indirect y address mode testing
 indirectY:
-    .word data  
+    .word data          ; Address of the actual test data start location
     .word data + $FF ; Used for the page boundary test
 
 .data

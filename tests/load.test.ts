@@ -133,45 +133,22 @@ function verifyIndirectX() {
 
 function verifyIndirectY() {
   const operationSize = 2;
-  let expectedPCLocation = CODE_LOCATION;
-  const memory = createMemoryFromTestRom("0018");
-  cpu.Initialize(memory);
 
   // Positive non-zero number case, memory location doesn't wrap zero page
-  cpu.Registers.Y = 0x00; // This is the offset to add to the value in the base memory location
-  expect(cpu.Execute(5, memory)).toBe(5);
-  expect(cpu.Registers.A).toBe(0x42);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
+  cpu.Registers.Y = 0x01; // This is the offset to add to the value in the base memory location
+  verifyPositiveNumber(cpu, operationSize, 5, "A");
 
   // Zero number case
-  cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
-  expect(cpu.Execute(5, memory)).toBe(5);
-  expect(cpu.Registers.A).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
+  cpu.Registers.Y = 0x02; // This is the offset to add to the value stored in the zero page address location
+  verifyZeroNumber(cpu, operationSize, 5, "A");
 
   // Negative number case, memory location doesn't wrap zero page
-  cpu.Registers.Y = 0x02; // This is the offset to add to the value stored in the zero page address location
-  expect(cpu.Execute(5, memory)).toBe(5);
-  expect(cpu.Registers.A).toBe(0b10010101);
-  expect(cpu.Flags.Z).toBe(false);
-  expect(cpu.Flags.N).toBe(true);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
+  cpu.Registers.Y = 0x03; // This is the offset to add to the value stored in the zero page address location
+  verifyNegativeNumber(cpu, operationSize, 5, "A");
 
   // Positive non-zero number case, memory location crosses page boundary
   cpu.Registers.Y = 0x01; // This is the offset to add to the value stored in the zero page address location
-  expect(cpu.Execute(6, memory)).toBe(6);
-  expect(cpu.Registers.A).toBe(0x00);
-  expect(cpu.Flags.Z).toBe(true);
-  expect(cpu.Flags.N).toBe(false);
-  expectedPCLocation += operationSize;
-  expect(cpu.PC).toBe(expectedPCLocation);
+  verifyZeroNumber(cpu, operationSize, 6, "A");
 }
 
 // The order of the test cases in this file depends on the order of the
@@ -187,8 +164,8 @@ function verifyIndirectY() {
 //
 // Tests that don't apply to the register (e.g. there's no zero page plus X on LDX) should be skipped.
 
-test("0002 - Verify LDA", () => {
-  initialize("0002");
+test.only("Verify LDA", () => {
+  initialize("LDA");
   verifyLoadImmediate("A");
   verifyLoadZeroPage("A");
   verifyLoadZeroPagePlusRegister("A", "X");
@@ -196,7 +173,7 @@ test("0002 - Verify LDA", () => {
   verifyLoadAbsolutePlusRegister("A", "X");
   verifyLoadAbsolutePlusRegister("A", "Y");
   verifyIndirectX();
-  // verifyIndirectY();
+  verifyIndirectY();
 });
 
 test("Verify LDX", () => {
