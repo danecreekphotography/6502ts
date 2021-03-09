@@ -5,6 +5,7 @@
 
 import CPU from "../src/cpu";
 import Memory from "../src/memory";
+import { createMemoryFromTestRom } from "./helpers";
 
 const CODE_LOCATION = 0x6000;
 
@@ -74,4 +75,33 @@ test("Verify JMP indirect across page boundary", () => {
   expect(cpu.Execute(8, memory)).toBe(8);
   expect(cpu.Registers.A).toBe(0x42);
   expect(cpu.PC).toBe(INDIRECT_ADDRESS_LOCATION + 2);
+});
+
+test.only("Verify JSR and RTS", () => {
+  const memory = createMemoryFromTestRom("JSR_RTS");
+  cpu.Initialize(memory);
+
+  // Execute LDX and TXS to initialize the stack pointer
+  expect(cpu.Execute(4, memory)).toBe(4);
+  expect(cpu.Registers.SP).toBe(0xff);
+
+  // Run the first instruction to load something in A register
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0x42);
+
+  // Run the jsr instruction
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.PC).toBe(0x020a); // The subroutine is located at 0x020a
+
+  // Run the subroutine
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.Y).toBe(0x42);
+
+  // Return from the subroutine
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.PC).toBe(0x0208); // The next main instruction to execute is at 0x0205 in memory
+
+  // Run one more statement
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.X).toBe(0x42);
 });

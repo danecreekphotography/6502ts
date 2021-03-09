@@ -99,6 +99,12 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x4c, (cpu, memory) => jump.jmp(cpu, memory, AddressModes.Absolute)],
   [0x6c, (cpu, memory) => jump.jmp(cpu, memory, AddressModes.Indirect)],
 
+  // JSR
+  [0x20, (cpu, memory) => jump.jsr(cpu, memory, AddressModes.Absolute)],
+
+  // RTS
+  [0x60, (cpu, memory) => jump.rts(cpu, memory, AddressModes.Implied)],
+
   // BIT
   [0x24, (cpu, memory) => logical.bit(cpu, memory, AddressModes.ZeroPage)],
   [0x2c, (cpu, memory) => logical.bit(cpu, memory, AddressModes.Absolute)],

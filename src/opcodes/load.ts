@@ -16,6 +16,6 @@ import Registers from "../registers";
  * @param register The register to load the data into.
  */
 export function LoadRegister(cpu: CPU, memory: Memory, addressMode: AddressModes, register: keyof Registers): void {
-  cpu.Registers[register] = cpu.ReadDataFromMemory(memory, addressMode);
+  cpu.Registers[register] = cpu.ReadByteFromMemory(memory, addressMode);
   cpu.SetFlagsOnRegisterLoad(register);
 }
