@@ -1,4 +1,4 @@
-; Verifies LDX with all applicable addressing modes
+; Verifies LDY with all applicable addressing modes
 .segment "VECTORS"
 
 .word $eaea
@@ -42,28 +42,28 @@ data:
 
 init:
     ; Immediate.
-    ldx #$42        ; Positive
-    ldx #$00        ; Zero
-    ldx #%10010101  ; Negative
+    ldy #$42        ; Positive
+    ldy #$00        ; Zero
+    ldy #%10010101  ; Negative
 
     ; Zeropage. Starts with +1 to skip padding.
-    ldx zp + $01  ; Positive
-    ldx zp + $02  ; Zero
-    ldx zp + $03  ; Negative
+    ldy zp + $01  ; Positive
+    ldy zp + $02  ; Zero
+    ldy zp + $03  ; Negative
 
-    ; Zeropage plus Y. Y will be $01
-    ldx zp,y          ; Positive
-    ldx zp + $01,y    ; Zero
-    ldx zp + $02,y    ; Negative
+    ; Zeropage plus X. X will be $01
+    ldy zp,x          ; Positive
+    ldy zp + $01,x    ; Zero
+    ldy zp + $02,x    ; Negative
 
     ; Absolute. Starts with +1 to skip padding.
-    ldx data + $01  ; Positive
-    ldx data + $02  ; Zero
-    ldx data + $03  ; Negative
+    ldy data + $01  ; Positive
+    ldy data + $02  ; Zero
+    ldy data + $03  ; Negative
 
-    ; Absolute plus Y. Y will be $01.
-    ldx data,y          ; Positive
-    ldx data + $01,y    ; Zero
-    ldx data + $02,y    ; Negative
-    ldx data - $01,y    ; Positive across page boundary, y will be $02.
-    ldx data - $01,y    ; Zero across page boundary, y will be $03.
+    ; Absolute plus X. X will be $01.
+    ldy data,x          ; Positive
+    ldy data + $01,x    ; Zero
+    ldy data + $02,x    ; Negative
+    ldy data - $01,x    ; Positive across page boundary, y will be $02.
+    ldy data - $01,x    ; Zero across page boundary, y will be $03.

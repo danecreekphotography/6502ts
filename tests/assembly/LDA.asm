@@ -65,24 +65,24 @@ init:
     lda data,x          ; Positive
     lda data + $01,x    ; Zero
     lda data + $02,x    ; Negative
-    lda data - $01,x    ; Positive across page boundary, x will be $02?
-    lda data - $01,x    ; Zero across page boundary, x will be $03?
+    lda data - $01,x    ; Positive across page boundary, x will be $02.
+    lda data - $01,x    ; Zero across page boundary, x will be $03.
 
     ; Absolute plus Y. Y will be $01.
     lda data,y          ; Positive
     lda data + $01,y    ; Zero
     lda data + $02,y    ; Negative
-    lda data - $01,y    ; Positive across page boundary, y will be $02?
-    lda data - $01,y    ; Zero across page boundary, y will be $03?
+    lda data - $01,y    ; Positive across page boundary, y will be $02.
+    lda data - $01,y    ; Zero across page boundary, y will be $03.
 
     ; Indirect plus X. 
     lda (indirectX,x)   ; Positive. x will be $01.
     lda (indirectX,x)   ; Zero. x will be $03.
     lda (indirectX,x)   ; Negative. x will be $05.
-    lda ($FF,x)         ; Positive, memory location wraps around zero page. x will be $07? 
+    lda ($FF,x)         ; Positive, memory location wraps around zero page. x will be $06.
 
     ; Indirect plus Y.
     lda (indirectY),y        ; Positive. y will be $00.
     lda (indirectY),y        ; Zero. y will be $01.
     lda (indirectY),y        ; Negative. y will be $02.
-    lda (indirectY + $02),y  ; Zero number page boundary case. y will be $01?
+    lda (indirectY + $02),y  ; Zero number page boundary case. y will be $01.

@@ -14,8 +14,8 @@ const cpu = new CPU();
 let memory: Memory;
 let expectedPCLocation: number;
 
-function initialize(testCaseNumber: string) {
-  memory = createMemoryFromTestRom(testCaseNumber);
+function initialize(testCase: string) {
+  memory = createMemoryFromTestRom(testCase);
   cpu.Initialize(memory);
   expectedPCLocation = CODE_LOCATION;
 }
@@ -186,7 +186,7 @@ test("Verify LDX", () => {
 });
 
 test("Verify LDY", () => {
-  initialize("0004");
+  initialize("LDY");
   verifyLoadImmediate("Y");
   verifyLoadZeroPage("Y");
   verifyLoadZeroPagePlusRegister("Y", "X");
