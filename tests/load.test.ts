@@ -164,7 +164,7 @@ function verifyIndirectY() {
 //
 // Tests that don't apply to the register (e.g. there's no zero page plus X on LDX) should be skipped.
 
-test.only("Verify LDA", () => {
+test("Verify LDA", () => {
   initialize("LDA");
   verifyLoadImmediate("A");
   verifyLoadZeroPage("A");
@@ -177,7 +177,7 @@ test.only("Verify LDA", () => {
 });
 
 test("Verify LDX", () => {
-  initialize("0003");
+  initialize("LDX");
   verifyLoadImmediate("X");
   verifyLoadZeroPage("X");
   verifyLoadZeroPagePlusRegister("X", "Y");
