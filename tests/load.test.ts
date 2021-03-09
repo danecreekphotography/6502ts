@@ -14,17 +14,36 @@ const cpu = new CPU();
 let memory: Memory;
 let expectedPCLocation: number;
 
+/**
+ * Creates a new memory instance intialized with the code from the test case
+ * and resets the CPU for test execution. Also sets the expected start location
+ * for the program counter to the starting code location in memory.
+ * @param testCase The test case binary to load.
+ */
 function initialize(testCase: string) {
   memory = createMemoryFromTestRom(testCase);
   cpu.Initialize(memory);
   expectedPCLocation = CODE_LOCATION;
 }
 
+/**
+ * Increments the expected program counter location by the size of the operation
+ * then confirms the CPU's program counter is in fact in that location.
+ * @param operationSize The number of bytes the operation takes to execute.
+ */
 function verifyProgramCounter(operationSize: number) {
   expectedPCLocation += operationSize;
   expect(cpu.PC).toBe(expectedPCLocation);
 }
 
+/**
+ * Verifies that the specified register contains the positive number 0x42, that the CPU
+ * flags Z and N are set appropriately, and that the program counter incremented correctly.
+ * @param cpu The CPU to execute the test with.
+ * @param operationSize The size of the operation in bytes.
+ * @param cycles The number of cycles to execute.
+ * @param register The register to verify.
+ */
 function verifyPositiveNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
   expect(cpu.Execute(cycles, memory)).toBe(cycles);
   expect(cpu.Registers[register]).toBe(0x42);
@@ -33,6 +52,14 @@ function verifyPositiveNumber(cpu: CPU, operationSize: number, cycles: number, r
   verifyProgramCounter(operationSize);
 }
 
+/**
+ * Verifies that the specified register contains 0x00, that the CPU flags Z and N are set appropriately,
+ * and that the program counter incremented correctly.
+ * @param cpu The CPU to execute the test with.
+ * @param operationSize The size of the operation in bytes.
+ * @param cycles The number of cycles to execute.
+ * @param register The register to verify.
+ */
 function verifyZeroNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
   expect(cpu.Execute(cycles, memory)).toBe(cycles);
   expect(cpu.Registers[register]).toBe(0x00);
@@ -41,6 +68,14 @@ function verifyZeroNumber(cpu: CPU, operationSize: number, cycles: number, regis
   verifyProgramCounter(operationSize);
 }
 
+/**
+ * Verifies that the specified register contains negative number 0b10010101, that the CPU flags Z
+ * and N are set appropriately, and that the program counter incremented correctly.
+ * @param cpu The CPU to execute the test with.
+ * @param operationSize The size of the operation in bytes.
+ * @param cycles The number of cycles to execute.
+ * @param register The register to verify.
+ */
 function verifyNegativeNumber(cpu: CPU, operationSize: number, cycles: number, register: keyof Registers) {
   expect(cpu.Execute(cycles, memory)).toBe(cycles);
   expect(cpu.Registers[register]).toBe(0b10010101);
@@ -49,9 +84,7 @@ function verifyNegativeNumber(cpu: CPU, operationSize: number, cycles: number, r
   verifyProgramCounter(operationSize);
 }
 
-// Verifies load immediate works for the specified register and value.
-// Additionally tests that zero and negative numbers properly set the
-// accumulator flags.
+// Verifies load immediate works for the specified register.
 function verifyLoadImmediate(register: keyof Registers) {
   const operationSize = 2;
 
@@ -60,9 +93,7 @@ function verifyLoadImmediate(register: keyof Registers) {
   verifyNegativeNumber(cpu, operationSize, 2, register);
 }
 
-// Verifies load zero page works for the specified register and value.
-// Additionally tests that zero and negative numbers properly set the
-// accumulator flags.
+// Verifies load zero page works for the specified register.
 function verifyLoadZeroPage(register: keyof Registers) {
   const operationSize = 2;
 
@@ -72,9 +103,7 @@ function verifyLoadZeroPage(register: keyof Registers) {
 }
 
 // Verifies load zero page plus an offset from a register works for the specified
-// offset register, register and value.
-// Additionally tests that zero and negative numbers properly set the
-// accumulator flags.
+// register and offset register.
 function verifyLoadZeroPagePlusRegister(register: keyof Registers, offsetRegister: keyof Registers) {
   const operationSize = 2;
   cpu.Registers[offsetRegister] = 0x01;
@@ -84,9 +113,7 @@ function verifyLoadZeroPagePlusRegister(register: keyof Registers, offsetRegiste
   verifyNegativeNumber(cpu, operationSize, 4, register);
 }
 
-// Verifies load absolute works for the specified register and value.
-// Additionally tests that zero and negative numbers properly set the
-// accumulator flags.
+// Verifies load absolute works for the specified register.
 function verifyLoadAbsolute(register: keyof Registers) {
   const operationSize = 3;
 
@@ -96,9 +123,7 @@ function verifyLoadAbsolute(register: keyof Registers) {
 }
 
 // Verifies load absolute plus an offset from a register works for the specified
-// offset register, register and value.
-// Additionally tests that zero and negative numbers properly set the
-// accumulator flags.
+// register and offset register.
 function verifyLoadAbsolutePlusRegister(register: keyof Registers, offsetRegister: keyof Registers) {
   const operationSize = 3;
 
@@ -116,6 +141,7 @@ function verifyLoadAbsolutePlusRegister(register: keyof Registers, offsetRegiste
   verifyZeroNumber(cpu, operationSize, 5, register);
 }
 
+// Verifies load indirect plus X works for register A.
 function verifyIndirectX() {
   const operationSize = 2;
 
@@ -131,6 +157,7 @@ function verifyIndirectX() {
   verifyPositiveNumber(cpu, operationSize, 6, "A");
 }
 
+// Verifies load indirect plus Y works for register A.
 function verifyIndirectY() {
   const operationSize = 2;
 
