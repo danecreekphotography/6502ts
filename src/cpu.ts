@@ -188,7 +188,7 @@ export default class CPU {
    * Pushes a word of data onto the stack. Consumes three cycles.
    * @param data The data to push onto the stack.
    */
-  public StackPush(memory: Memory, data: number): void {
+  public StackPushWord(memory: Memory, data: number): void {
     // Decrement the stack pointer to move it into location to write the data.
     this.Registers.SP -= 2;
     this.consumedCycles++;
@@ -202,12 +202,41 @@ export default class CPU {
    * Pops a word of data from the stack. Consumes three cycles.
    * @returns The data from the stack
    */
-  public StackPop(memory: Memory): number {
+  public StackPopWord(memory: Memory): number {
     const data = memory.readWord(this.Registers.SP);
     this.consumedCycles += 2;
 
     // Increment the stack pointer.
     this.Registers.SP += 2;
+    this.consumedCycles++;
+
+    return data;
+  }
+
+  /**
+   * Pushes a byte of data onto the stack. Consumes two cycles.
+   * @param data The data to push onto the stack.
+   */
+  public StackPushByte(memory: Memory, data: number): void {
+    // Decrement the stack pointer to move it into location to write the data.
+    this.Registers.SP--;
+    this.consumedCycles++;
+
+    // Store the data
+    memory.writeByte(this.Registers.SP, data);
+    this.consumedCycles--;
+  }
+
+  /**
+   * Pops a byte of data from the stack. Consumes two cycles.
+   * @returns The data from the stack
+   */
+  public StackPopByte(memory: Memory): number {
+    const data = memory.readByte(this.Registers.SP);
+    this.consumedCycles++;
+
+    // Increment the stack pointer.
+    this.Registers.SP++;
     this.consumedCycles++;
 
     return data;
@@ -220,6 +249,10 @@ export default class CPU {
    * @returns The number of cycles executed
    */
   public Execute(cyclesToExecute: number, memory: Memory): number {
+    if (!this.PC) {
+      throw new Error("Program counter is undefined. Did you remember to call Initialize()?");
+    }
+
     this.consumedCycles = 0;
 
     while (this.consumedCycles < cyclesToExecute) {

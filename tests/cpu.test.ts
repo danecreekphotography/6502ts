@@ -14,12 +14,12 @@ const memory = new Memory();
 
 // Before each test clear the memory, set the code location in the reset vector
 // and initialize the CPU.
-beforeEach(() => {
+function initialize() {
   memory.Clear();
   memory.writeWord(cpu.RESET_VECTOR, CODE_LOCATION);
 
   cpu.Initialize(memory);
-});
+}
 
 function verifyCpuInitialization(cpu: CPU): void {
   expect(cpu.PC).toBe(CODE_LOCATION);
@@ -38,11 +38,19 @@ function verifyCpuInitialization(cpu: CPU): void {
   expect(cpu.Flags.Status).toBe(0b00100000);
 }
 
+test("Verify un-initialized execution", () => {
+  expect(() => {
+    cpu.Execute(2, memory);
+  }).toThrowError();
+});
+
 test("Verify CPU constructor", () => {
+  initialize();
   verifyCpuInitialization(cpu);
 });
 
 test("Verify CPU initialization", () => {
+  initialize();
   // Set the program counter and stack pointer to some value
   // then initialize the CPU to make sure everything resets.
   cpu.PC = 0x0042;
@@ -53,6 +61,7 @@ test("Verify CPU initialization", () => {
 });
 
 test("Verify CPU reset vector", () => {
+  initialize();
   // Write a basic command at the reset vector code location and ensure it executes correctly.
   memory.writeByte(CODE_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(CODE_LOCATION + 1, 0x42);
@@ -62,6 +71,7 @@ test("Verify CPU reset vector", () => {
 });
 
 test("Verify reading an invalid opcode", () => {
+  initialize();
   memory.writeByte(CODE_LOCATION, 0xa9); // LDA Immediate
   memory.writeByte(CODE_LOCATION + 1, 0x42);
 
@@ -72,6 +82,8 @@ test("Verify reading an invalid opcode", () => {
 
 test("Verify address mode calculations", () => {
   const baseAddressLocation = 0x2000;
+
+  initialize();
 
   // Absolute
   cpu.PC = baseAddressLocation;
