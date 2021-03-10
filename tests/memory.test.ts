@@ -72,6 +72,7 @@ test("Verify page boundary detection", () => {
   expect(memory.OffsetCrossesPageBoundary(0x00ff, 0x0001)).toBe(true);
   expect(memory.OffsetCrossesPageBoundary(0x01ff, 0x0001)).toBe(true);
   expect(memory.OffsetCrossesPageBoundary(0xffff, 0x0001)).toBe(true);
+  expect(memory.OffsetCrossesPageBoundary(0x0100, -1)).toBe(true);
 });
 
 test("Verify clear", () => {

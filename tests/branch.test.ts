@@ -62,9 +62,17 @@ function verifyBranch(flag: "C" | "Z" | "N" | "V") {
   expect(cpu.Execute(3, memory)).toBe(3);
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers.X).toBe(0x42);
+
+  // Branch on clear, flag set to false, going backwards.
+  // Will branch and run LDA again
+  cpu.Flags[flag] = false;
+  cpu.Registers.A = 0x00;
+  expect(cpu.Execute(3, memory)).toBe(3);
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0x42);
 }
 
-test.only("Verify BEQ and BNE", () => {
+test("Verify BEQ and BNE", () => {
   initialize("BEQ_BNE");
   verifyBranch("Z");
 });
