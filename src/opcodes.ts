@@ -9,6 +9,7 @@ import * as branch from "./opcodes/branch";
 import * as jump from "./opcodes/jump";
 import * as load from "./opcodes/load";
 import * as logical from "./opcodes/logical";
+import * as stack from "./opcodes/stack";
 import * as store from "./opcodes/store";
 import * as system from "./opcodes/system";
 import * as transfer from "./opcodes/transfer";
@@ -128,6 +129,12 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   // BVC, BVS
   [0x70, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", true)],
   [0x50, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", false)],
+
+  // PHA, PHP, PLA, PLP
+  [0x48, (cpu, memory) => stack.pha(cpu, memory, AddressModes.Implied)],
+  [0x08, (cpu, memory) => stack.php(cpu, memory, AddressModes.Implied)],
+  [0x68, (cpu, memory) => stack.pla(cpu, memory, AddressModes.Implied)],
+  [0x28, (cpu, memory) => stack.plp(cpu, memory, AddressModes.Implied)],
 ]);
 
 export default OpcodeFunctions;

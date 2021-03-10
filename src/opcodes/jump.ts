@@ -63,7 +63,7 @@ export function jsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.consumedCycles += 2;
 
   // Push the program counter minus one onto the stack, just like the real CPU.
-  cpu.StackPush(memory, cpu.PC - 1);
+  cpu.StackPushWord(memory, cpu.PC - 1);
 
   // Set the program counter to the subroutine location
   cpu.PC = jumpLocation;
@@ -76,7 +76,7 @@ export function jsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * @param addressMode The address mode to use when reading the location.
  */
 export function rts(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
-  const returnLocation = cpu.StackPop(memory) + 1;
+  const returnLocation = cpu.StackPopWord(memory) + 1;
   cpu.consumedCycles++;
 
   // Set the program counter to the subroutine location
