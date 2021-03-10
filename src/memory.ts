@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
+import * as fs from "fs";
 
 export default class Memory {
   public readonly MAX_ADDRESS = 0xffff;
@@ -18,9 +18,8 @@ export default class Memory {
    */
   public constructor(filename?: string) {
     if (filename) {
-      this.LoadFromFile(filename)
-    }
-    else {
+      this.LoadFromFile(filename);
+    } else {
       this.Clear();
     }
   }
@@ -107,6 +106,9 @@ export default class Memory {
    * @param offset The offset to add to the address.
    */
   public OffsetCrossesPageBoundary(address: number, offset: number): boolean {
-    return (address & 0xff) + (offset & 0xff) > 0xff;
+    const destination = address + offset;
+
+    // Compare the high byte of the origin and destination to see if it changed.
+    return address >> 8 != destination >> 8;
   }
 }
