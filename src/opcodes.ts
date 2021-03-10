@@ -113,9 +113,9 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   // NOP
   [0xea, (cpu, memory) => system.nop(cpu, memory, AddressModes.Implied)],
 
-  // BCC, BCS
-  [0x90, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", false)],
+  // BCS, BCC
   [0xb0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", true)],
+  [0x90, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", false)],
 
   // BEQ, BNE
   [0xf0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", true)],

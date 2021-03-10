@@ -76,3 +76,8 @@ test("Verify BEQ and BNE", () => {
   initialize("BEQ_BNE");
   verifyBranch("Z");
 });
+
+test("Verify BCS and BCC", () => {
+  initialize("BCS_BCC");
+  verifyBranch("C");
+});
