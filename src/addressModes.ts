@@ -15,6 +15,7 @@ enum AddressModes {
   Indirect,
   IndirectX,
   IndirectY,
+  Relative,
 }
 
 export default AddressModes;

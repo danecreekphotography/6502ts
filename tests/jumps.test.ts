@@ -77,7 +77,7 @@ test("Verify JMP indirect across page boundary", () => {
   expect(cpu.PC).toBe(INDIRECT_ADDRESS_LOCATION + 2);
 });
 
-test.only("Verify JSR and RTS", () => {
+test("Verify JSR and RTS", () => {
   const memory = createMemoryFromTestRom("JSR_RTS");
   cpu.Initialize(memory);
 

@@ -5,6 +5,7 @@
 
 import AddressModes from "./addressModes";
 import ExecutionFunction from "./ExecutionFunction";
+import * as branch from "./opcodes/branch";
 import * as jump from "./opcodes/jump";
 import * as load from "./opcodes/load";
 import * as logical from "./opcodes/logical";
@@ -58,12 +59,12 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x8c, (cpu, memory) => store.StoreRegister(cpu, memory, AddressModes.Absolute, "Y")],
 
   // TAX, TAY, TXA, TYA, TSX, TXS
-  [0xaa, (cpu, memory) => transfer.TransferRegister(cpu, "A", "X")],
-  [0xa8, (cpu, memory) => transfer.TransferRegister(cpu, "A", "Y")],
-  [0x8a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "A")],
-  [0x98, (cpu, memory) => transfer.TransferRegister(cpu, "Y", "A")],
-  [0xba, (cpu, memory) => transfer.TransferRegister(cpu, "SP", "X")],
-  [0x9a, (cpu, memory) => transfer.TransferRegister(cpu, "X", "SP")],
+  [0xaa, (cpu) => transfer.TransferRegister(cpu, "A", "X")],
+  [0xa8, (cpu) => transfer.TransferRegister(cpu, "A", "Y")],
+  [0x8a, (cpu) => transfer.TransferRegister(cpu, "X", "A")],
+  [0x98, (cpu) => transfer.TransferRegister(cpu, "Y", "A")],
+  [0xba, (cpu) => transfer.TransferRegister(cpu, "SP", "X")],
+  [0x9a, (cpu) => transfer.TransferRegister(cpu, "X", "SP")],
 
   // AND
   [0x29, (cpu, memory) => logical.and(cpu, memory, AddressModes.Immediate)],
@@ -111,6 +112,22 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
 
   // NOP
   [0xea, (cpu, memory) => system.nop(cpu, memory, AddressModes.Implied)],
+
+  // BCC, BCS
+  [0x90, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", false)],
+  [0xb0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", true)],
+
+  // BEQ, BNE
+  [0xf0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", true)],
+  [0xd0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", false)],
+
+  // BMI, BPL
+  [0x30, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", true)],
+  [0x10, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", false)],
+
+  // BVC, BVS
+  [0x50, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", false)],
+  [0x70, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", true)],
 ]);
 
 export default OpcodeFunctions;
