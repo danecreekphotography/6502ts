@@ -1,4 +1,4 @@
-; Verifies LDA with all applicable addressing modes
+; Verifies BEQ and BNE
 .segment "VECTORS"
 
 .word $eaea
