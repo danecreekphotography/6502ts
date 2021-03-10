@@ -11,7 +11,11 @@ init:
     ldx #$FF    ; Initialize the stack pointer
     txs
     
-    pha     ; Accumulator will have 0x42 in it
-    pla     ; Accumulator will get cleared before running this command
-    php     ; Processor status will have 0xFF in it
-    plp     ; Processor status will get cleared before running this
+    pha     ; A will have $42 in it.
+    pha     ; A will have $00 in it.
+    pha     ; A will have %10010101 in it.
+    pla     ; Accumulator will get cleared before running this command.
+    pla
+    pla
+    php     ; Processor status will have 0xFF in it.
+    plp     ; Processor status will get cleared before running this.
