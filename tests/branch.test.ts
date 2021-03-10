@@ -86,3 +86,8 @@ test("Verify BMI and BPL", () => {
   initialize("BMI_BPL");
   verifyBranch("N");
 });
+
+test("Verify BVS and BVC", () => {
+  initialize("BVS_BVC");
+  verifyBranch("V");
+});

@@ -121,13 +121,13 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0xf0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", true)],
   [0xd0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", false)],
 
-  // BPL, BMI
-  [0x10, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", false)],
+  // BMI, BPL
   [0x30, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", true)],
+  [0x10, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", false)],
 
   // BVC, BVS
-  [0x50, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", false)],
   [0x70, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", true)],
+  [0x50, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", false)],
 ]);
 
 export default OpcodeFunctions;
