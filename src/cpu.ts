@@ -224,7 +224,7 @@ export default class CPU {
 
     // Store the data
     memory.writeByte(this.Registers.SP, data);
-    this.consumedCycles--;
+    this.consumedCycles++;
   }
 
   /**
