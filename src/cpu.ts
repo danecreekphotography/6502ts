@@ -164,7 +164,13 @@ export default class CPU {
     if (addressMode === AddressModes.Immediate) {
       data = memory.readByte(this.PC++);
       this.consumedCycles++;
-    } else {
+    }
+    // Read from the accumulator. Oddball case only used for some of the rotation operations
+    else if (addressMode === AddressModes.Accumulator) {
+      return this.Registers.A;
+    }
+    // Read from memory
+    else {
       data = memory.readByte(this.CalculateAddressFromAddressMode(memory, addressMode, true));
       this.consumedCycles++;
     }
