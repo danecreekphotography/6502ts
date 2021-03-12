@@ -179,6 +179,28 @@ export default class CPU {
   }
 
   /**
+   * Returns the data at the requested location using the specified address mode
+   * and the address it was read from. Handy to then update the data and write it back
+   * to the same location in memory.
+   * @param memory The memory to reference during execution.
+   * @param addressMode The addressing mode to use when reading from memory.
+   * @returns
+   */
+  public ReadByteAndAddress(memory: Memory, addressMode: AddressModes): [data: number, address: number] {
+    let data = 0;
+    let address = 0;
+
+    if (addressMode === AddressModes.Accumulator) {
+      data = this.Registers.A;
+    } else {
+      address = this.CalculateAddressFromAddressMode(memory, addressMode, false);
+      data = memory.readByte(address);
+    }
+
+    return [data, address];
+  }
+
+  /**
    * Sets the Z and N flag based on the value stored in a register.
    * @param register The register to reference (A, X or Y).
    */
