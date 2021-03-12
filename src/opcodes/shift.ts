@@ -61,3 +61,25 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
 
   saveShift(cpu, memory, addressMode, data, address);
 }
+
+/**
+ * Executes the logical shift right instruction.
+ * @param cpu The CPU to use when executing the command.
+ * @param memory The memory to reference during execution.
+ * @param addressMode The addressing mode to use when reading from memory.
+ */
+export function lsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+  // eslint-disable-next-line prefer-const
+  let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
+
+  // Bit 0 goes in the carry flag
+  cpu.Flags.C = (data & 0b00000001) > 0;
+
+  // Do the actual shift
+  data >>= 1;
+
+  // Set the zero flag appropriately
+  cpu.Flags.Z = data === 0;
+
+  saveShift(cpu, memory, addressMode, data, address);
+}

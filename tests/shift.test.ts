@@ -35,8 +35,7 @@ function verifyProgramCounter(operationSize: number) {
   expect(cpu.PC).toBe(expectedPCLocation);
 }
 
-// Verifies a pair of branch instructions works correctly. Always tests
-// branching on flag set first, followed by branching on flag clear.
+// Verifies the ASL command for all address modes.
 function verifyAsl() {
   const operationSize = 1;
 
@@ -44,11 +43,13 @@ function verifyAsl() {
   cpu.Registers.A = 0b00100000;
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers.A).toBe(0b01000000);
+  expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.C).toBe(false);
   verifyProgramCounter(operationSize); // This is enough to confirm the operation size of the branch instruction is correct
 
   expect(cpu.Execute(2, memory)).toBe(2);
   expect(cpu.Registers.A).toBe(0b10000000);
+  expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.C).toBe(false);
 
   expect(cpu.Execute(2, memory)).toBe(2);
@@ -65,7 +66,7 @@ function verifyAsl() {
   // Test a shift on zero page plus X
   cpu.Registers.X = 0x01;
   expect(cpu.Execute(6, memory)).toBe(6);
-  expect(memory.readByte(0x00)).toBe(0b01000000);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0b01000000);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.C).toBe(false);
 
@@ -83,7 +84,61 @@ function verifyAsl() {
   expect(cpu.Flags.C).toBe(false);
 }
 
+// Verifies the LSR command for all address modes.
+function verifyLsr() {
+  const operationSize = 1;
+
+  // Test shifts on A register
+  cpu.Registers.A = 0b00000010;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b00000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+  verifyProgramCounter(operationSize); // This is enough to confirm the operation size of the branch instruction is correct
+
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b00000000);
+  expect(cpu.Flags.C).toBe(true);
+  expect(cpu.Flags.Z).toBe(true);
+
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b00000000);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a shift on zero page
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x00)).toBe(0b00000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a shift on zero page plus X
+  cpu.Registers.X = 0x01;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0b00000000);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.C).toBe(true);
+
+  // Test a shift on absolute memory location
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0b00000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a shift on absolute memory location plus X
+  cpu.Registers.X = 0x01;
+  expect(cpu.Execute(7, memory)).toBe(7);
+  expect(memory.readByte(0x3001)).toBe(0b00000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+}
+
 test("Verify ASL", () => {
   initialize("ASL");
   verifyAsl();
+});
+
+test("Verify LSR", () => {
+  initialize("LSR");
+  verifyLsr();
 });
