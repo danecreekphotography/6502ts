@@ -67,8 +67,36 @@ function verifyRegisterIncrement(register: "X" | "Y") {
   verifyProgramCounter(operationSize);
 }
 
+// Verifies the register increment operation on memory.
+function verifyMemoryIncrement() {
+  // Zero page increment from zero, ensure zero flag clears
+  cpu.Flags.Z = true;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x00)).toBe(0b00000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Zero page increment from 255, ensure it wraps to zero
+  cpu.Flags.Z = false;
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+
+  // Zero page increment from 0b01111111, ensure it sets negative flag
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x00 + 0x02)).toBe(0b10000000);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+}
+
 test("Verify INX and INY", () => {
   initialize("INX_INY");
   verifyRegisterIncrement("X");
   verifyRegisterIncrement("Y");
+});
+
+test("Verify INC", () => {
+  initialize("INC");
+  verifyMemoryIncrement();
 });

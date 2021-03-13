@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import AddressModes from "../addressModes";
 import CPU from "../cpu";
 import Memory from "../memory";
 
@@ -49,6 +50,22 @@ export function incrementRegister(cpu: CPU, register: "X" | "Y"): void {
 }
 
 /**
+ * Executes a memory increment instruction
+ * @param cpu The CPU to use when executing the command.
+ * @param memory The memory to reference during execution.
+ * @param addressMode The addressing mode to use when reading from memory.
+ */
+export function incrementMemory(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+  const [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
+
+  const incrementedData = IncrementAndSetFlags(cpu, data);
+  cpu.consumedCycles += 2; // +2 here otherwise this is one short of expected
+
+  memory.writeByte(address, incrementedData);
+  cpu.consumedCycles++;
+}
+
+/**
  * Executes a register decrement instruction.
  * @param cpu The CPU to use when executing the command.
  * @param memory The memory to reference during execution.
@@ -57,4 +74,19 @@ export function incrementRegister(cpu: CPU, register: "X" | "Y"): void {
 export function decrementRegister(cpu: CPU, register: "X" | "Y"): void {
   cpu.Registers[register] = DecrementAndSetFlags(cpu, cpu.Registers[register]);
   cpu.consumedCycles++;
+}
+
+/**
+ * Executes a memory decrement instruction
+ * @param cpu The CPU to use when executing the command.
+ * @param memory The memory to reference during execution.
+ * @param addressMode The addressing mode to use when reading from memory.
+ */
+export function decrementMemory(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+  const [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
+
+  const incrementedData = DecrementAndSetFlags(cpu, data);
+  cpu.consumedCycles++;
+
+  memory.writeByte(address, incrementedData);
 }

@@ -169,6 +169,18 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   // INX, INY
   [0xe8, (cpu) => incdec.incrementRegister(cpu, "X")],
   [0xc8, (cpu) => incdec.incrementRegister(cpu, "Y")],
+
+  // INC
+  [0xe6, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.ZeroPage)],
+  [0xf6, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.ZeroPageX)],
+  [0xee, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.Absolute)],
+  [0xfe, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.AbsoluteX)],
+
+  // DEC
+  [0xc6, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.ZeroPage)],
+  [0xd6, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.ZeroPageX)],
+  [0xce, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.Absolute)],
+  [0xde, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.AbsoluteX)],
 ]);
 
 export default OpcodeFunctions;
