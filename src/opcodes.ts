@@ -103,10 +103,10 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x6c, (cpu, memory) => jump.jmp(cpu, memory, AddressModes.Indirect)],
 
   // JSR
-  [0x20, (cpu, memory) => jump.jsr(cpu, memory, AddressModes.Absolute)],
+  [0x20, (cpu, memory) => jump.jsr(cpu, memory)],
 
   // RTS
-  [0x60, (cpu, memory) => jump.rts(cpu, memory, AddressModes.Implied)],
+  [0x60, (cpu, memory) => jump.rts(cpu, memory)],
 
   // BIT
   [0x24, (cpu, memory) => logical.bit(cpu, memory, AddressModes.ZeroPage)],
@@ -116,26 +116,26 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0xea, (cpu, memory) => system.nop(cpu, memory, AddressModes.Implied)],
 
   // BCS, BCC
-  [0xb0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", true)],
-  [0x90, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "C", false)],
+  [0xb0, (cpu, memory) => branch.branch(cpu, memory, "C", true)],
+  [0x90, (cpu, memory) => branch.branch(cpu, memory, "C", false)],
 
   // BEQ, BNE
-  [0xf0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", true)],
-  [0xd0, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "Z", false)],
+  [0xf0, (cpu, memory) => branch.branch(cpu, memory, "Z", true)],
+  [0xd0, (cpu, memory) => branch.branch(cpu, memory, "Z", false)],
 
   // BMI, BPL
-  [0x30, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", true)],
-  [0x10, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "N", false)],
+  [0x30, (cpu, memory) => branch.branch(cpu, memory, "N", true)],
+  [0x10, (cpu, memory) => branch.branch(cpu, memory, "N", false)],
 
   // BVC, BVS
-  [0x70, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", true)],
-  [0x50, (cpu, memory) => branch.branch(cpu, memory, AddressModes.Relative, "V", false)],
+  [0x70, (cpu, memory) => branch.branch(cpu, memory, "V", true)],
+  [0x50, (cpu, memory) => branch.branch(cpu, memory, "V", false)],
 
   // PHA, PHP, PLA, PLP
-  [0x48, (cpu, memory) => stack.pha(cpu, memory, AddressModes.Implied)],
-  [0x08, (cpu, memory) => stack.php(cpu, memory, AddressModes.Implied)],
-  [0x68, (cpu, memory) => stack.pla(cpu, memory, AddressModes.Implied)],
-  [0x28, (cpu, memory) => stack.plp(cpu, memory, AddressModes.Implied)],
+  [0x48, (cpu, memory) => stack.pha(cpu, memory)],
+  [0x08, (cpu, memory) => stack.php(cpu, memory)],
+  [0x68, (cpu, memory) => stack.pla(cpu, memory)],
+  [0x28, (cpu, memory) => stack.plp(cpu, memory)],
 
   // ASL
   [0x0a, (cpu, memory) => shift.asl(cpu, memory, AddressModes.Accumulator)],

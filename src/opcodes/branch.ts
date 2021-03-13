@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AddressModes from "../addressModes";
 import CPU from "../cpu";
 import Memory from "../memory";
 
@@ -11,18 +10,11 @@ import Memory from "../memory";
  * Executes a branch instruction.
  * @param cpu The CPU to use when executing the command.
  * @param memory The memory to reference during execution.
- * @param addressMode The addressing mode to use when reading from memory.
  * @param flag The flag to test
  * @param test The boolean value that results in the branch occurring
  */
 
-export function branch(
-  cpu: CPU,
-  memory: Memory,
-  addressMode: AddressModes,
-  flag: "C" | "Z" | "N" | "V",
-  test: boolean,
-): void {
+export function branch(cpu: CPU, memory: Memory, flag: "C" | "Z" | "N" | "V", test: boolean): void {
   let offset = memory.readByte(cpu.PC++);
   cpu.consumedCycles++;
 
