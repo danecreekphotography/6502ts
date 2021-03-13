@@ -210,6 +210,16 @@ export default class CPU {
   }
 
   /**
+   * Takes a TypeScript number and cuts off any bits beyond eight
+   * bits of data.
+   * @param data The data to cap at eight bits
+   * @returns The data capped to eight bits
+   */
+  public CapAtEightBits(data: number): number {
+    return data & 0b011111111;
+  }
+
+  /**
    * Pushes a word of data onto the stack. Consumes three cycles.
    * @param data The data to push onto the stack.
    */
