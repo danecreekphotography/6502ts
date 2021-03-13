@@ -56,6 +56,15 @@ function verifyRegisterIncrement(register: "X" | "Y") {
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
   verifyProgramCounter(operationSize);
+
+  // Increment from 0b01111111, ensure it sets negative flag
+  cpu.Registers[register] = 0b01111111;
+  cpu.Flags.Z = false;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers[register]).toBe(0b10000000);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+  verifyProgramCounter(operationSize);
 }
 
 test("Verify INX and INY", () => {
