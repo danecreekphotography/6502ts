@@ -14,8 +14,8 @@ import Memory from "../memory";
  */
 function IncrementAndSetFlags(cpu: CPU, data: number): number {
   data++;
-  cpu.SetZAndNFlag(data);
   data = cpu.CapAtEightBits(data);
+  cpu.SetZAndNFlag(data);
 
   return data;
 }

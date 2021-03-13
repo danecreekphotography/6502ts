@@ -46,7 +46,16 @@ function verifyRegisterIncrement(register: "X" | "Y") {
   expect(cpu.Registers[register]).toBe(0b00000001);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
-  verifyProgramCounter(operationSize); // This is enough to confirm the operation size of the branch instruction is correct
+  verifyProgramCounter(operationSize);
+
+  // Increment from 255, ensure it wraps to zero
+  cpu.Registers[register] = 0xff;
+  cpu.Flags.Z = false;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers[register]).toBe(0x00);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.N).toBe(false);
+  verifyProgramCounter(operationSize);
 }
 
 test("Verify INX and INY", () => {
