@@ -150,6 +150,13 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x56, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.ZeroPageX)],
   [0x4e, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.Absolute)],
   [0x5e, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.AbsoluteX)],
+
+  // ROR
+  [0x6a, (cpu, memory) => shift.ror(cpu, memory, AddressModes.Accumulator)],
+  [0x66, (cpu, memory) => shift.ror(cpu, memory, AddressModes.ZeroPage)],
+  [0x76, (cpu, memory) => shift.ror(cpu, memory, AddressModes.ZeroPageX)],
+  [0x6e, (cpu, memory) => shift.ror(cpu, memory, AddressModes.Absolute)],
+  [0x7e, (cpu, memory) => shift.ror(cpu, memory, AddressModes.AbsoluteX)],
 ]);
 
 export default OpcodeFunctions;

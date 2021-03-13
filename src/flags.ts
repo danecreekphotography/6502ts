@@ -59,6 +59,21 @@ export default class Flags {
   public N = false;
 
   /**
+   * Sets N to true if bit 7 of data is set.
+   * @param data The value to test.
+   */
+  public SetN(data: number): void {
+    this.N = (data & 0b10000000) > 0;
+  }
+
+  /**
+   * Sets Z to true if data is zero.
+   * @param data The value to test.
+   */
+  public SetZ(data: number): void {
+    this.Z = data === 0;
+  }
+  /**
    * Returns all the status flags as a single word with each bit representing one of the flag values.
    * Bit order:
    * N V Unused B D I Z C

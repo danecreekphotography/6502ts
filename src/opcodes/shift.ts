@@ -5,6 +5,7 @@
 
 import AddressModes from "../addressModes";
 import CPU from "../cpu";
+import Flags, { FlagMask } from "../flags";
 import Memory from "../memory";
 
 function CapAtEightBits(data: number): number {
@@ -56,8 +57,9 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   // Because number isn't a specific 8-bit byte handle shifting past the 8th bit
   data = CapAtEightBits(data);
 
-  // Set the zero flag appropriately
-  cpu.Flags.Z = data === 0;
+  // Set the flags appropriately
+  cpu.Flags.SetZ(data);
+  cpu.Flags.SetN(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }
@@ -78,8 +80,40 @@ export function lsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   // Do the actual shift
   data >>= 1;
 
-  // Set the zero flag appropriately
-  cpu.Flags.Z = data === 0;
+  // Set the flags appropriately
+  cpu.Flags.SetZ(data);
+  cpu.Flags.SetN(data);
+
+  saveShift(cpu, memory, addressMode, data, address);
+}
+
+/**
+ * Executes the rotate right instruction.
+ * @param cpu The CPU to use when executing the command.
+ * @param memory The memory to reference during execution.
+ * @param addressMode The addressing mode to use when reading from memory.
+ */
+export function ror(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+  // eslint-disable-next-line prefer-const
+  let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
+
+  // Temp save what the new carry flag will be
+  const newCarry = (data & 0b00000001) === 1;
+
+  // Shift right one
+  data >>= 1;
+
+  // Add the carry flag to position 7
+  if (cpu.Flags.C) {
+    data |= 0b10000000;
+  }
+
+  // Set the carry flag to what fell off the right end of the data
+  cpu.Flags.C = newCarry;
+
+  // Set the flags appropriately
+  cpu.Flags.SetZ(data);
+  cpu.Flags.SetN(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }

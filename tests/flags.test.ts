@@ -86,3 +86,23 @@ test("Verify set Status property", () => {
   expect(flags.V).toBe(true);
   expect(flags.N).toBe(true);
 });
+
+test("Verify SetN", () => {
+  const flags = new Flags();
+
+  flags.SetN(0b10000000);
+  expect(flags.N).toBe(true);
+
+  flags.SetN(0b01000000);
+  expect(flags.N).toBe(false);
+});
+
+test("Verify SetZ", () => {
+  const flags = new Flags();
+
+  flags.SetZ(0b00000000);
+  expect(flags.Z).toBe(true);
+
+  flags.SetZ(0b00000010);
+  expect(flags.Z).toBe(false);
+});
