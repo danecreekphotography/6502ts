@@ -5,13 +5,14 @@
   "main": "dist/main.ts",
   "scripts": {
     "build": "tsc",
+    "build:asm": "gulp",
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint -c .eslintrc.json --ext .ts src/",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"tests/**/*.ts\" \"tests/**/*.js\"",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint",
     "start": "node dist/main.js",
-    "test": "jest"
+    "test": "npm run build:asm & jest"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "gulp-tap": "^2.0.0",
     "jest": "^26.6.3",
     "jest-cli": "^26.6.3",
+    "mkdirp": "^1.0.4",
     "prettier": "^2.2.1",
     "ts-jest": "^26.5.2",
     "typescript": "^4.2.2"

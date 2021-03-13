@@ -7,6 +7,7 @@
 const spawnSync = require('child_process').spawnSync;
 const gulp = require('gulp');
 const path = require('path');
+const mkdirp = require('mkdirp');
 const tap = require('gulp-tap')
 
 function assemble(sourceFile) {
@@ -31,9 +32,15 @@ function assemble(sourceFile) {
   return cl65;
 }
 
+function makeOutputDirectory(done) {
+  mkdirp.sync("./tests/roms");
+
+  done();
+}
+
 function build() {
   return gulp.src("tests/assembly/**/*.asm")
     .pipe(tap((file) => assemble(file)));
 }
 
-exports.default = gulp.series(build);
+exports.default = gulp.series(makeOutputDirectory, build);
