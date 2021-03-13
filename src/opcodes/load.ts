@@ -17,5 +17,5 @@ import Registers from "../registers";
  */
 export function LoadRegister(cpu: CPU, memory: Memory, addressMode: AddressModes, register: keyof Registers): void {
   cpu.Registers[register] = cpu.ReadByteFromMemory(memory, addressMode);
-  cpu.SetFlagsOnRegisterLoad(register);
+  cpu.SetZAndNFlag(cpu.Registers[register]);
 }

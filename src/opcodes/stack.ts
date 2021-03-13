@@ -26,7 +26,7 @@ export function pha(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
 export function pla(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Registers.A = cpu.StackPopByte(memory);
   cpu.consumedCycles++;
-  cpu.SetFlagsOnRegisterLoad("A");
+  cpu.SetZAndNFlag(cpu.Registers.A);
 }
 
 /**

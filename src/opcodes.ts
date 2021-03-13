@@ -9,6 +9,7 @@ import * as branch from "./opcodes/branch";
 import * as jump from "./opcodes/jump";
 import * as load from "./opcodes/load";
 import * as logical from "./opcodes/logical";
+import * as shift from "./opcodes/shift";
 import * as stack from "./opcodes/stack";
 import * as store from "./opcodes/store";
 import * as system from "./opcodes/system";
@@ -135,6 +136,34 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x08, (cpu, memory) => stack.php(cpu, memory, AddressModes.Implied)],
   [0x68, (cpu, memory) => stack.pla(cpu, memory, AddressModes.Implied)],
   [0x28, (cpu, memory) => stack.plp(cpu, memory, AddressModes.Implied)],
+
+  // ASL
+  [0x0a, (cpu, memory) => shift.asl(cpu, memory, AddressModes.Accumulator)],
+  [0x06, (cpu, memory) => shift.asl(cpu, memory, AddressModes.ZeroPage)],
+  [0x16, (cpu, memory) => shift.asl(cpu, memory, AddressModes.ZeroPageX)],
+  [0x0e, (cpu, memory) => shift.asl(cpu, memory, AddressModes.Absolute)],
+  [0x1e, (cpu, memory) => shift.asl(cpu, memory, AddressModes.AbsoluteX)],
+
+  // LSR
+  [0x4a, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.Accumulator)],
+  [0x46, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.ZeroPage)],
+  [0x56, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.ZeroPageX)],
+  [0x4e, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.Absolute)],
+  [0x5e, (cpu, memory) => shift.lsr(cpu, memory, AddressModes.AbsoluteX)],
+
+  // ROR
+  [0x6a, (cpu, memory) => shift.ror(cpu, memory, AddressModes.Accumulator)],
+  [0x66, (cpu, memory) => shift.ror(cpu, memory, AddressModes.ZeroPage)],
+  [0x76, (cpu, memory) => shift.ror(cpu, memory, AddressModes.ZeroPageX)],
+  [0x6e, (cpu, memory) => shift.ror(cpu, memory, AddressModes.Absolute)],
+  [0x7e, (cpu, memory) => shift.ror(cpu, memory, AddressModes.AbsoluteX)],
+
+  // ROL
+  [0x2a, (cpu, memory) => shift.rol(cpu, memory, AddressModes.Accumulator)],
+  [0x26, (cpu, memory) => shift.rol(cpu, memory, AddressModes.ZeroPage)],
+  [0x36, (cpu, memory) => shift.rol(cpu, memory, AddressModes.ZeroPageX)],
+  [0x2e, (cpu, memory) => shift.rol(cpu, memory, AddressModes.Absolute)],
+  [0x3e, (cpu, memory) => shift.rol(cpu, memory, AddressModes.AbsoluteX)],
 ]);
 
 export default OpcodeFunctions;

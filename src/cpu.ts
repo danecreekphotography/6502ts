@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
-import Flags, { FlagMask } from "./flags";
+import Flags from "./flags";
 import Memory from "./memory";
 import OpcodeFunctions from "./opcodes";
 import Registers from "./registers";
@@ -164,7 +164,13 @@ export default class CPU {
     if (addressMode === AddressModes.Immediate) {
       data = memory.readByte(this.PC++);
       this.consumedCycles++;
-    } else {
+    }
+    // Read from the accumulator. Oddball case only used for some of the rotation operations
+    else if (addressMode === AddressModes.Accumulator) {
+      return this.Registers.A;
+    }
+    // Read from memory
+    else {
       data = memory.readByte(this.CalculateAddressFromAddressMode(memory, addressMode, true));
       this.consumedCycles++;
     }
@@ -173,15 +179,34 @@ export default class CPU {
   }
 
   /**
-   * Sets the Z and N flag based on the value stored in a register.
-   * @param register The register to reference (A, X or Y).
+   * Returns the data at the requested location using the specified address mode
+   * and the address it was read from. Handy to then update the data and write it back
+   * to the same location in memory.
+   * @param memory The memory to reference during execution.
+   * @param addressMode The addressing mode to use when reading from memory.
+   * @returns
    */
-  public SetFlagsOnRegisterLoad(register: keyof Registers): void {
-    // Zero flag is set if the register value is zero.
-    this.Flags.Z = this.Registers[register] == 0;
+  public ReadByteAndAddress(memory: Memory, addressMode: AddressModes): [data: number, address: number] {
+    let data = 0;
+    let address = 0;
 
-    // Negative flag is set if the 7th bit in the register is one.
-    this.Flags.N = (this.Registers[register] & 0b10000000) > 0;
+    if (addressMode === AddressModes.Accumulator) {
+      data = this.Registers.A;
+    } else {
+      address = this.CalculateAddressFromAddressMode(memory, addressMode, false);
+      data = memory.readByte(address);
+    }
+
+    return [data, address];
+  }
+
+  /**
+   * Sets the Z and N flag based on the value provided.
+   * @param data The data to test.
+   */
+  public SetZAndNFlag(data: number): void {
+    this.Flags.SetZ(data);
+    this.Flags.SetN(data);
   }
 
   /**
