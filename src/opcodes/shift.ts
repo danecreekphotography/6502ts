@@ -8,11 +8,7 @@ import CPU from "../cpu";
 import Memory from "../memory";
 
 function CapAtEightBits(data: number): number {
-  if (data >= 0b100000000) {
-    data -= 0b100000000;
-  }
-
-  return data;
+  return data & 0b011111111;
 }
 
 /**
@@ -50,11 +46,9 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   // Bit 7 goes in the carry flag
   cpu.Flags.C = (data & 0b10000000) > 0;
 
-  // Do the actual shift
-  data <<= 1;
-
-  // Because number isn't a specific 8-bit byte handle shifting past the 8th bit
-  data = CapAtEightBits(data);
+  // Shift left one, masking off the top-most bit to keep it within
+  // the 8-bit range of the CPU.
+  data = CapAtEightBits((data <<= 1));
 
   // Set the flags appropriately
   cpu.Flags.SetZ(data);
@@ -132,7 +126,7 @@ export function rol(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
 
   // Shift left one, masking off the top-most bit to keep it within
   // the 8-bit range of the CPU.
-  data = (data <<= 1) & 0b011111111;
+  data = CapAtEightBits((data <<= 1));
 
   // Add the carry flag to position 0
   if (cpu.Flags.C) {
