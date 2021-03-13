@@ -15,7 +15,7 @@ zp:
 
 zpx:
   .byte $00 ; Padding
-  .byte %00000001
+  .byte %00000000
   .byte $FF
   .byte %01111111
 
@@ -26,23 +26,23 @@ init:
   inc zp + 1
   inc zp + 2
 
-  inc zp,x  ; x will be $01
-  inc zp,x  ; x will be $02
-  inc zp,x  ; x will be $03
+  inc zpx,x  ; x will be $01
+  inc zpx,x  ; x will be $02
+  inc zpx,x  ; x will be $03
 
   inc data
   inc data + 1
   inc data + 2
 
-  inc data,x  ; x will be $01
-  inc data,x  ; x will be $02
-  inc data,x  ; x will be $03
+  inc datax,x  ; x will be $01
+  inc datax,x  ; x will be $02
+  inc datax,x  ; x will be $03
 
 .segment "DATA"
 
 data:
 
-  .byte %00000001
+  .byte %00000000
   .byte $FF
   .byte %01111111
 
