@@ -5,7 +5,6 @@
 
 import AddressModes from "../addressModes";
 import CPU from "../cpu";
-import Flags, { FlagMask } from "../flags";
 import Memory from "../memory";
 
 function CapAtEightBits(data: number): number {
@@ -109,6 +108,38 @@ export function ror(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   }
 
   // Set the carry flag to what fell off the right end of the data
+  cpu.Flags.C = newCarry;
+
+  // Set the flags appropriately
+  cpu.Flags.SetZ(data);
+  cpu.Flags.SetN(data);
+
+  saveShift(cpu, memory, addressMode, data, address);
+}
+
+/**
+ * Executes the rotate left instruction.
+ * @param cpu The CPU to use when executing the command.
+ * @param memory The memory to reference during execution.
+ * @param addressMode The addressing mode to use when reading from memory.
+ */
+export function rol(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+  // eslint-disable-next-line prefer-const
+  let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
+
+  // Temp save what the new carry flag will be: true if the 7th bit is set.
+  const newCarry = data >= 128;
+
+  // Shift left one, masking off the top-most bit to keep it within
+  // the 8-bit range of the CPU.
+  data = (data <<= 1) & 0b011111111;
+
+  // Add the carry flag to position 0
+  if (cpu.Flags.C) {
+    data |= 0b00000001;
+  }
+
+  // Set the carry flag to what fell off the left end of the data
   cpu.Flags.C = newCarry;
 
   // Set the flags appropriately

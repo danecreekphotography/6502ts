@@ -186,6 +186,59 @@ function verifyRor() {
   expect(cpu.Flags.C).toBe(true);
 }
 
+// Verifies the ROL command for all address modes.
+function verifyRol() {
+  const operationSize = 1;
+
+  // Test shifts on A register
+  cpu.Registers.A = 0b01000000;
+  cpu.Flags.C = true;
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b10000001);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+  expect(cpu.Flags.N).toBe(true);
+  verifyProgramCounter(operationSize); // This is enough to confirm the operation size of the branch instruction is correct
+
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b00000010);
+  expect(cpu.Flags.C).toBe(true);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.N).toBe(false);
+
+  expect(cpu.Execute(2, memory)).toBe(2);
+  expect(cpu.Registers.A).toBe(0b00000101);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a rotate on zero page
+  expect(cpu.Execute(5, memory)).toBe(5);
+  expect(memory.readByte(0x00)).toBe(0b10000000);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a rotate on zero page plus X
+  cpu.Registers.X = 0x01;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x00 + 0x01)).toBe(0b00000000);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.C).toBe(true);
+
+  // Test a rotate on absolute memory location
+  cpu.Flags.C = false;
+  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(memory.readByte(0x3000)).toBe(0b10000000);
+  expect(cpu.Flags.Z).toBe(false);
+  expect(cpu.Flags.C).toBe(false);
+
+  // Test a rotate on absolute memory location plus X
+  cpu.Registers.X = 0x01;
+  expect(cpu.Execute(7, memory)).toBe(7);
+  expect(memory.readByte(0x3001)).toBe(0b00000000);
+  expect(cpu.Flags.Z).toBe(true);
+  expect(cpu.Flags.C).toBe(true);
+}
+
 test("Verify ASL", () => {
   initialize("ASL");
   verifyAsl();
@@ -199,4 +252,9 @@ test("Verify LSR", () => {
 test("Verify ROR", () => {
   initialize("ROR");
   verifyRor();
+});
+
+test("Verify ROL", () => {
+  initialize("ROL");
+  verifyRol();
 });

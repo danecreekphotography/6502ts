@@ -17,7 +17,7 @@ zp:
 init:
     ror         ; A will be %00000010, C will be 1.
     ror         ; A will be %10000001 from last instruction
-    ror         ; A will be %00000000 from last instruction
+    ror         ; A will be %00000010 from last instruction
     ror zp
     ror zp,x    ; X will be $01
     ror data
