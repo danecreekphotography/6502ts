@@ -51,8 +51,7 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   data = CapAtEightBits((data <<= 1));
 
   // Set the flags appropriately
-  cpu.Flags.SetZ(data);
-  cpu.Flags.SetN(data);
+  cpu.SetZAndNFlag(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }
@@ -74,8 +73,7 @@ export function lsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   data >>= 1;
 
   // Set the flags appropriately
-  cpu.Flags.SetZ(data);
-  cpu.Flags.SetN(data);
+  cpu.SetZAndNFlag(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }
@@ -105,8 +103,7 @@ export function ror(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Flags.C = newCarry;
 
   // Set the flags appropriately
-  cpu.Flags.SetZ(data);
-  cpu.Flags.SetN(data);
+  cpu.SetZAndNFlag(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }
@@ -137,8 +134,7 @@ export function rol(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Flags.C = newCarry;
 
   // Set the flags appropriately
-  cpu.Flags.SetZ(data);
-  cpu.Flags.SetN(data);
+  cpu.SetZAndNFlag(data);
 
   saveShift(cpu, memory, addressMode, data, address);
 }

@@ -16,7 +16,7 @@ import Memory from "../memory";
  */
 export function and(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Registers.A &= cpu.ReadByteFromMemory(memory, addressMode);
-  cpu.SetFlagsOnRegisterLoad("A");
+  cpu.SetZAndNFlag(cpu.Registers.A);
 }
 
 /**
@@ -27,7 +27,7 @@ export function and(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  */
 export function eor(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Registers.A ^= cpu.ReadByteFromMemory(memory, addressMode);
-  cpu.SetFlagsOnRegisterLoad("A");
+  cpu.SetZAndNFlag(cpu.Registers.A);
 }
 
 /**
@@ -38,7 +38,7 @@ export function eor(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  */
 export function ora(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   cpu.Registers.A |= cpu.ReadByteFromMemory(memory, addressMode);
-  cpu.SetFlagsOnRegisterLoad("A");
+  cpu.SetZAndNFlag(cpu.Registers.A);
 }
 
 /**

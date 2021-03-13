@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import AddressModes from "./addressModes";
-import Flags, { FlagMask } from "./flags";
+import Flags from "./flags";
 import Memory from "./memory";
 import OpcodeFunctions from "./opcodes";
 import Registers from "./registers";
@@ -201,15 +201,12 @@ export default class CPU {
   }
 
   /**
-   * Sets the Z and N flag based on the value stored in a register.
-   * @param register The register to reference (A, X or Y).
+   * Sets the Z and N flag based on the value provided.
+   * @param data The data to test.
    */
-  public SetFlagsOnRegisterLoad(register: keyof Registers): void {
-    // Zero flag is set if the register value is zero.
-    this.Flags.SetZ(this.Registers[register]);
-
-    // Negative flag is set if the 7th bit in the register is one.
-    this.Flags.SetN(this.Registers[register]);
+  public SetZAndNFlag(data: number): void {
+    this.Flags.SetZ(data);
+    this.Flags.SetN(data);
   }
 
   /**

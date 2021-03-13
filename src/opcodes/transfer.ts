@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Neil Enns. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import AddressModes from "../addressModes";
 import CPU from "../cpu";
 import Memory from "../memory";
@@ -16,6 +20,6 @@ export function TransferRegister(cpu: CPU, sourceRegister: keyof Registers, dest
 
   // Flags only get set on transfers to A, X, and Y registers.
   if (destinationRegister != "SP") {
-    cpu.SetFlagsOnRegisterLoad(destinationRegister);
+    cpu.SetZAndNFlag(cpu.Registers[destinationRegister]);
   }
 }
