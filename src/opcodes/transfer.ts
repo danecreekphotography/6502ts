@@ -2,9 +2,8 @@
  *  Copyright (c) Neil Enns. All rights reserved.
  *  Licensed under the MIT License. See LICENSE in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import AddressModes from "../addressModes";
+
 import CPU from "../cpu";
-import Memory from "../memory";
 import Registers from "../registers";
 
 /**
@@ -14,7 +13,11 @@ import Registers from "../registers";
  * @param sourceRegister The register to read the data from.
  * @param destinationRegister The register to store the data in.
  */
-export function TransferRegister(cpu: CPU, sourceRegister: keyof Registers, destinationRegister: keyof Registers) {
+export function TransferRegister(
+  cpu: CPU,
+  sourceRegister: keyof Registers,
+  destinationRegister: keyof Registers,
+): void {
   cpu.Registers[destinationRegister] = cpu.Registers[sourceRegister];
   cpu.consumedCycles++;
 

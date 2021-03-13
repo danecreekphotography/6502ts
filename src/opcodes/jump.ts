@@ -53,9 +53,8 @@ export function jmp(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * Jumps to a subroutine, pushing the return point - 1 to the current stack position.
  * @param cpu The CPU to use when executing the command.
  * @param memory The memory containing the location.
- * @param addressMode The address mode to use when reading the location.
  */
-export function jsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+export function jsr(cpu: CPU, memory: Memory): void {
   // Read the location of the subroutine. This advances the program counter past
   // the JSR instruction to whatever will get called when the subroutine returns.
   const jumpLocation = memory.readWord(cpu.PC);
@@ -73,9 +72,8 @@ export function jsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
  * Returns from a subroutine, popping the program counter + 1 from the stack.
  * @param cpu The CPU to use when executing the command.
  * @param memory The memory containing the location.
- * @param addressMode The address mode to use when reading the location.
  */
-export function rts(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
+export function rts(cpu: CPU, memory: Memory): void {
   const returnLocation = cpu.StackPopWord(memory) + 1;
   cpu.consumedCycles++;
 
