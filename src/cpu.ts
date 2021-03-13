@@ -206,10 +206,10 @@ export default class CPU {
    */
   public SetFlagsOnRegisterLoad(register: keyof Registers): void {
     // Zero flag is set if the register value is zero.
-    this.Flags.Z = this.Registers[register] == 0;
+    this.Flags.SetZ(this.Registers[register]);
 
     // Negative flag is set if the 7th bit in the register is one.
-    this.Flags.N = (this.Registers[register] & 0b10000000) > 0;
+    this.Flags.SetN(this.Registers[register]);
   }
 
   /**
