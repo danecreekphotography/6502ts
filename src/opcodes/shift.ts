@@ -44,7 +44,7 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
 
   // Bit 7 goes in the carry flag
-  cpu.Flags.C = (data & 0b10000000) > 0;
+  cpu.Flags.C = (data & 0b10000000) === 0b10000000;
 
   // Shift left one, masking off the top-most bit to keep it within
   // the 8-bit range of the CPU.
@@ -67,7 +67,7 @@ export function lsr(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
 
   // Bit 0 goes in the carry flag
-  cpu.Flags.C = (data & 0b00000001) > 0;
+  cpu.Flags.C = (data & 0b00000001) === 0b00000001;
 
   // Do the actual shift
   data >>= 1;
@@ -89,7 +89,7 @@ export function ror(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
 
   // Temp save what the new carry flag will be
-  const newCarry = (data & 0b00000001) === 1;
+  const newCarry = (data & 0b00000001) === 0b00000001;
 
   // Shift right one
   data >>= 1;
@@ -119,7 +119,7 @@ export function rol(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
   let [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
 
   // Temp save what the new carry flag will be: true if the 7th bit is set.
-  const newCarry = data >= 128;
+  const newCarry = (data & 0b10000000) === 0b10000000;
 
   // Shift left one, masking off the top-most bit to keep it within
   // the 8-bit range of the CPU.
