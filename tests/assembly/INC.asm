@@ -48,6 +48,7 @@ data:
 
 datax:
 
-  .byte %00000001
+  .byte $00         ; Padding
+  .byte %00000000
   .byte $FF
   .byte %01111111
