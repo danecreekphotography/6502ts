@@ -14,6 +14,7 @@ import * as stack from "./opcodes/stack";
 import * as store from "./opcodes/store";
 import * as system from "./opcodes/system";
 import * as transfer from "./opcodes/transfer";
+import * as incdec from "./opcodes/increment_decrement";
 
 // Reference for all the opcodes: http://www.obelisk.me.uk/6502/reference.html
 const OpcodeFunctions = new Map<number, ExecutionFunction>([
@@ -164,6 +165,22 @@ const OpcodeFunctions = new Map<number, ExecutionFunction>([
   [0x36, (cpu, memory) => shift.rol(cpu, memory, AddressModes.ZeroPageX)],
   [0x2e, (cpu, memory) => shift.rol(cpu, memory, AddressModes.Absolute)],
   [0x3e, (cpu, memory) => shift.rol(cpu, memory, AddressModes.AbsoluteX)],
+
+  // INX, INY
+  [0xe8, (cpu) => incdec.incrementRegister(cpu, "X")],
+  [0xc8, (cpu) => incdec.incrementRegister(cpu, "Y")],
+
+  // INC
+  [0xe6, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.ZeroPage)],
+  [0xf6, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.ZeroPageX)],
+  [0xee, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.Absolute)],
+  [0xfe, (cpu, memory) => incdec.incrementMemory(cpu, memory, AddressModes.AbsoluteX)],
+
+  // DEC
+  [0xc6, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.ZeroPage)],
+  [0xd6, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.ZeroPageX)],
+  [0xce, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.Absolute)],
+  [0xde, (cpu, memory) => incdec.decrementMemory(cpu, memory, AddressModes.AbsoluteX)],
 ]);
 
 export default OpcodeFunctions;

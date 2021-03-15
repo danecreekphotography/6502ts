@@ -7,10 +7,6 @@ import AddressModes from "../addressModes";
 import CPU from "../cpu";
 import Memory from "../memory";
 
-function CapAtEightBits(data: number): number {
-  return data & 0b011111111;
-}
-
 /**
  * Saves the result of a shift operation to either the accumulator or memory.
  * Consumes one cycle (Accumulator), three cycles (all other address modes except AbsoluteX),
@@ -48,7 +44,7 @@ export function asl(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
 
   // Shift left one, masking off the top-most bit to keep it within
   // the 8-bit range of the CPU.
-  data = CapAtEightBits((data <<= 1));
+  data = cpu.CapAtEightBits((data <<= 1));
 
   // Set the flags appropriately
   cpu.SetZAndNFlag(data);
@@ -123,7 +119,7 @@ export function rol(cpu: CPU, memory: Memory, addressMode: AddressModes): void {
 
   // Shift left one, masking off the top-most bit to keep it within
   // the 8-bit range of the CPU.
-  data = CapAtEightBits((data <<= 1));
+  data = cpu.CapAtEightBits((data <<= 1));
 
   // Add the carry flag to position 0
   if (cpu.Flags.C) {

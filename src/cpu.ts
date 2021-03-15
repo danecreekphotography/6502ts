@@ -182,6 +182,8 @@ export default class CPU {
    * Returns the data at the requested location using the specified address mode
    * and the address it was read from. Handy to then update the data and write it back
    * to the same location in memory.
+   *
+   * This consumes cycles based on the type of address mode provided.
    * @param memory The memory to reference during execution.
    * @param addressMode The addressing mode to use when reading from memory.
    * @returns
@@ -207,6 +209,16 @@ export default class CPU {
   public SetZAndNFlag(data: number): void {
     this.Flags.SetZ(data);
     this.Flags.SetN(data);
+  }
+
+  /**
+   * Takes a TypeScript number and cuts off any bits beyond eight
+   * bits of data.
+   * @param data The data to cap at eight bits
+   * @returns The data capped to eight bits
+   */
+  public CapAtEightBits(data: number): number {
+    return data & 0b011111111;
   }
 
   /**
