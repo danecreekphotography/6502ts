@@ -182,6 +182,8 @@ export default class CPU {
    * Returns the data at the requested location using the specified address mode
    * and the address it was read from. Handy to then update the data and write it back
    * to the same location in memory.
+   *
+   * This consumes cycles based on the type of address mode provided.
    * @param memory The memory to reference during execution.
    * @param addressMode The addressing mode to use when reading from memory.
    * @returns

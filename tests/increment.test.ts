@@ -135,7 +135,7 @@ function verifyMemoryIncrement() {
   // Absolute plus x increment from zero, ensure zero flag clears
   cpu.Flags.Z = true;
   cpu.Registers.X = 0x01;
-  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Execute(7, memory)).toBe(7);
   expect(memory.readByte(0x3003 + 0x01)).toBe(0b00000001);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
@@ -143,14 +143,14 @@ function verifyMemoryIncrement() {
   // Absolute plus x increment from 255, ensure it wraps to zero
   cpu.Flags.Z = false;
   cpu.Registers.X = 0x02;
-  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Execute(7, memory)).toBe(7);
   expect(memory.readByte(0x3003 + 0x02)).toBe(0x00);
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
 
   // Absolute plus x increment from 0b01111111, ensure it sets negative flag
   cpu.Registers.X = 0x03;
-  expect(cpu.Execute(6, memory)).toBe(6);
+  expect(cpu.Execute(7, memory)).toBe(7);
   expect(memory.readByte(0x3003 + 0x03)).toBe(0b10000000);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(true);

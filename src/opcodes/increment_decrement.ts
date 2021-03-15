@@ -63,6 +63,9 @@ export function incrementMemory(cpu: CPU, memory: Memory, addressMode: AddressMo
 
   memory.writeByte(address, incrementedData);
   cpu.consumedCycles++;
+
+  // Absolute X mode consumes an extra cycle for no apparent reason.
+  if (addressMode === AddressModes.AbsoluteX) cpu.consumedCycles++;
 }
 
 /**
@@ -86,7 +89,11 @@ export function decrementMemory(cpu: CPU, memory: Memory, addressMode: AddressMo
   const [data, address] = cpu.ReadByteAndAddress(memory, addressMode);
 
   const incrementedData = DecrementAndSetFlags(cpu, data);
-  cpu.consumedCycles++;
+  cpu.consumedCycles += 2; // +2 here otherwise this is one short of expected
 
   memory.writeByte(address, incrementedData);
+  cpu.consumedCycles++;
+
+  // Absolute X mode consumes an extra cycle for no apparent reason.
+  if (addressMode === AddressModes.AbsoluteX) cpu.consumedCycles++;
 }

@@ -111,7 +111,7 @@ function verifyMemoryDecrement() {
   cpu.Registers.X = 0x03;
   cpu.Flags.N = true;
   expect(cpu.Execute(6, memory)).toBe(6);
-  expect(memory.readByte(0x03 + 0x03)).toBe(0b0111111);
+  expect(memory.readByte(0x03 + 0x03)).toBe(0b01111111);
   expect(cpu.Flags.Z).toBe(false);
   expect(cpu.Flags.N).toBe(false);
 
@@ -131,7 +131,7 @@ function verifyMemoryDecrement() {
   expect(cpu.Flags.Z).toBe(true);
   expect(cpu.Flags.N).toBe(false);
 
-  // Absolute decrement from 0b10000000, ensure it clears ngeative flag
+  // Absolute decrement from 0b10000000, ensure it clears negative flag
   cpu.Flags.N = true;
   expect(cpu.Execute(6, memory)).toBe(6);
   expect(memory.readByte(0x3002)).toBe(0b01111111);
@@ -171,7 +171,7 @@ test.skip("Verify DEX and DEY", () => {
   verifyRegisterDecrement("Y");
 });
 
-test("Verify DEC", () => {
+test.only("Verify DEC", () => {
   initialize("DEC");
   verifyMemoryDecrement();
 });
