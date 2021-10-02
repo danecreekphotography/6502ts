@@ -15,19 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danecreekphotography/6502ts.git"
+    "url": "git+https://github.com/neilenns/6502ts.git"
   },
-  "keywords": [
-    "6502",
-    "emulator",
-    "typescript"
-  ],
+  "keywords": ["6502", "emulator", "typescript"],
   "author": "Neil Enns",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/danecreekphotography/6502ts/issues"
+    "url": "https://github.com/neilenns/6502ts/issues"
   },
-  "homepage": "https://github.com/danecreekphotography/6502ts#readme",
+  "homepage": "https://github.com/neilenns/6502ts#readme",
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
